@@ -1,6 +1,7 @@
 package demo;
 
 public class UserBoundary {
+	
 	private String email;
 	private String userName;
 	private String userDomain;
@@ -9,7 +10,6 @@ public class UserBoundary {
 		
 	}
 		
-	
 	public UserBoundary(String email, String userName, String userDomain) {
 		super();
 		this.email = email;
