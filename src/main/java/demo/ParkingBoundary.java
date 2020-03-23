@@ -9,13 +9,10 @@ public class ParkingBoundary {
 	private String parkingDomain;
 	private String parkingId;
 	
-
-	
 	public ParkingBoundary() {
 	
 	}
-	
-	
+		
 	public ParkingBoundary(String lat, String lon, String city, String street,String parkingDomain, String parkingId) {
 		super();
 		
@@ -79,9 +76,4 @@ public class ParkingBoundary {
 	public void setStreet(String street) {
 		this.street = street;
 	}
-	
-	
-	
-	
-
 }

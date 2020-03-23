@@ -18,7 +18,7 @@ public class ParkingController {
 		public ParkingBoundary getParking(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail,
 				@PathVariable("parkingDomain") String parkingDomain,@PathVariable("parkingId") String parkingId) {
 			
-			if(isLoggedIn(userDomain,userEmail)) {
+			if(UserLogin.isLoggedIn(userDomain,userEmail)) {
 				
 				//Some tests
 				System.out.println("userDoamin = " + userDomain);
@@ -35,12 +35,6 @@ public class ParkingController {
 							
 		}
 		
-		public boolean isLoggedIn(String userDomian, String userEmail) {
-			
-			//In the future, we need to ad some real logic of checking if the user is logged in
-			return true;
-		}
-		
 		
 		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}",
 				method = RequestMethod.GET,
@@ -48,7 +42,7 @@ public class ParkingController {
 		public List<ParkingBoundary> getAllParking(@PathVariable("userDomain") String userDomain,
 				@PathVariable("userEmail") String userEmail) {
 			
-			if(isLoggedIn(userDomain,userEmail)) {
+			if(UserLogin.isLoggedIn(userDomain,userEmail)) {
 				
 				//Some tests
 				System.out.println("userDoamin = " + userDomain);
