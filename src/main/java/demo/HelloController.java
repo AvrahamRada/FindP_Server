@@ -13,4 +13,4 @@ public class HelloController {
 	public MessageBoundary hello () {
 		return new MessageBoundary ("Hello World!");
 	}
-}
+}  
