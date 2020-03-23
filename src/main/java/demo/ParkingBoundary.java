@@ -8,6 +8,7 @@ public class ParkingBoundary {
 	private String street;
 	private String parkingDomain;
 	private String parkingId;
+	
 
 	
 	public ParkingBoundary() {

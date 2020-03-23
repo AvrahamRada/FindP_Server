@@ -1,5 +1,8 @@
 package demo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +39,37 @@ public class ParkingController {
 			
 			//In the future, we need to ad some real logic of checking if the user is logged in
 			return true;
+		}
+		
+		
+		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}",
+				method = RequestMethod.GET,
+				produces = MediaType.APPLICATION_JSON_VALUE)
+		public List<ParkingBoundary> getAllParking(@PathVariable("userDomain") String userDomain,
+				@PathVariable("userEmail") String userEmail) {
+			
+			if(isLoggedIn(userDomain,userEmail)) {
+				
+				//Some tests
+				System.out.println("userDoamin = " + userDomain);
+				System.out.println("userEmail = " + userEmail);
+				
+				return getAllParkingsFromDB();
+				
+			} 
+			
+			//User is not logged in.
+			return null;
+							
+		}
+
+		private List<ParkingBoundary> getAllParkingsFromDB() {
+			List<ParkingBoundary> list=new ArrayList<>();
+			list.add(new ParkingBoundary("5","5","city","street","parkingDomain","9999"));
+			list.add(new ParkingBoundary("5","5","city","street","parkingDomain","123"));
+			list.add(new ParkingBoundary("5","5","city","street","parkingDomain","56856"));
+
+			return list;
 		}
 
 }
