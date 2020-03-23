@@ -14,7 +14,6 @@ public class UserController {
 	public UserBoundary login(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail) {
 		System.out.println("userDoamin = " + userDomain);
 		System.out.println("userEmail = " + userEmail);
-		//testing row
 		return new UserBoundary(userEmail, "userName", userDomain);
 	}
 }
