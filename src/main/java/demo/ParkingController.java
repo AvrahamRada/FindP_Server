@@ -39,7 +39,7 @@ public class ParkingController {
 		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}",
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)
-		public List<ParkingBoundary> getAllParking(@PathVariable("userDomain") String userDomain,
+		public ParkingBoundary[] getAllParking(@PathVariable("userDomain") String userDomain,
 				@PathVariable("userEmail") String userEmail) {
 			
 			if(UserLogin.isLoggedIn(userDomain,userEmail)) {
@@ -48,7 +48,7 @@ public class ParkingController {
 				System.out.println("userDoamin = " + userDomain);
 				System.out.println("userEmail = " + userEmail);
 				
-				return getAllParkingsFromDB();
+				return getAllParkingsFromDB().toArray(new ParkingBoundary[0]);
 				
 			} 
 			
