@@ -2,43 +2,55 @@ package demo;
 
 public class UserBoundary {
 	
-	private String email;
+	private UserId userId;
+	private String role;
 	private String userName;
-	private String userDomain;
+	private String avatar;
 	
 	public UserBoundary() {
-		
+		// TODO Auto-generated constructor stub
 	}
-		
-	public UserBoundary(String email, String userName, String userDomain) {
+
+	public UserBoundary(UserId userId, String role, String userName, String avatar) {
 		super();
-		this.email = email;
+		this.userId = userId;
+		this.role = role;
 		this.userName = userName;
-		this.userDomain = userDomain;
+		this.avatar = avatar;
 	}
-	
-	public String getEmail() {
-		return this.email;
+
+	public UserId getUserId() {
+		return userId;
 	}
-	
+
+	public void setUserId(UserId userId) {
+		this.userId = userId;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
 	public String getUserName() {
-		return this.userName;
+		return userName;
 	}
-	
-	public String getUserDomain() {
-		return this.userDomain;
-	}
-	
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	
+
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
-	public void setUserDomain(String userDomain) {
-		this.userDomain = userDomain;
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 	
+	
+
 }
