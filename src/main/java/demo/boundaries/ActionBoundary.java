@@ -1,6 +1,11 @@
-package demo;
+package demo.boundaries;
 
 import java.util.Date;
+
+import demo.action.ActionAttributes;
+import demo.action.ActionId;
+import demo.action.InvokedBy;
+import demo.element.Element;
 
 public class ActionBoundary {
 	

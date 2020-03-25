@@ -1,6 +1,10 @@
-package demo;
+package demo.boundaries;
 
 import java.util.Date;
+
+import demo.element.CreatedBy;
+import demo.element.ElementAttributes;
+import demo.element.ElementId;
 
 public class ElementBoundary {
 	

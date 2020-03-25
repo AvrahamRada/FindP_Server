@@ -1,4 +1,4 @@
-package demo;
+package demo.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import demo.boundaries.UserBoundary;
+import demo.element.UserId;
+import demo.helpers.UserHelper;
 
 @RestController
 public class UserController {
@@ -27,8 +31,8 @@ public class UserController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<UserBoundary> getAllUsers(@PathVariable("adminDomain") String adminDomain,@PathVariable("adminEmail") String adminEmail) {
 		
-		if(UserLogin.isLoggedIn(adminDomain,adminEmail)) {
-			if(UserLogin.isAdmin(adminDomain,adminEmail))
+		if(UserHelper.isLoggedIn(adminDomain,adminEmail)) {
+			if(UserHelper.isAdmin(adminDomain,adminEmail))
 			
 			//Some tests
 			System.out.println("userDoamin = " + adminDomain);

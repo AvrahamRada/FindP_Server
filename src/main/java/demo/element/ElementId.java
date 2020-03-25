@@ -1,19 +1,21 @@
-package demo;
+package demo.element;
 
-public class UserId {
-
-	private String domain;
-	private String email;
+public class ElementId {
 	
-	public UserId() {
+	private String domain;
+	private String id;
+	
+	public ElementId() {
 		// TODO Auto-generated constructor stub
 	}
+	
 
-	public UserId(String domain, String email) {
+	public ElementId(String domain, String id) {
 		super();
 		this.domain = domain;
-		this.email = email;
+		this.id = id;
 	}
+
 
 	public String getDomain() {
 		return domain;
@@ -23,12 +25,12 @@ public class UserId {
 		this.domain = domain;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getId() {
+		return id;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	
