@@ -67,6 +67,18 @@ public class UserController {
 		return ub;
 	}
 	
+	//Update user details
+	@RequestMapping(path = "/acs/users/{userDomain}/{userEmail}",
+			method = RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void updateUserDetails (
+			@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail, 
+			@RequestBody UserBoundary update) {
+		if(UserHelper.isLoggedIn(userDomain, userEmail)) {
+			// TODO update user by userDomain and userEmail
+		}
+	}
+	
 	
 
 
