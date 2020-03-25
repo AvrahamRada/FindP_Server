@@ -1,6 +1,7 @@
 package demo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -10,23 +11,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class ParkingController {
+public class ElementController {
 		//Retreive Specific Parking
-		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/{parkingDomain}/{parkingId}",
+		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/{elementDomain}/{elementId}",
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)
-		public ParkingBoundary getParking(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail,
-				@PathVariable("parkingDomain") String parkingDomain,@PathVariable("parkingId") String parkingId) {
+		public ElementBoundary getParking(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail,
+				@PathVariable("elementDomain") String elementDomain,@PathVariable("elementId") String elementId) {
 			
 			if(UserLogin.isLoggedIn(userDomain,userEmail)) {
 				
 				//Some tests
 				System.out.println("userDoamin = " + userDomain);
 				System.out.println("userEmail = " + userEmail);
-				System.out.println("elementDomain = " + parkingDomain);
-				System.out.println("elementId = " + parkingId);
+				System.out.println("elementDomain = " + elementDomain);
+				System.out.println("elementId = " + elementId);
 		
-				return new ParkingBoundary("lat","lon","City","Street",parkingDomain, parkingId);
+				return new ElementBoundary(new ElementId(userDomain, "id"),"type","name",
+						true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId(userDomain,userEmail))
+						,new ElementAttributes(true));
 				
 			} 
 			
@@ -39,7 +42,7 @@ public class ParkingController {
 		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}",
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)
-		public ParkingBoundary[] getAllParking(@PathVariable("userDomain") String userDomain,
+		public ElementBoundary[] getAllParking(@PathVariable("userDomain") String userDomain,
 				@PathVariable("userEmail") String userEmail) {
 			
 			if(UserLogin.isLoggedIn(userDomain,userEmail)) {
@@ -48,7 +51,7 @@ public class ParkingController {
 				System.out.println("userDoamin = " + userDomain);
 				System.out.println("userEmail = " + userEmail);
 				
-				return getAllParkingsFromDB().toArray(new ParkingBoundary[0]);
+				return getAllParkingsFromDB().toArray(new ElementBoundary[0]);
 				
 			} 
 			
@@ -57,11 +60,11 @@ public class ParkingController {
 							
 		}
 
-		private List<ParkingBoundary> getAllParkingsFromDB() {
-			List<ParkingBoundary> list=new ArrayList<>();
-			list.add(new ParkingBoundary("5","5","city","street","parkingDomain","9999"));
-			list.add(new ParkingBoundary("5","5","city","street","parkingDomain","123"));
-			list.add(new ParkingBoundary("5","5","city","street","parkingDomain","56856"));
+		private List<ElementBoundary> getAllParkingsFromDB() {
+			List<ElementBoundary> list=new ArrayList<>();
+//			list.add(new ElementBoundary("5","5","city","street","parkingDomain","9999"));
+//			list.add(new ElementBoundary("5","5","city","street","parkingDomain","123"));
+//			list.add(new ElementBoundary("5","5","city","street","parkingDomain","56856"));
 
 			return list;
 		}

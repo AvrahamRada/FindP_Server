@@ -19,7 +19,7 @@ public class UserController {
 	public UserBoundary login(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail) {
 		System.out.println("userDoamin = " + userDomain);
 		System.out.println("userEmail = " + userEmail);
-		return new UserBoundary(userEmail, "userName", userDomain);
+		return new UserBoundary(new UserId(userDomain,userEmail),"role", "userName","avatar");
 	}
 	
 	@RequestMapping(path = "/acs/elements/{adminDomain}/{adminEmail}",
@@ -41,9 +41,9 @@ public class UserController {
 
 	private List<UserBoundary> getAllUsersFromDB() {
 		List<UserBoundary> list=new ArrayList<>();
-		list.add(new UserBoundary("1@1.com", "Mor", "1"));
-		list.add(new UserBoundary("2@2.com", "Hod", "2"));
-		list.add(new UserBoundary("3@3.com", "Lior", "3"));
+//		list.add(new UserBoundary("1@1.com", "Mor", "1"));
+//		list.add(new UserBoundary("2@2.com", "Hod", "2"));
+//		list.add(new UserBoundary("3@3.com", "Lior", "3"));
 		
 		return list;
 	}
