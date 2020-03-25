@@ -62,9 +62,15 @@ public class ElementController {
 
 		private List<ElementBoundary> getAllParkingsFromDB() {
 			List<ElementBoundary> list=new ArrayList<>();
-//			list.add(new ElementBoundary("5","5","city","street","parkingDomain","9999"));
-//			list.add(new ElementBoundary("5","5","city","street","parkingDomain","123"));
-//			list.add(new ElementBoundary("5","5","city","street","parkingDomain","56856"));
+			list.add(new ElementBoundary(new ElementId("userDomain", "1"),"type","name",
+					true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId("userDomain","userEmail"))
+					,new ElementAttributes(true)));
+			list.add(new ElementBoundary(new ElementId("userDomain", "2"),"type","name",
+					true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId("userDomain","userEmail"))
+					,new ElementAttributes(true)));
+			list.add(new ElementBoundary(new ElementId("userDomain", "3"),"type","name",
+					true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId("userDomain","userEmail"))
+					,new ElementAttributes(true)));
 
 			return list;
 		}
