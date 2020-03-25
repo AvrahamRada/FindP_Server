@@ -1,4 +1,4 @@
-package demo;
+package demo.action;
 
 public class ActionId {
 	

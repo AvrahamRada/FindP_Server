@@ -1,4 +1,6 @@
-package demo;
+package demo.boundaries;
+
+import demo.element.UserId;
 
 public class UserBoundary {
 	

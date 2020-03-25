@@ -1,4 +1,4 @@
-package demo;
+package demo.controllers;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import demo.boundaries.ElementBoundary;
+import demo.element.CreatedBy;
+import demo.element.ElementAttributes;
+import demo.element.ElementId;
+import demo.element.UserId;
+import demo.helpers.UserHelper;
+
 @RestController
 public class ElementController {
 		//Retreive Specific Parking
@@ -19,7 +26,7 @@ public class ElementController {
 		public ElementBoundary getParking(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail,
 				@PathVariable("elementDomain") String elementDomain,@PathVariable("elementId") String elementId) {
 			
-			if(UserLogin.isLoggedIn(userDomain,userEmail)) {
+			if(UserHelper.isLoggedIn(userDomain,userEmail)) {
 				
 				//Some tests
 				System.out.println("userDoamin = " + userDomain);
@@ -45,7 +52,7 @@ public class ElementController {
 		public ElementBoundary[] getAllParking(@PathVariable("userDomain") String userDomain,
 				@PathVariable("userEmail") String userEmail) {
 			
-			if(UserLogin.isLoggedIn(userDomain,userEmail)) {
+			if(UserHelper.isLoggedIn(userDomain,userEmail)) {
 				
 				//Some tests
 				System.out.println("userDoamin = " + userDomain);

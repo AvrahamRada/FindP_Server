@@ -1,4 +1,6 @@
-package demo;
+package demo.action;
+
+import demo.element.UserId;
 
 public class InvokedBy {
 	
