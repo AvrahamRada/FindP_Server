@@ -5,18 +5,21 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import demo.boundaries.MessageBoundary;
 import demo.boundaries.UserBoundary;
+import demo.element.NewUserDetails;
 import demo.element.UserId;
 import demo.helpers.UserHelper;
 
 @RestController
 public class UserController {
 	
-	//login user get request
+	//Login user get request
 	@RequestMapping(path = "/acs/users/login/{userDomain}/{userEmail}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,5 +55,19 @@ public class UserController {
 		
 		return list;
 	}
+	
+	//Create a new user
+	@RequestMapping(path = "/acs/users",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public UserBoundary createNewUser (@RequestBody NewUserDetails input) {
+		UserBoundary ub=new UserBoundary(new UserId("2020b.lior_trachtman",input.getEmail()), input.getRole()
+				, input.getUserName(), input.getAvatar());
+		return ub;
+	}
+	
+	
+
 
 }
