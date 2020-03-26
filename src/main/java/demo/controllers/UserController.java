@@ -19,6 +19,9 @@ import demo.helpers.UserHelper;
 @RestController
 public class UserController {
 	
+	
+	/*--------------------- GET APIS ------------------- */
+
 	//Login user get request
 	@RequestMapping(path = "/acs/users/login/{userDomain}/{userEmail}",
 			method = RequestMethod.GET,
@@ -29,32 +32,8 @@ public class UserController {
 		return new UserBoundary(new UserId(userDomain,userEmail),"role", "userName","avatar");
 	}
 	
-	@RequestMapping(path = "/acs/elements/{adminDomain}/{adminEmail}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<UserBoundary> getAllUsers(@PathVariable("adminDomain") String adminDomain,@PathVariable("adminEmail") String adminEmail) {
-		
-		if(UserHelper.isLoggedIn(adminDomain,adminEmail)) {
-			if(UserHelper.isAdmin(adminDomain,adminEmail))
-			
-			//Some tests
-			System.out.println("userDoamin = " + adminDomain);
-			System.out.println("userEmail = " + adminEmail);
-			return getAllUsersFromDB();
-		} 
-		//User is not logged in.
-		return null;				
-	}
+	/*--------------------- POST APIS ------------------- */
 
-	private List<UserBoundary> getAllUsersFromDB() {
-		List<UserBoundary> list=new ArrayList<>();
-		list.add(new UserBoundary(new UserId("Hod","1@1.com"),"role", "userName","avatar"));
-		list.add(new UserBoundary(new UserId("Sarel","2@2.com"),"role", "userName","avatar"));
-		list.add(new UserBoundary(new UserId("Mor","3@3.com"),"role", "userName","avatar"));
-
-		
-		return list;
-	}
 	
 	//Create a new user
 	@RequestMapping(path = "/acs/users",
@@ -66,6 +45,9 @@ public class UserController {
 				, input.getUserName(), input.getAvatar());
 		return ub;
 	}
+	
+	/*--------------------- PUT APIS ------------------- */
+
 	
 	//Update user details
 	@RequestMapping(path = "/acs/users/{userDomain}/{userEmail}",

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import demo.boundaries.ElementBoundary;
+import demo.database.Database;
 import demo.element.CreatedBy;
 import demo.element.ElementAttributes;
 import demo.element.ElementId;
@@ -24,7 +25,7 @@ public class ElementController {
 	
 		/*--------------------- GET APIS ------------------- */
 	
-		//Retreive Specific Parking
+		//Retreive Specific Element
 		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/{elementDomain}/{elementId}",
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,7 +54,7 @@ public class ElementController {
 		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}",
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)
-		public ElementBoundary[] getAllParking(@PathVariable("userDomain") String userDomain,
+		public ElementBoundary[] getAllElements(@PathVariable("userDomain") String userDomain,
 				@PathVariable("userEmail") String userEmail) {
 			
 			if(UserHelper.isLoggedIn(userDomain,userEmail)) {
@@ -62,7 +63,7 @@ public class ElementController {
 				System.out.println("userDoamin = " + userDomain);
 				System.out.println("userEmail = " + userEmail);
 				
-				return getAllParkingsFromDB().toArray(new ElementBoundary[0]);
+				return Database.getAllElements().toArray(new ElementBoundary[0]);
 				
 			} 
 			
@@ -80,35 +81,10 @@ public class ElementController {
 				public ElementBoundary createNewElement (
 						@RequestBody ElementBoundary input) {
 					
-						input.getElementId().setId(generateUniqueId());
-						saveElementInDB(input);
+						input.getElementId().setId(Database.generateUniqueId());
+						Database.saveElement(input);
 						
 						return input;	
-				}
-
-				private String generateUniqueId() {
-			// TODO Auto-generated method stub - need to be completed in future.
-			return "1";
+			
 		}
-
-
-				private void saveElementInDB(ElementBoundary input) {
-					// TODO Auto-generated method stub - need to be completed in future.
-				}
-
-		private List<ElementBoundary> getAllParkingsFromDB() {
-			List<ElementBoundary> list=new ArrayList<>();
-			list.add(new ElementBoundary(new ElementId("userDomain", "1"),"type","name",
-					true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId("userDomain","userEmail")),new Location(40.730610,-73.935242)
-					,new ElementAttributes(true)));
-			list.add(new ElementBoundary(new ElementId("userDomain", "2"),"type","name",
-					true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId("userDomain","userEmail")),new Location(40.730610,-73.935242)
-					,new ElementAttributes(true)));
-			list.add(new ElementBoundary(new ElementId("userDomain", "3"),"type","name",
-					true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId("userDomain","userEmail")),new Location(40.730610,-73.935242)
-					,new ElementAttributes(true)));
-
-			return list;
-		}
-
 }
