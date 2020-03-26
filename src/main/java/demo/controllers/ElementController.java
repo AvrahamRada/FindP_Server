@@ -81,10 +81,16 @@ public class ElementController {
 				public ElementBoundary createNewElement (
 						@RequestBody ElementBoundary input) {
 					
+					if(input.getElementId().getId() == null) {
+						
 						input.getElementId().setId(Database.generateUniqueId());
 						Database.saveElement(input);
-						
 						return input;	
+					} 
+					//Element is already exist with an id
+					return null;
+						
+						
 			
 		}
 }
