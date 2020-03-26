@@ -2,32 +2,32 @@ package demo.element;
 
 public class Location {
 	
-	private Long lat;
-	private Long lng;
+	private Double lat;
+	private Double lng;
 	
 	public Location() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Location(long lat, long lng) {
+	public Location(Double d, Double e) {
 		super();
-		this.lat = lat;
-		this.lng = lng;
+		this.lat = d;
+		this.lng = e;
 	}
 
-	public long getLat() {
+	public Double getLat() {
 		return lat;
 	}
 
-	public void setLat(long lat) {
+	public void setLat(Double lat) {
 		this.lat = lat;
 	}
 
-	public long getLng() {
+	public Double getLng() {
 		return lng;
 	}
 
-	public void setLng(long lng) {
+	public void setLng(Double lng) {
 		this.lng = lng;
 	}
 	

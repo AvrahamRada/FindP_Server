@@ -5,6 +5,7 @@ import java.util.Date;
 import demo.element.CreatedBy;
 import demo.element.ElementAttributes;
 import demo.element.ElementId;
+import demo.element.Location;
 
 public class ElementBoundary {
 	
@@ -14,6 +15,7 @@ public class ElementBoundary {
 	private Boolean active;
 	private Date createdTimeStamp;
 	private CreatedBy createdBy;
+	private Location location;
 	private ElementAttributes elementAttributes;
 	
 	public ElementBoundary() {
@@ -21,7 +23,7 @@ public class ElementBoundary {
 	}
 
 	public ElementBoundary(ElementId elementId, String type, String name, Boolean active, Date createdTimeStamp,
-			CreatedBy createdBy, ElementAttributes elementAttributes) {
+			CreatedBy createdBy, Location location,ElementAttributes elementAttributes) {
 		super();
 		this.elementId = elementId;
 		this.type = type;
@@ -29,6 +31,7 @@ public class ElementBoundary {
 		this.active = active;
 		this.createdTimeStamp = createdTimeStamp;
 		this.createdBy = createdBy;
+		this.location = location;
 		this.elementAttributes = elementAttributes;
 	}
 
@@ -78,6 +81,15 @@ public class ElementBoundary {
 
 	public void setCreatedBy(CreatedBy createdBy) {
 		this.createdBy = createdBy;
+	}
+	
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 
 	public ElementAttributes getElementAttributes() {
