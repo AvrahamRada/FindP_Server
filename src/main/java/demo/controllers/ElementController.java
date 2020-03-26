@@ -40,7 +40,7 @@ public class ElementController {
 				System.out.println("elementDomain = " + elementDomain);
 				System.out.println("elementId = " + elementId);
 		
-				return new ElementBoundary(new ElementId(userDomain, "id"),"type","name",
+				return new ElementBoundary(new ElementId(userDomain, elementId),"type","name",
 						true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId(userDomain,userEmail)),new Location(40.730610,-73.935242),new ElementAttributes(true));
 				
 			} 
