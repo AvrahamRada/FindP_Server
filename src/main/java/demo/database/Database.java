@@ -21,12 +21,27 @@ public class Database {
 		
 	}
 	
+	public static  void deleteAllElements() {
+
+		// TODO Auto-generated method stub
+		
+	}
+	
 	public static String generateUniqueId() {
 		// TODO Auto-generated method stub - need to be completed in future.
 		return "1";
 	}
 	
 	public static void saveElement(ElementBoundary input) {
+		// TODO Auto-generated method stub - need to be completed in future.
+	}
+	
+	public static boolean checkElement(String elementDomain, String elementId) {
+		// TODO Auto-generated method stub - need to be completed in future.
+		return true;
+	}
+	
+	public static void updateElement(ElementBoundary input) {
 		// TODO Auto-generated method stub - need to be completed in future.
 	}
 	

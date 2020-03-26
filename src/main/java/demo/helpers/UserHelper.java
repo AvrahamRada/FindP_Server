@@ -11,4 +11,9 @@ public class UserHelper {
 		//In the future, we need to ad some real logic of checking if the user is logged in
 		return true;
 	}
+	
+	public static boolean isManager(String userDomain, String userEmail) {
+		//In the future, we need to ad some real logic of checking if the user is logged in
+		return true;
+	}
 }
