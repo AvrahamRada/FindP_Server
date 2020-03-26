@@ -89,8 +89,19 @@ public class ElementController {
 					} 
 					//Element is already exist with an id
 					return null;
-						
-						
-			
 		}
+				
+		/*--------------------- PUT APIS ------------------- */
+				//Update an element
+				@RequestMapping(path = "/acs/elements/{managerDomain}/{managerEmail}/{elementDomain}/{elementId}",
+						method = RequestMethod.PUT,
+						consumes = MediaType.APPLICATION_JSON_VALUE)
+				public void updateElement(@PathVariable("managerDomain") String managerDomain, @PathVariable("managerEmail") String managerEmail,
+						@PathVariable("elementDomain") String elementDomain,@PathVariable("elementId") String elementId, @RequestBody ElementBoundary input) {
+					if(UserHelper.isManager(managerDomain, managerEmail)) {
+						if(Database.checkElement(elementDomain,elementId))
+							Database.updateElement(input);
+					}
+				}
+				
 }
