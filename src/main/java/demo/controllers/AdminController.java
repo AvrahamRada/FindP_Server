@@ -36,14 +36,14 @@ public class AdminController {
 	
 	/*--------------------- DELETE APIS ------------------- */
 	
-	@RequestMapping(path = "/acs/actions/{adminDomain}/{adminEmail}",
+	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}",
 			method = RequestMethod.DELETE)
 	public void deleteAllActions() {
 		
 		Database.deleteAllActions();
 	}
 
-	@RequestMapping(path = "/acs/elements/{adminDomain}/{adminEmail}",
+	@RequestMapping(path = "/acs/admin/elements/{adminDomain}/{adminEmail}",
 			method = RequestMethod.DELETE)
 	public void deleteAllElements() {
 		
