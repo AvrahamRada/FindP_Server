@@ -27,9 +27,10 @@ public class UserController {
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary login(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail) {
-		System.out.println("userDoamin = " + userDomain);
-		System.out.println("userEmail = " + userEmail);
-		return new UserBoundary(new UserId(userDomain,userEmail),"role", "userName","avatar");
+		if(UserHelper.isSignedIn(userEmail, userEmail)) {
+			return new UserBoundary(new UserId(userDomain,userEmail),"role", "userName","avatar");
+		}
+		return null;
 	}
 	
 	/*--------------------- POST APIS ------------------- */
