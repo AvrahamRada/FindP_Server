@@ -10,6 +10,7 @@ import demo.element.CreatedBy;
 import demo.element.ElementAttributes;
 import demo.element.ElementId;
 import demo.element.Location;
+import demo.element.NewUserDetails;
 import demo.element.UserId;
 
 public class Database {
@@ -68,6 +69,17 @@ public class Database {
 
 		
 		return list;
+	}
+	
+	public static UserBoundary createUser(NewUserDetails input) {
+		return new UserBoundary(new UserId("2020b.lior_trachtman",input.getEmail()), input.getRole()
+				, input.getUserName(), input.getAvatar());
+	}
+	
+	
+	
+	public static void updateUserDetails(UserBoundary userBoundary) {
+		
 	}
 
 }
