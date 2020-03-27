@@ -12,7 +12,7 @@ public class ActionBoundary {
 	private ActionId actionId;
 	private String type;
 	private Element element;
-	private Date createdTimeStamp;
+	private Date createdTimestamp;
 	private InvokedBy invokedBy;
 	private ActionAttributes actionAttributes;
 	
@@ -20,13 +20,13 @@ public class ActionBoundary {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ActionBoundary(ActionId actionId, String type, Element element, Date createdTimeStamp, InvokedBy invokedBy,
+	public ActionBoundary(ActionId actionId, String type, Element element, Date createdTimestamp, InvokedBy invokedBy,
 			ActionAttributes actionAttributes) {
 		super();
 		this.actionId = actionId;
 		this.type = type;
 		this.element = element;
-		this.createdTimeStamp = createdTimeStamp;
+		this.createdTimestamp = createdTimestamp;
 		this.invokedBy = invokedBy;
 		this.actionAttributes = actionAttributes;
 	}
@@ -55,12 +55,12 @@ public class ActionBoundary {
 		this.element = element;
 	}
 
-	public Date getCreatedTimeStamp() {
-		return createdTimeStamp;
+	public Date getCreatedTimestamp() {
+		return createdTimestamp;
 	}
 
-	public void setCreatedTimeStamp(Date createdTimeStamp) {
-		this.createdTimeStamp = createdTimeStamp;
+	public void setCreatedTimestamp(Date createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
 	}
 
 	public InvokedBy getInvokedBy() {
