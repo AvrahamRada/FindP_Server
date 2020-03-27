@@ -1,7 +1,5 @@
 package demo.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,9 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import demo.boundaries.MessageBoundary;
 import demo.boundaries.UserBoundary;
+import demo.database.Database;
 import demo.element.NewUserDetails;
 import demo.element.UserId;
 import demo.helpers.UserHelper;
@@ -42,9 +39,7 @@ public class UserController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary createNewUser (@RequestBody NewUserDetails input) {
-		UserBoundary ub=new UserBoundary(new UserId("2020b.lior_trachtman",input.getEmail()), input.getRole()
-				, input.getUserName(), input.getAvatar());
-		return ub;
+		return Database.createUser(input);
 	}
 	
 	/*--------------------- PUT APIS ------------------- */
@@ -57,8 +52,9 @@ public class UserController {
 	public void updateUserDetails (
 			@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail, 
 			@RequestBody UserBoundary update) {
+		
 		if(UserHelper.isLoggedIn(userDomain, userEmail)) {
-			// TODO update user by userDomain and userEmail
+			Database.updateUserDetails(update);
 		}
 	}
 	
