@@ -24,10 +24,6 @@ public class AdminController {
 		
 		if(UserHelper.isLoggedIn(adminDomain,adminEmail)) {
 			if(UserHelper.isAdmin(adminDomain,adminEmail))
-			
-			//Some tests
-			System.out.println("userDoamin = " + adminDomain);
-			System.out.println("userEmail = " + adminEmail);
 			return Database.getAllUsers();
 		} 
 		//User is not logged in.

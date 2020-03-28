@@ -1,8 +1,8 @@
 package demo.controllers;
 
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.List;
+
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,13 +33,6 @@ public class ElementController {
 				@PathVariable("elementDomain") String elementDomain,@PathVariable("elementId") String elementId) {
 			
 			if(UserHelper.isLoggedIn(userDomain,userEmail)) {
-				
-				//Some tests
-				System.out.println("userDoamin = " + userDomain);
-				System.out.println("userEmail = " + userEmail);
-				System.out.println("elementDomain = " + elementDomain);
-				System.out.println("elementId = " + elementId);
-		
 				return new ElementBoundary(new ElementId(userDomain, elementId),"type","name",
 						true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId(userDomain,userEmail)),new Location(40.730610,-73.935242),new ElementAttributes(true));
 				
@@ -58,15 +51,8 @@ public class ElementController {
 				@PathVariable("userEmail") String userEmail) {
 			
 			if(UserHelper.isLoggedIn(userDomain,userEmail)) {
-				
-				//Some tests
-				System.out.println("userDoamin = " + userDomain);
-				System.out.println("userEmail = " + userEmail);
-				
 				return Database.getAllElements().toArray(new ElementBoundary[0]);
-				
 			} 
-			
 			//User is not logged in.
 			return null;
 							
