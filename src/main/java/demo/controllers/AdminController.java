@@ -1,7 +1,5 @@
 package demo.controllers;
 
-import java.util.List;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,14 +15,14 @@ public class AdminController {
 	
 	/*--------------------- GET APIS ------------------- */
 	
-	@RequestMapping(path = "/acs/elements/{adminDomain}/{adminEmail}",
+	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<UserBoundary> getAllUsers(@PathVariable("adminDomain") String adminDomain,@PathVariable("adminEmail") String adminEmail) {
+	public UserBoundary[] getAllUsers(@PathVariable("adminDomain") String adminDomain,@PathVariable("adminEmail") String adminEmail) {
 		
 		if(UserHelper.isLoggedIn(adminDomain,adminEmail)) {
 			if(UserHelper.isAdmin(adminDomain,adminEmail))
-			return Database.getAllUsers();
+			return Database.getAllUsers().toArray(new UserBoundary[0]);
 		} 
 		//User is not logged in.
 		return null;				
