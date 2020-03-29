@@ -28,8 +28,8 @@ public class AdminController {
 			if(UserHelper.isAdmin(adminDomain,adminEmail))
 			return Database.getAllUsers().toArray(new UserBoundary[0]);
 		} 
-		//User is not logged in.
-		return null;				
+		UserBoundary[] arr = {new UserBoundary()};
+		return arr;				
 	}
 	
 	/*--------------------- GET all actions APIS ------------------- */
@@ -41,7 +41,6 @@ public class AdminController {
 			@PathVariable("adminDomain") String adminDomain,
 			@PathVariable("adminEmail") String adminEmail) {
 		
-		// TODO check with Eyal all options
 		List<ActionBoundary> listOfAction = new ArrayList<>();
 		return listOfAction.toArray(new ActionBoundary[0]);
 	}		
@@ -63,15 +62,11 @@ public class AdminController {
 		Database.deleteAllElements();
 	}
 	
-	/*--------------------- DELETE all users APIS ------------------- */
-	
-	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}",
+	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}",
 			method = RequestMethod.DELETE)
 	public void deleteAllUsers() {
 		
 		Database.deleteAllUsers();
 	}
 
-
 }
-

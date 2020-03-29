@@ -1,8 +1,6 @@
 package demo.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,12 +15,11 @@ public class ActionController {
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ActionBoundary> invokeAction (
-			@RequestBody ActionBoundary input) {
+	public ActionBoundary invokeAction (@RequestBody ActionBoundary input) {
 		if(input.getActionId() == null) {
-			return ResponseEntity.ok(input);	
+			return input;	
 		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(input);
+		return new ActionBoundary();
 
 	}
 }

@@ -27,12 +27,11 @@ public class UserController {
 		if(UserHelper.isSignedIn(userEmail, userEmail)) {
 			return new UserBoundary(new UserId(userDomain,userEmail),"role", "userName","avatar");
 		}
-		return null;
+		return new UserBoundary();
 	}
 	
 	/*--------------------- POST APIS ------------------- */
 
-	
 	//Create a new user
 	@RequestMapping(path = "/acs/users",
 			method = RequestMethod.POST,
@@ -43,7 +42,6 @@ public class UserController {
 	}
 	
 	/*--------------------- PUT APIS ------------------- */
-
 	
 	//Update user details
 	@RequestMapping(path = "/acs/users/{userDomain}/{userEmail}",
@@ -58,7 +56,4 @@ public class UserController {
 		}
 	}
 	
-	
-
-
 }
