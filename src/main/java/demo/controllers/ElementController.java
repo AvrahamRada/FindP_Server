@@ -25,7 +25,7 @@ public class ElementController {
 	
 		/*--------------------- GET APIS ------------------- */
 	
-		//Retreive Specific Element
+		//Retrieve Specific Element
 		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/{elementDomain}/{elementId}",
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)

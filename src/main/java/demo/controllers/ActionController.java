@@ -17,12 +17,12 @@ public class ActionController {
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ActionBoundary> InvokeAction (
+	public ResponseEntity<ActionBoundary> invokeAction (
 			@RequestBody ActionBoundary input) {
 		if(input.getActionId() == null) {
 			return ResponseEntity.ok(input);	
-		} 	
-		return new ResponseEntity<ActionBoundary>(HttpStatus.BAD_REQUEST);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(input);
 
 	}
 }
