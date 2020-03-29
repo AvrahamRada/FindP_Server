@@ -1,11 +1,15 @@
 package demo.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import demo.boundaries.ActionBoundary;
 import demo.boundaries.UserBoundary;
 import demo.database.Database;
 import demo.helpers.UserHelper;
@@ -13,7 +17,7 @@ import demo.helpers.UserHelper;
 @RestController
 public class AdminController {
 	
-	/*--------------------- GET APIS ------------------- */
+	/*--------------------- GET all users APIS ------------------- */
 	
 	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}",
 			method = RequestMethod.GET,
@@ -27,6 +31,21 @@ public class AdminController {
 		//User is not logged in.
 		return null;				
 	}
+	
+	/*--------------------- GET all actions APIS ------------------- */
+	
+	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ActionBoundary[] getAllActions(
+			@PathVariable("adminDomain") String adminDomain,
+			@PathVariable("adminEmail") String adminEmail) {
+		
+		// TODO check with Eyal all options
+		List<ActionBoundary> listOfAction = new ArrayList<>();
+		return listOfAction.toArray(new ActionBoundary[0]);
+	}		
+	
 	
 	/*--------------------- DELETE APIS ------------------- */
 	
@@ -43,6 +62,16 @@ public class AdminController {
 		
 		Database.deleteAllElements();
 	}
+	
+	/*--------------------- DELETE all users APIS ------------------- */
+	
+	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}",
+			method = RequestMethod.DELETE)
+	public void deleteAllUsers() {
+		
+		Database.deleteAllUsers();
+	}
 
 
 }
+

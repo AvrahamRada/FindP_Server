@@ -82,4 +82,9 @@ public class Database {
 		
 	}
 
+	public static void deleteAllUsers() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
