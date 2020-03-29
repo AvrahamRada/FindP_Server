@@ -37,10 +37,7 @@ public class ElementController {
 						true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId(userDomain,userEmail)),new Location(40.730610,-73.935242),new ElementAttributes(true));
 				
 			} 
-			
-			//User is not logged in.
-			return null;
-							
+			return new ElementBoundary();				
 		}
 		
 		
@@ -53,9 +50,8 @@ public class ElementController {
 			if(UserHelper.isLoggedIn(userDomain,userEmail)) {
 				return Database.getAllElements().toArray(new ElementBoundary[0]);
 			} 
-			//User is not logged in.
-			return null;
-							
+			ElementBoundary[] arr = {new ElementBoundary()};
+			return arr;				
 		}
 		
 		/*--------------------- POST APIS ------------------- */
@@ -68,13 +64,12 @@ public class ElementController {
 						@RequestBody ElementBoundary input) {
 					
 					if(input.getElementId().getId() == null) {
-						
 						input.getElementId().setId(Database.generateUniqueId());
 						Database.saveElement(input);
 						return input;	
 					} 
 					//Element is already exist with an id
-					return null;
+					return new ElementBoundary();
 		}
 				
 		/*--------------------- PUT APIS ------------------- */
