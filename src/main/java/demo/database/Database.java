@@ -48,6 +48,7 @@ public class Database {
 	
 	public static List<ElementBoundary> getAllElements() {
 		List<ElementBoundary> list=new ArrayList<>();
+		
 		list.add(new ElementBoundary(new ElementId("userDomain", "1"),"type","name",
 				true,new Date(System.currentTimeMillis()),new CreatedBy(new UserId("userDomain","userEmail")),new Location(40.730610,-73.935242)
 				,new ElementAttributes(true)));
@@ -83,6 +84,7 @@ public class Database {
 	}
 
 	public static void deleteAllUsers() {
+		
 		// TODO Auto-generated method stub
 		
 	}

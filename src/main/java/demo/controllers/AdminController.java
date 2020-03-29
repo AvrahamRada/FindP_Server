@@ -42,6 +42,12 @@ public class AdminController {
 			@PathVariable("adminEmail") String adminEmail) {
 		
 		List<ActionBoundary> listOfAction = new ArrayList<>();
+		
+		//Test values
+		listOfAction.add(new ActionBoundary());
+		listOfAction.add(new ActionBoundary());
+		listOfAction.add(new ActionBoundary());
+		
 		return listOfAction.toArray(new ActionBoundary[0]);
 	}		
 	
