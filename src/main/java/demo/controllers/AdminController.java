@@ -56,15 +56,18 @@ public class AdminController {
 	
 	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}",
 			method = RequestMethod.DELETE)
-	public void deleteAllActions() {
+	public void deleteAllActions(@PathVariable ("adminDomain") String adminDomain,
+			@PathVariable ("adminEmail") String adminEmail) {
 		
 		Database.deleteAllActions();
 	}
 
 	@RequestMapping(path = "/acs/admin/elements/{adminDomain}/{adminEmail}",
 			method = RequestMethod.DELETE)
-	public void deleteAllElements() {
+	public void deleteAllElements(@PathVariable ("adminDomain") String adminDomain,
+			@PathVariable ("adminEmail") String adminEmail) {
 		
+		// TODO Complete the method below 'deleteAllElements()'
 		Database.deleteAllElements();
 	}
 	
@@ -73,7 +76,7 @@ public class AdminController {
 	public void deleteAllUsers(@PathVariable ("adminDomain") String adminDomain,
 			@PathVariable ("adminEmail") String adminEmail) {
 		
-		// TODO Complete the methode below 'deleteAllUsers()'
+		// TODO Complete the method below 'deleteAllUsers()'
 		Database.deleteAllUsers();
 	}
 
