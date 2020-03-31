@@ -22,6 +22,4 @@ public class ActionAttributes {
 	public void setTestAttribute(String testAttribute) {
 		this.testAttribute = testAttribute;
 	}
-	
-	
 }

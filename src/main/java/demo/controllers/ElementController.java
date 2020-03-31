@@ -41,7 +41,6 @@ public class ElementController {
 			return new ElementBoundary();				
 		}
 		
-		
 		@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}",
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)
