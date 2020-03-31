@@ -70,8 +70,10 @@ public class AdminController {
 	
 	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}",
 			method = RequestMethod.DELETE)
-	public void deleteAllUsers() {
+	public void deleteAllUsers(@PathVariable ("adminDomain") String adminDomain,
+			@PathVariable ("adminEmail") String adminEmail) {
 		
+		// TODO Complete the methode below 'deleteAllUsers()'
 		Database.deleteAllUsers();
 	}
 
