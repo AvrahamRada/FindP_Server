@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import acs.boundaries.UserBoundary;
 import acs.database.Database;
-import acs.element.NewUserDetails;
-import acs.element.UserId;
 import acs.helpers.UserHelper;
 import acs.logic.UserService;
+import acs.util.NewUserDetails;
+import acs.util.UserId;
 
 @RestController
 public class UserController {

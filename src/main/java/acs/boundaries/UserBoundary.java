@@ -1,6 +1,6 @@
 package acs.boundaries;
 
-import acs.element.UserId;
+import acs.util.UserId;
 
 public class UserBoundary {
 	
