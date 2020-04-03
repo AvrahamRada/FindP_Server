@@ -1,8 +1,10 @@
 package acs.logic.util;
 
+import org.springframework.stereotype.Component;
+
 import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
-
+@Component
 public class ElementConverter {
 	
 	public ElementBoundary fromEntity(ElementEntity entity) {

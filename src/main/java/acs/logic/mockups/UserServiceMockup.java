@@ -7,13 +7,12 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import acs.boundaries.UserBoundary;
 import acs.data.UserEntity;
-import acs.database.Database;
-import acs.helpers.UserHelper;
 import acs.logic.UserService;
 import acs.logic.util.UserConverter;
 
@@ -22,6 +21,13 @@ public class UserServiceMockup implements UserService {
 	private String projectName;
 	private List<UserEntity> allUsers;
 	private UserConverter userConverter;
+	
+	
+	@Autowired
+	public UserServiceMockup(UserConverter userConverter) {
+		super();
+		this.userConverter = userConverter;
+	}
 
 	@PostConstruct
 	public void init() {
