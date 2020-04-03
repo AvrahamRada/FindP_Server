@@ -3,6 +3,7 @@ package acs.rest;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,23 +14,26 @@ import acs.boundaries.ActionBoundary;
 import acs.boundaries.UserBoundary;
 import acs.database.Database;
 import acs.helpers.UserHelper;
+import acs.logic.UserService;
 
 @RestController
 public class AdminController {
+	
+	private UserService userService;
+	
+	@Autowired
+	public AdminController(UserService userService) {
+		this.userService = userService;
+	}
 	
 	/*--------------------- GET all users APIS ------------------- */
 	
 	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public UserBoundary[] getAllUsers(@PathVariable("adminDomain") String adminDomain,@PathVariable("adminEmail") String adminEmail) {
-		
-		if(UserHelper.isLoggedIn(adminDomain,adminEmail)) {
-			if(UserHelper.isAdmin(adminDomain,adminEmail))
-			return Database.getAllUsers().toArray(new UserBoundary[0]);
-		} 
-		UserBoundary[] arr = {new UserBoundary()};
-		return arr;				
+	public UserBoundary[] getAllUsers(@PathVariable("adminDomain") String adminDomain,
+			@PathVariable("adminEmail") String adminEmail) {
+		return this.userService.getAllUsers(adminDomain, adminEmail).toArray(new UserBoundary[0]);				
 	}
 	
 	/*--------------------- GET all actions APIS ------------------- */
@@ -76,8 +80,7 @@ public class AdminController {
 	public void deleteAllUsers(@PathVariable ("adminDomain") String adminDomain,
 			@PathVariable ("adminEmail") String adminEmail) {
 		
-		// TODO Complete the method below 'deleteAllUsers()'
-		Database.deleteAllUsers();
+		this.userService.deleteAllUsers(adminDomain, adminEmail);
 	}
 
 }
