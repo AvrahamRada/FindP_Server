@@ -6,17 +6,25 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import acs.boundaries.ActionBoundary;
 import acs.data.ActionEntity;
 import acs.logic.ActionService;
 import acs.logic.util.ActionConverter;
+import acs.logic.util.ElementConverter;
 
 public class ActionServiceMockup implements ActionService {
 	private String projectName;
 	private List<ActionEntity> allActions;
 	private ActionConverter actionConverter;
+	
+	@Autowired
+	public ActionServiceMockup(ActionConverter actionConverter) {
+		super();
+		this.actionConverter = actionConverter;
+	}
 	
 	@PostConstruct
 	public void init() {

@@ -6,17 +6,26 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
 import acs.logic.ElementService;
 import acs.logic.util.ElementConverter;
+import acs.logic.util.UserConverter;
 
 public class ElementServiceMockup implements ElementService {
 	private String projectName;
 	private List<ElementEntity> allElements;
 	private ElementConverter elementConverter;
+	
+	
+	@Autowired
+	public ElementServiceMockup(ElementConverter elementConverter) {
+		super();
+		this.elementConverter = elementConverter;
+	}
 	
 	@PostConstruct
 	public void init() {

@@ -1,8 +1,10 @@
 package acs.logic.util;
 
+import org.springframework.stereotype.Component;
+
 import acs.boundaries.ActionBoundary;
 import acs.data.ActionEntity;
-
+@Component
 public class ActionConverter {
 	
 	public ActionBoundary fromEntity(ActionEntity entity) {
