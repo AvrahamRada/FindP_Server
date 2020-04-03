@@ -1,6 +1,6 @@
 package acs.data;
 
-import acs.element.UserId;
+import acs.util.UserId;
 
 public class UserEntity {
 	

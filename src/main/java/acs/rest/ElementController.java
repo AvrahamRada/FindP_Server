@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import acs.boundaries.ElementBoundary;
 import acs.database.Database;
-import acs.element.CreatedBy;
-import acs.element.ElementAttributes;
-import acs.element.ElementId;
-import acs.element.Location;
-import acs.element.UserId;
 import acs.helpers.UserHelper;
+import acs.util.CreatedBy;
+import acs.util.ElementAttributes;
+import acs.util.ElementId;
+import acs.util.Location;
+import acs.util.UserId;
 
 @RestController
 public class ElementController {

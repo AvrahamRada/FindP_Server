@@ -5,7 +5,7 @@ import java.util.Date;
 import acs.action.ActionAttributes;
 import acs.action.ActionId;
 import acs.action.InvokedBy;
-import acs.element.Element;
+import acs.util.Element;
 
 public class ActionEntity {
 	private ActionId actionId;

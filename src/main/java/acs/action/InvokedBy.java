@@ -1,6 +1,6 @@
 package acs.action;
 
-import acs.element.UserId;
+import acs.util.UserId;
 
 public class InvokedBy {
 	

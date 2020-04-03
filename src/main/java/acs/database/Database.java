@@ -6,12 +6,12 @@ import java.util.List;
 
 import acs.boundaries.ElementBoundary;
 import acs.boundaries.UserBoundary;
-import acs.element.CreatedBy;
-import acs.element.ElementAttributes;
-import acs.element.ElementId;
-import acs.element.Location;
-import acs.element.NewUserDetails;
-import acs.element.UserId;
+import acs.util.CreatedBy;
+import acs.util.ElementAttributes;
+import acs.util.ElementId;
+import acs.util.Location;
+import acs.util.NewUserDetails;
+import acs.util.UserId;
 
 public class Database {
 	

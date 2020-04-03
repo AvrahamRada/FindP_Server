@@ -1,4 +1,4 @@
-package acs.element;
+package acs.util;
 
 public class NewUserDetails {
 	private String email;
