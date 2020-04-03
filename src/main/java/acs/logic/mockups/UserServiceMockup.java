@@ -3,6 +3,7 @@ package acs.logic.mockups;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -59,14 +60,20 @@ public class UserServiceMockup implements UserService {
 
 	@Override
 	public List<UserBoundary> getAllUsers(String adminDomain, String adminEmail) {
-		// TODO Auto-generated method stub
-		return null;
+		//check if admin is logged in
+		//...
+		return this.allUsers
+				.stream()
+				.map(this.userConverter::fromEntity)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public void deleteAllUser(String adminDomain, String adminEmail) {
+	public void deleteAllUsers(String adminDomain, String adminEmail) {
 		// TODO Auto-generated method stub
-
+		//check if admin is logged in
+		//...
+		this.allUsers.clear();
 	}
 
 }
