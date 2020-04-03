@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import acs.boundaries.UserBoundary;
 import acs.data.UserEntity;
+import acs.database.Database;
 import acs.helpers.UserHelper;
 import acs.logic.UserService;
 import acs.logic.util.UserConverter;
@@ -35,8 +36,10 @@ public class UserServiceMockup implements UserService {
 
 	@Override
 	public UserBoundary createUser(UserBoundary user) {
-		// TODO Auto-generated method stub
-		return null;
+		user.getUserId().setDomain(projectName);
+		UserEntity newUser = userConverter.toEntity(user);
+		allUsers.add(newUser);
+		return user;
 	}
 
 	@Override
@@ -47,14 +50,17 @@ public class UserServiceMockup implements UserService {
 				userEntity.getUserId().getEmail() != null && userEntity.getUserId().getDomain().equals(userDomain) &&
 						userEntity.getUserId().getEmail().equals(userEmail))
 				.findFirst().orElseThrow(() -> new RuntimeException("could not find user"));
-		
 		return this.userConverter.fromEntity(user);
 	}
 
 	@Override
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
-		// TODO Auto-generated method stub
-		return null;
+		UserEntity updateUser = allUsers.stream().
+				filter(userEntity -> userEntity.getUserId().getEmail().equals(userEmail) 
+						&& userEntity.getUserId().getDomain().equals(userDomain)).
+				findFirst().orElseThrow(() -> new RuntimeException("could not find user"));
+		Collections.replaceAll(allUsers, updateUser, userConverter.toEntity(update));
+		return update;
 	}
 
 	@Override

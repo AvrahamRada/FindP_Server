@@ -25,7 +25,6 @@ public class UserController {
 		this.userService = userService;
 	}
 	
-	
 	/*--------------------- GET APIS ------------------- */
 
 	//Login user get request
@@ -43,8 +42,8 @@ public class UserController {
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public UserBoundary createNewUser (@RequestBody NewUserDetails input) {
-		return Database.createUser(input);
+	public UserBoundary createNewUser(@RequestBody NewUserDetails input) {
+		return userService.createUser(new UserBoundary(new UserId(null, input.getEmail()), input.getRole(), input.getUserName(), input.getAvatar()));
 	}
 	
 	/*--------------------- PUT APIS ------------------- */
@@ -53,13 +52,8 @@ public class UserController {
 	@RequestMapping(path = "/acs/users/{userDomain}/{userEmail}",
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void updateUserDetails (
-			@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail, 
-			@RequestBody UserBoundary update) {
-		
-		if(UserHelper.isLoggedIn(userDomain, userEmail)) {
-			Database.updateUserDetails(update);
-		}
+	public void updateUserDetails(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail, @RequestBody UserBoundary update) {
+		userService.updateUser(userDomain, userEmail, update);
 	}
 	
 }
