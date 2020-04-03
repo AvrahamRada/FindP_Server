@@ -14,17 +14,23 @@ import acs.boundaries.ActionBoundary;
 import acs.boundaries.UserBoundary;
 import acs.database.Database;
 import acs.helpers.UserHelper;
+import acs.logic.ActionService;
 import acs.logic.UserService;
 
 @RestController
 public class AdminController {
 	
 	private UserService userService;
+	private ActionService actionService;
 	
 	@Autowired
-	public AdminController(UserService userService) {
+	public AdminController(UserService userService, ActionService actionService) {
 		this.userService = userService;
+		this.actionService = actionService;
+
 	}
+	
+
 	
 	/*--------------------- GET all users APIS ------------------- */
 	
@@ -44,15 +50,9 @@ public class AdminController {
 	public ActionBoundary[] getAllActions(
 			@PathVariable("adminDomain") String adminDomain,
 			@PathVariable("adminEmail") String adminEmail) {
-		
-		List<ActionBoundary> listOfAction = new ArrayList<>();
-		
-		//Test values
-		listOfAction.add(new ActionBoundary());
-		listOfAction.add(new ActionBoundary());
-		listOfAction.add(new ActionBoundary());
-		
-		return listOfAction.toArray(new ActionBoundary[0]);
+		System.out.println("here");
+		return this.actionService.getAllActions(adminDomain, adminEmail).toArray(new ActionBoundary[0]);				
+
 	}		
 	
 	
