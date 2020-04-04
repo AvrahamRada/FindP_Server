@@ -48,24 +48,27 @@ public class ActionServiceMockup implements ActionService {
 
 	@Override
 	public Object invokeAction(ActionBoundary action) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO Check with Eyal the purpose of this method
+		if (action.getActionId() == null) {
+			ActionEntity entity = this.actionConverter.toEntity(action);
+			this.allActions.add(entity);
+			System.out.println("here");
+			return new ActionEntity();
+		}
+		throw new RuntimeException("actionId must be null");
 	}
 
 	@Override
 	public List<ActionBoundary> getAllActions(String adminDomain, String adminEmail) {
 		// TODO Find if user is admin
-		allActions.add(new ActionEntity(new ActionId(), "asd", new Element(), new Date(), new InvokedBy(), new ActionAttributes()));
-		return this.allActions
-				.stream()
-				.map(this.actionConverter::fromEntity)
-				.collect(Collectors.toList());
+		return this.allActions.stream().map(this.actionConverter::fromEntity).collect(Collectors.toList());
 	}
 
 	@Override
 	public void deleteAllActions(String adminDomain, String adminEmail) {
-		// TODO Auto-generated method stub
-
+		// TODO Find if user is admin
+		this.allActions.clear();
 	}
 
 }
+
