@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,7 @@ import acs.logic.ActionService;
 import acs.logic.util.ActionConverter;
 import acs.logic.util.ElementConverter;
 import acs.util.Element;
+import acs.util.UserId;
 
 @Service
 public class ActionServiceMockup implements ActionService {
@@ -50,10 +52,11 @@ public class ActionServiceMockup implements ActionService {
 	public Object invokeAction(ActionBoundary action) {
 		// TODO Check with Eyal the purpose of this method
 		if (action.getActionId() == null) {
+			action.setActionId(new ActionId(projectName, UUID.randomUUID().toString()));
+			action.setCreatedTimestamp(new Date());
 			ActionEntity entity = this.actionConverter.toEntity(action);
 			this.allActions.add(entity);
-			System.out.println("here");
-			return new ActionEntity();
+			return entity;
 		}
 		throw new RuntimeException("actionId must be null");
 	}
