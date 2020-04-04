@@ -19,66 +19,53 @@ import acs.logic.UserService;
 
 @RestController
 public class AdminController {
-	
+
 	private UserService userService;
 	private ActionService actionService;
-	
+
 	@Autowired
 	public AdminController(UserService userService, ActionService actionService) {
 		this.userService = userService;
 		this.actionService = actionService;
 
 	}
-	
 
-	
 	/*--------------------- GET all users APIS ------------------- */
-	
-	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
+
+	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary[] getAllUsers(@PathVariable("adminDomain") String adminDomain,
 			@PathVariable("adminEmail") String adminEmail) {
-		return this.userService.getAllUsers(adminDomain, adminEmail).toArray(new UserBoundary[0]);				
+		return this.userService.getAllUsers(adminDomain, adminEmail).toArray(new UserBoundary[0]);
 	}
-	
+
 	/*--------------------- GET all actions APIS ------------------- */
-	
-	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ActionBoundary[] getAllActions(
-			@PathVariable("adminDomain") String adminDomain,
-			@PathVariable("adminEmail") String adminEmail) {
-		System.out.println("here");
-		return this.actionService.getAllActions(adminDomain, adminEmail).toArray(new ActionBoundary[0]);				
 
-	}		
-	
-	
-	/*--------------------- DELETE APIS ------------------- */
-	
-	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}",
-			method = RequestMethod.DELETE)
-	public void deleteAllActions(@PathVariable ("adminDomain") String adminDomain,
-			@PathVariable ("adminEmail") String adminEmail) {
-		
-		Database.deleteAllActions();
+	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ActionBoundary[] getAllActions(@PathVariable("adminDomain") String adminDomain,
+			@PathVariable("adminEmail") String adminEmail) {
+		return this.actionService.getAllActions(adminDomain, adminEmail).toArray(new ActionBoundary[0]);
+
 	}
 
-	@RequestMapping(path = "/acs/admin/elements/{adminDomain}/{adminEmail}",
-			method = RequestMethod.DELETE)
-	public void deleteAllElements(@PathVariable ("adminDomain") String adminDomain,
-			@PathVariable ("adminEmail") String adminEmail) {
-		
+	/*--------------------- DELETE APIS ------------------- */
+
+	@RequestMapping(path = "/acs/admin/actions/{adminDomain}/{adminEmail}", method = RequestMethod.DELETE)
+	public void deleteAllActions(@PathVariable("adminDomain") String adminDomain,
+			@PathVariable("adminEmail") String adminEmail) {
+		this.actionService.deleteAllActions(adminDomain, adminEmail);
+	}
+
+	@RequestMapping(path = "/acs/admin/elements/{adminDomain}/{adminEmail}", method = RequestMethod.DELETE)
+	public void deleteAllElements(@PathVariable("adminDomain") String adminDomain,
+			@PathVariable("adminEmail") String adminEmail) {
+
 		// TODO Complete the method below 'deleteAllElements()'
 		Database.deleteAllElements();
 	}
-	
-	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}",
-			method = RequestMethod.DELETE)
-	public void deleteAllUsers(@PathVariable ("adminDomain") String adminDomain,
-			@PathVariable ("adminEmail") String adminEmail) {
+
+	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}", method = RequestMethod.DELETE)
+	public void deleteAllUsers(@PathVariable("adminDomain") String adminDomain,
+			@PathVariable("adminEmail") String adminEmail) {
 		
 		this.userService.deleteAllUsers(adminDomain, adminEmail);
 	}
