@@ -48,6 +48,7 @@ public class ActionServiceMockup implements ActionService {
 
 	@Override
 	public Object invokeAction(ActionBoundary action) {
+		// TODO Check with Eyal the purpose of this method
 		if (action.getActionId() == null) {
 			ActionEntity entity = this.actionConverter.toEntity(action);
 			this.allActions.add(entity);
