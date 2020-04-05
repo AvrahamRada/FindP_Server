@@ -15,6 +15,7 @@ import acs.boundaries.UserBoundary;
 import acs.database.Database;
 import acs.helpers.UserHelper;
 import acs.logic.ActionService;
+import acs.logic.ElementService;
 import acs.logic.UserService;
 
 @RestController
@@ -22,11 +23,13 @@ public class AdminController {
 
 	private UserService userService;
 	private ActionService actionService;
+	private ElementService elementService;
 
 	@Autowired
-	public AdminController(UserService userService, ActionService actionService) {
+	public AdminController(UserService userService, ElementService elementService, ActionService actionService) {
 		this.userService = userService;
 		this.actionService = actionService;
+		this.elementService = elementService;
 
 	}
 
@@ -59,8 +62,7 @@ public class AdminController {
 	public void deleteAllElements(@PathVariable("adminDomain") String adminDomain,
 			@PathVariable("adminEmail") String adminEmail) {
 
-		// TODO Complete the method below 'deleteAllElements()'
-		Database.deleteAllElements();
+		elementService.deleteAllElements(adminDomain, adminEmail);
 	}
 
 	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}", method = RequestMethod.DELETE)

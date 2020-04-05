@@ -10,6 +10,6 @@ public interface ElementService {
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId, ElementBoundary update);
 	public List<ElementBoundary> getAll(String userDomain, String userEmail);
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain, String elementId);
-	public void deleteAllElements(String domainDomain, String domainEmail);
+	public void deleteAllElements(String adminDomain, String adminEmail);
 	
 }
