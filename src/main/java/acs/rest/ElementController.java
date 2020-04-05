@@ -50,11 +50,9 @@ public class ElementController {
 	public ElementBoundary[] getAllElements(@PathVariable("userDomain") String userDomain,
 			@PathVariable("userEmail") String userEmail) {
 
-		if (UserHelper.isLoggedIn(userDomain, userEmail)) {
-			return Database.getAllElements().toArray(new ElementBoundary[0]);
-		}
-		ElementBoundary[] arr = { new ElementBoundary() };
-		return arr;
+		return elementService.getAll(userDomain, userEmail).toArray(new ElementBoundary[0]);
+		
+		
 	}
 
 	/*--------------------- POST APIS ------------------- */
