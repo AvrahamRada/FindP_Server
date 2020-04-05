@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
+import acs.data.UserEntity;
 import acs.logic.ElementService;
 import acs.logic.util.ElementConverter;
 import acs.logic.util.UserConverter;
@@ -25,21 +26,20 @@ public class ElementServiceMockup implements ElementService {
 	private String projectName;
 	private List<ElementEntity> allElements;
 	private ElementConverter elementConverter;
-	
-	
+
 	@Autowired
 	public ElementServiceMockup(ElementConverter elementConverter) {
 		super();
 		this.elementConverter = elementConverter;
 	}
-	
+
 	@PostConstruct
 	public void init() {
 		// synchronized Java collection
 		this.allElements = Collections.synchronizedList(new ArrayList<>());
 	}
-	
-	//inject configuration value or inject default value 
+
+	// inject configuration value or inject default value
 	@Value("${spring.application.name:demo}")
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
@@ -48,56 +48,63 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
 		
-		if(isBoundaryContainsLegalValues(elementBoundary)) {	
-			
-			//Set the element's domain to the project name.
+		try {
+
+			isBoundaryContainsLegalValues(elementBoundary);
+
+			// Set the element's domain to the project name.
 			elementBoundary.getElementId().setDomain(getProjectName());
-			
-			//Set the element's creation date.
+
+			// Set the element's creation date.
 			elementBoundary.setCreatedTimeStamp(new Date(System.currentTimeMillis()));
-			
-			//Create  the unique id for the element.
+
+			// Create the unique id for the element.
 			elementBoundary.getElementId().setId(UUID.randomUUID().toString());
-			
-			//Set element's manager details.
+
+			// Set element's manager details.
 			elementBoundary.getCreatedBy().getUserId().setDomain(managerDomain);
 			elementBoundary.getCreatedBy().getUserId().setEmail(managerEmail);
-			
-			//Convert the element boundary to element entity
-			ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);
-			
-			//Add the new element entity to DB.
-			allElements.add(elementEntity);
-			
-			return elementBoundary;
-		}
-		
-		throw new RuntimeException("Element Boundary contains illegal values."); 
-		
-	}
-	
-	//Check with the guys, maybe we can make this method generic to all and any service can use it.
-	private boolean isBoundaryContainsLegalValues(ElementBoundary element) {
-		
-		if(isBoundaryValuesInstantiated(element)) {
-			return true;
-		}
-		
-		return false;
-		
-		
-	}
 
-	private boolean isBoundaryValuesInstantiated(ElementBoundary element) {
-		
-		return true;
+			// Convert the element boundary to element entity
+			ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);
+
+			// Add the new element entity to DB.
+			allElements.add(elementEntity);
+
+			return elementBoundary;
+		}catch(RuntimeException e) {
+			throw e;
+		}
 	}
 
 	@Override
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId,
 			ElementBoundary update) {
-		
-		return null;
+
+		isBoundaryContainsLegalValues(update);
+
+		try {
+
+			// Fetching the specific element from DB.
+			ElementEntity foundedElement = searchElement(update.getElementId());
+			
+			//Check if all values to be updated are legal.
+			isUpdateValuesLegal(foundedElement, update);
+
+			// Convert the input to entity before update the values in element entity that
+			// is in the DB.
+			ElementEntity updateEntity = elementConverter.toEntity(update);
+
+			// Update the element's values.
+			updateElementValues(foundedElement, updateEntity);
+			
+			//Convert the update entity to boundary and returns it.
+			return elementConverter.fromEntity(foundedElement);
+		}
+
+		catch (RuntimeException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -116,13 +123,70 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public void deleteAllElements(String domainDomain, String domainEmail) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public String getProjectName() {
 		return projectName;
 	}
+
+	private void isBoundaryContainsLegalValues(ElementBoundary element) {
+
+		try {
+			
+			isBoundaryValuesInstantiated(element);
+
+		} catch (RuntimeException e) {
+
+			throw e;
+		}
+
+	}
+
+	private void isBoundaryValuesInstantiated(ElementBoundary element) {
+
+		if (element.getActive() != null && element.getCreatedBy() != null && element.getCreatedTimeStamp() != null
+				&& element.getElementAttributes() != null && element.getElementId() != null
+				&& element.getLocation() != null && element.getName() != null && element.getType() != null) {
+			return;
+		}
+
+		throw new RuntimeException("Element Boundary contains illegal values.");
+	}
+
+	private ElementEntity searchElement(ElementId elementId) {
+
+		ElementEntity foundedElement = allElements.stream()
+				.filter(elementEntity -> elementEntity.getElementId().equals(elementId)).findFirst()
+				.orElseThrow(() -> new RuntimeException("could not find element"));
+		return foundedElement;
+
+	}
+
+	private void isUpdateValuesLegal(ElementEntity elementEntity, ElementBoundary update) {
+
+		if (elementEntity.getElementId().getDomain().equals(update.getElementId().getDomain())
+				&& elementEntity.getCreatedBy().getUserId().getEmail()
+						.equals(update.getCreatedBy().getUserId().getEmail())
+				&& elementEntity.getCreatedBy().getUserId().getDomain()
+						.equals(update.getCreatedBy().getUserId().getDomain())) {
+			return;
+		}
+
+		throw new RuntimeException("There has been atempt to change values that can not be change.");
+
+	}
+
+	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity updatedEntity) {
+		
+		//Copy the relevant values from update entity to toBeUpdateEntity.
+		
+		toBeUpdatedEntity.setActive(updatedEntity.getActive());
+		toBeUpdatedEntity.setElementAttributes(updatedEntity.getElementAttributes());
+		toBeUpdatedEntity.setLocation(updatedEntity.getLocation());
+		toBeUpdatedEntity.setName(updatedEntity.getName());
+		toBeUpdatedEntity.setType(updatedEntity.getType());
 	
-	
+	}
 
 }

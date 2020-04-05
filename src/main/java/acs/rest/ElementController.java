@@ -78,10 +78,9 @@ public class ElementController {
 	public void updateElement(@PathVariable("managerDomain") String managerDomain,
 			@PathVariable("managerEmail") String managerEmail, @PathVariable("elementDomain") String elementDomain,
 			@PathVariable("elementId") String elementId, @RequestBody ElementBoundary input) {
-		if (UserHelper.isManager(managerDomain, managerEmail)) {
-			if (Database.checkElement(elementDomain, elementId))
-				Database.updateElement(input);
-		}
+		
+		elementService.update(managerDomain, managerEmail, elementDomain, elementId, input);
+		
 	}
 
 }
