@@ -35,15 +35,18 @@ public class ElementController {
 	public ElementBoundary getElement(@PathVariable("userDomain") String userDomain,
 			@PathVariable("userEmail") String userEmail, @PathVariable("elementDomain") String elementDomain,
 			@PathVariable("elementId") String elementId) {
+		
+		
+		return elementService.getSpecificElement(userDomain, userEmail, elementDomain, elementId);
 
-		if (UserHelper.isLoggedIn(userDomain, userEmail)) {
-			// In future need to reterive the element with the element id from DB
-			return new ElementBoundary(new ElementId(userDomain, elementId), "type", "name", true,
-					new Date(System.currentTimeMillis()), new CreatedBy(new UserId(userDomain, userEmail)),
-					new Location(40.730610, -73.935242), new ElementAttributes(true));
-
-		}
-		return new ElementBoundary();
+//		if (UserHelper.isLoggedIn(userDomain, userEmail)) {
+//			// In future need to reterive the element with the element id from DB
+//			return new ElementBoundary(new ElementId(userDomain, elementId), "type", "name", true,
+//					new Date(System.currentTimeMillis()), new CreatedBy(new UserId(userDomain, userEmail)),
+//					new Location(40.730610, -73.935242), new ElementAttributes(true));
+//
+//		}
+//		return new ElementBoundary();
 	}
 
 	@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
