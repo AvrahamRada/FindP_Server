@@ -102,8 +102,6 @@ public class ElementBoundary {
 	}
 
 	public void validation() {
-
-		try {
 			
 			elementId.validation();
 			createdBy.validation();
@@ -121,11 +119,5 @@ public class ElementBoundary {
 			if (createdTimeStamp == null) {
 				throw new RuntimeException("createdTimeStamp was not instantiate");
 			}
-
-		} catch (
-
-		RuntimeException e) {
-			throw e;
-		}
 	}
 }

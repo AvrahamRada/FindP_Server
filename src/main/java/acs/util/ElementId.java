@@ -39,7 +39,6 @@ public class ElementId {
 
 		if (id == null) {
 			throw new RuntimeException("id was not instantiate");
-
 		}
 	}
 
