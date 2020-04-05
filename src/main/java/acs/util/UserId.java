@@ -31,5 +31,17 @@ public class UserId {
 		this.email = email;
 	}
 	
+	public void validation(){
+		if(email == null)
+			throw new RuntimeException("email was not instantiate");
+	}
+	
+	public void validationDomain(String nameProject) {
+		if(domain == null)
+			throw new RuntimeException("domain was not instantiate");
+		else if(!domain.equals(nameProject)) {
+			throw new RuntimeException("wrong domain");
+		}		
+	}
 	
 }
