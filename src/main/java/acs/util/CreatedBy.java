@@ -24,6 +24,15 @@ public class CreatedBy {
 	}
 	
 	
+	public void validation() {
+		
+		try {
+		userId.validation();
+		} catch(RuntimeException e) {
+			throw e;
+		}	
+	}	
+	
 	
 	
 }

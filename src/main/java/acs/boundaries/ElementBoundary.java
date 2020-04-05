@@ -2,13 +2,15 @@ package acs.boundaries;
 
 import java.util.Date;
 
+import javax.management.RuntimeErrorException;
+
 import acs.util.CreatedBy;
 import acs.util.ElementAttributes;
 import acs.util.ElementId;
 import acs.util.Location;
 
 public class ElementBoundary {
-	
+
 	private ElementId elementId;
 	private String type;
 	private String name;
@@ -17,13 +19,13 @@ public class ElementBoundary {
 	private CreatedBy createdBy;
 	private Location location;
 	private ElementAttributes elementAttributes;
-	
+
 	public ElementBoundary() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public ElementBoundary(ElementId elementId, String type, String name, Boolean active, Date createdTimeStamp,
-			CreatedBy createdBy, Location location,ElementAttributes elementAttributes) {
+			CreatedBy createdBy, Location location, ElementAttributes elementAttributes) {
 		super();
 		this.elementId = elementId;
 		this.type = type;
@@ -82,7 +84,6 @@ public class ElementBoundary {
 	public void setCreatedBy(CreatedBy createdBy) {
 		this.createdBy = createdBy;
 	}
-	
 
 	public Location getLocation() {
 		return location;
@@ -99,12 +100,32 @@ public class ElementBoundary {
 	public void setElementAttributes(ElementAttributes elementAttributes) {
 		this.elementAttributes = elementAttributes;
 	}
-	
-	public void validation(){
-		elementId.validation();
-		if(type==null || name == null )
-		{
+
+	public void validation() {
+
+		try {
 			
+			elementId.validation();
+			createdBy.validation();
+			location.validation();
+			elementAttributes.validation();
+
+			if (type == null) {
+				throw new RuntimeException("type was not instantiate");
+			}
+
+			if (name == null) {
+				throw new RuntimeException("name was not instantiate");
+			}
+
+			if (createdTimeStamp == null) {
+				throw new RuntimeException("createdTimeStamp was not instantiate");
+			}
+
+		} catch (
+
+		RuntimeException e) {
+			throw e;
 		}
 	}
 }
