@@ -86,7 +86,7 @@ public class ElementServiceMockup implements ElementService {
 		try {
 
 			// Fetching the specific element from DB.
-			ElementEntity foundedElement = searchElement(update.getElementId());
+			ElementEntity foundedElement = searchElement(update.getElementId().getId());
 
 			// Check if all values to be updated are legal.
 			isUpdateValuesLegal(foundedElement, update);
@@ -103,7 +103,7 @@ public class ElementServiceMockup implements ElementService {
 		}
 
 		catch (RuntimeException e) {
-			throw new RuntimeException(e);
+			throw e;
 		}
 	}
 
@@ -115,7 +115,7 @@ public class ElementServiceMockup implements ElementService {
 		for (ElementEntity elementEntity : allElements) {
 			AllElementsBoundaries.add(elementConverter.fromEntity(elementEntity));
 		}
-		
+
 		return AllElementsBoundaries;
 
 	}
@@ -123,8 +123,16 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
-		// TODO Auto-generated method stub
-		return null;
+
+		try {
+			// Fetching the specific element from DB.
+			ElementEntity foundedElement = searchElement(elementId);
+			
+			return elementConverter.fromEntity(foundedElement);
+
+		} catch (RuntimeException e) {
+			throw e;
+		}
 	}
 
 	@Override
@@ -161,10 +169,10 @@ public class ElementServiceMockup implements ElementService {
 		throw new RuntimeException("Element Boundary contains illegal values.");
 	}
 
-	private ElementEntity searchElement(ElementId elementId) {
+	private ElementEntity searchElement(String elementId) {
 
 		ElementEntity foundedElement = allElements.stream()
-				.filter(elementEntity -> elementEntity.getElementId().equals(elementId)).findFirst()
+				.filter(elementEntity -> elementEntity.getElementId().getId().equals(elementId)).findFirst()
 				.orElseThrow(() -> new RuntimeException("could not find element"));
 		return foundedElement;
 
