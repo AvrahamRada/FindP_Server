@@ -98,5 +98,13 @@ public class ElementBoundary {
 
 	public void setElementAttributes(ElementAttributes elementAttributes) {
 		this.elementAttributes = elementAttributes;
-	}	
+	}
+	
+	public void validation(){
+		elementId.validation();
+		if(type==null || name == null )
+		{
+			
+		}
+	}
 }

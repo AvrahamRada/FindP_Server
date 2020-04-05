@@ -33,5 +33,9 @@ public class ElementId {
 		this.id = id;
 	}
 	
+	public void validation(){
+		if(this.domain == null || this.id ==null)
+			throw new RuntimeException("Not null!!!");
+	}
 	
 }
