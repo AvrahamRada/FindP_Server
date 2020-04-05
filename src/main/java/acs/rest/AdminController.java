@@ -1,7 +1,5 @@
 package acs.rest;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import acs.boundaries.ActionBoundary;
 import acs.boundaries.UserBoundary;
-import acs.database.Database;
-import acs.helpers.UserHelper;
 import acs.logic.ActionService;
 import acs.logic.ElementService;
 import acs.logic.UserService;
@@ -62,7 +58,7 @@ public class AdminController {
 	public void deleteAllElements(@PathVariable("adminDomain") String adminDomain,
 			@PathVariable("adminEmail") String adminEmail) {
 
-		elementService.deleteAllElements(adminDomain, adminEmail);
+		this.elementService.deleteAllElements(adminDomain, adminEmail);
 	}
 
 	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}", method = RequestMethod.DELETE)
