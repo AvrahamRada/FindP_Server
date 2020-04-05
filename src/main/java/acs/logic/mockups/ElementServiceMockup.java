@@ -184,7 +184,8 @@ public class ElementServiceMockup implements ElementService {
 				&& elementEntity.getCreatedBy().getUserId().getEmail()
 						.equals(update.getCreatedBy().getUserId().getEmail())
 				&& elementEntity.getCreatedBy().getUserId().getDomain()
-						.equals(update.getCreatedBy().getUserId().getDomain())) {
+						.equals(update.getCreatedBy().getUserId().getDomain())
+				&& elementEntity.getCreatedTimeStamp().compareTo(update.getCreatedTimeStamp()) == 0) {
 			return;
 		}
 
