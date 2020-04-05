@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -16,7 +17,6 @@ import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
 import acs.logic.ElementService;
 import acs.logic.util.ElementConverter;
-
 
 @Service
 public class ElementServiceMockup implements ElementService {
@@ -42,12 +42,17 @@ public class ElementServiceMockup implements ElementService {
 		this.projectName = projectName;
 	}
 
+	public String getProjectName() {
+		return projectName;
+	}
+
 	@Override
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
 
 		try {
 
-			isBoundaryContainsLegalValues(elementBoundary);
+			// Validate the element boundary fields;
+			elementBoundary.validation();
 
 			// Set the element's domain to the project name.
 			elementBoundary.getElementId().setDomain(getProjectName());
@@ -78,15 +83,13 @@ public class ElementServiceMockup implements ElementService {
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId,
 			ElementBoundary update) {
 
-		isBoundaryContainsLegalValues(update);
-
 		try {
+
+			// Validate the element boundary's fields
+			update.validation();
 
 			// Fetching the specific element from DB.
 			ElementEntity foundedElement = searchElement(update.getElementId().getId());
-
-			// Check if all values to be updated are legal.
-			isUpdateValuesLegal(foundedElement, update);
 
 			// Convert the input to entity before update the values in element entity that
 			// is in the DB.
@@ -107,14 +110,11 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
 
-		List<ElementBoundary> AllElementsBoundaries = new ArrayList<>();
-
-		for (ElementEntity elementEntity : allElements) {
-			AllElementsBoundaries.add(elementConverter.fromEntity(elementEntity));
-		}
-
-		return AllElementsBoundaries;
-
+		return this.allElements
+		.stream()
+		.map(this.elementConverter::fromEntity)
+		.collect(Collectors.toList());
+		
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public class ElementServiceMockup implements ElementService {
 		try {
 			// Fetching the specific element from DB.
 			ElementEntity foundedElement = searchElement(elementId);
-			
+
 			return elementConverter.fromEntity(foundedElement);
 
 		} catch (RuntimeException e) {
@@ -134,39 +134,10 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public void deleteAllElements(String adminDomain, String adminEmail) {
-		
-		//Clear all elements from DB.
-		
+
+		// Clear all elements from DB.
 		allElements.clear();
-	
-	}
 
-	public String getProjectName() {
-		return projectName;
-	}
-
-	private void isBoundaryContainsLegalValues(ElementBoundary element) {
-
-		try {
-
-			isBoundaryValuesInstantiated(element);
-
-		} catch (RuntimeException e) {
-
-			throw e;
-		}
-
-	}
-
-	private void isBoundaryValuesInstantiated(ElementBoundary element) {
-
-		if (element.getActive() != null && element.getCreatedBy() != null && element.getCreatedTimeStamp() != null
-				&& element.getElementAttributes() != null && element.getElementId() != null
-				&& element.getLocation() != null && element.getName() != null && element.getType() != null) {
-			return;
-		}
-
-		throw new RuntimeException("Element Boundary contains illegal values.");
 	}
 
 	private ElementEntity searchElement(String elementId) {
@@ -178,25 +149,9 @@ public class ElementServiceMockup implements ElementService {
 
 	}
 
-	private void isUpdateValuesLegal(ElementEntity elementEntity, ElementBoundary update) {
-
-		if (elementEntity.getElementId().getDomain().equals(update.getElementId().getDomain())
-				&& elementEntity.getCreatedBy().getUserId().getEmail()
-						.equals(update.getCreatedBy().getUserId().getEmail())
-				&& elementEntity.getCreatedBy().getUserId().getDomain()
-						.equals(update.getCreatedBy().getUserId().getDomain())
-				&& elementEntity.getCreatedTimeStamp().compareTo(update.getCreatedTimeStamp()) == 0) {
-			return;
-		}
-
-		throw new RuntimeException("There has been atempt to change values that can not be change.");
-
-	}
-
 	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity updatedEntity) {
 
-		// Copy the relevant values from update entity to toBeUpdateEntity.
-
+		// Copy the RELEVANT values from update entity to toBeUpdateEntity.
 		toBeUpdatedEntity.setActive(updatedEntity.getActive());
 		toBeUpdatedEntity.setElementAttributes(updatedEntity.getElementAttributes());
 		toBeUpdatedEntity.setLocation(updatedEntity.getLocation());
