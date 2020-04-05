@@ -12,7 +12,7 @@ public class UserConverter {
 		rv.setUserId(entity.getUserId());
 		rv.setAvatar(entity.getAvatar());
 		rv.setUserName(entity.getUserName());
-		rv.setRole(entity.getRole());
+		rv.setRole(entity.getRole().name());
 		return rv;
 	}
 

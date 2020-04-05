@@ -5,7 +5,7 @@ import acs.util.UserId;
 public class UserEntity {
 	
 	private UserId userId;
-	private String role;
+	private UserRole role;
 	private String userName;
 	private String avatar;
 	
@@ -16,7 +16,7 @@ public class UserEntity {
 	public UserEntity(UserId userId, String role, String userName, String avatar) {
 		super();
 		this.userId = userId;
-		this.role = role;
+		this.role = UserRole.valueOf(role);
 		this.userName = userName;
 		this.avatar = avatar;
 	}
@@ -29,12 +29,12 @@ public class UserEntity {
 		this.userId = userId;
 	}
 
-	public String getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 
 	public void setRole(String role) {
-		this.role = role;
+		this.role = UserRole.valueOf(role);
 	}
 
 	public String getUserName() {
