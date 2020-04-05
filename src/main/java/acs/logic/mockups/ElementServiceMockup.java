@@ -47,7 +47,7 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
-		
+
 		try {
 
 			isBoundaryContainsLegalValues(elementBoundary);
@@ -72,7 +72,7 @@ public class ElementServiceMockup implements ElementService {
 			allElements.add(elementEntity);
 
 			return elementBoundary;
-		}catch(RuntimeException e) {
+		} catch (RuntimeException e) {
 			throw e;
 		}
 	}
@@ -87,8 +87,8 @@ public class ElementServiceMockup implements ElementService {
 
 			// Fetching the specific element from DB.
 			ElementEntity foundedElement = searchElement(update.getElementId());
-			
-			//Check if all values to be updated are legal.
+
+			// Check if all values to be updated are legal.
 			isUpdateValuesLegal(foundedElement, update);
 
 			// Convert the input to entity before update the values in element entity that
@@ -97,8 +97,8 @@ public class ElementServiceMockup implements ElementService {
 
 			// Update the element's values.
 			updateElementValues(foundedElement, updateEntity);
-			
-			//Convert the update entity to boundary and returns it.
+
+			// Convert the update entity to boundary and returns it.
 			return elementConverter.fromEntity(foundedElement);
 		}
 
@@ -109,8 +109,15 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<ElementBoundary> AllElementsBoundaries = new ArrayList<>();
+
+		for (ElementEntity elementEntity : allElements) {
+			AllElementsBoundaries.add(elementConverter.fromEntity(elementEntity));
+		}
+		
+		return AllElementsBoundaries;
+
 	}
 
 	@Override
@@ -133,7 +140,7 @@ public class ElementServiceMockup implements ElementService {
 	private void isBoundaryContainsLegalValues(ElementBoundary element) {
 
 		try {
-			
+
 			isBoundaryValuesInstantiated(element);
 
 		} catch (RuntimeException e) {
@@ -178,15 +185,15 @@ public class ElementServiceMockup implements ElementService {
 	}
 
 	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity updatedEntity) {
-		
-		//Copy the relevant values from update entity to toBeUpdateEntity.
-		
+
+		// Copy the relevant values from update entity to toBeUpdateEntity.
+
 		toBeUpdatedEntity.setActive(updatedEntity.getActive());
 		toBeUpdatedEntity.setElementAttributes(updatedEntity.getElementAttributes());
 		toBeUpdatedEntity.setLocation(updatedEntity.getLocation());
 		toBeUpdatedEntity.setName(updatedEntity.getName());
 		toBeUpdatedEntity.setType(updatedEntity.getType());
-	
+
 	}
 
 }
