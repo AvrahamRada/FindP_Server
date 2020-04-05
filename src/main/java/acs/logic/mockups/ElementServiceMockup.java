@@ -136,9 +136,12 @@ public class ElementServiceMockup implements ElementService {
 	}
 
 	@Override
-	public void deleteAllElements(String domainDomain, String domainEmail) {
-		// TODO Auto-generated method stub
-
+	public void deleteAllElements(String adminDomain, String adminEmail) {
+		
+		//Clear all elements from DB.
+		
+		allElements.clear();
+	
 	}
 
 	public String getProjectName() {
