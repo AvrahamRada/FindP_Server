@@ -10,18 +10,15 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
-import acs.data.UserEntity;
 import acs.logic.ElementService;
 import acs.logic.util.ElementConverter;
-import acs.logic.util.UserConverter;
-import acs.util.CreatedBy;
-import acs.util.ElementAttributes;
-import acs.util.ElementId;
-import acs.util.Location;
 
+
+@Service
 public class ElementServiceMockup implements ElementService {
 	private String projectName;
 	private List<ElementEntity> allElements;
