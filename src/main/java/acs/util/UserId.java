@@ -1,10 +1,12 @@
 package acs.util;
 
+import javax.management.RuntimeErrorException;
+
 public class UserId {
 
 	private String domain;
 	private String email;
-	
+
 	public UserId() {
 		// TODO Auto-generated constructor stub
 	}
@@ -30,7 +32,7 @@ public class UserId {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public void validation() {
 
 		if (domain == null) {
@@ -41,5 +43,5 @@ public class UserId {
 			throw new RuntimeException("Email wasnot instantiate");
 		}
 	}
-	
+
 }

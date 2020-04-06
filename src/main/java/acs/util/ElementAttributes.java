@@ -23,4 +23,12 @@ public class ElementAttributes {
 		this.isOccupied = isOccupied;
 	}
 	
+	public void validation() {
+		
+		if(isOccupied == null) {
+			throw new RuntimeException("isOccupid was not instantiate");
+		}
+		
+	}
+	
 }

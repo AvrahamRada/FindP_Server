@@ -1,10 +1,10 @@
 package acs.util;
 
 public class Location {
-	
+
 	private Double lat;
 	private Double lng;
-	
+
 	public Location() {
 		// TODO Auto-generated constructor stub
 	}
@@ -30,7 +30,16 @@ public class Location {
 	public void setLng(Double lng) {
 		this.lng = lng;
 	}
-	
-	
-	
+
+	public void validation() {
+
+		if (lat == null) {
+			throw new RuntimeException("latitude was not instantiate");
+		}
+
+		if (lng == null) {
+			throw new RuntimeException("longitude was not instantiate");
+		}
+	}
+
 }
