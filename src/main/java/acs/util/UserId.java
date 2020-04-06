@@ -43,4 +43,5 @@ public class UserId {
 			throw new RuntimeException("Email wasnot instantiate");
 		}
 	}
+
 }

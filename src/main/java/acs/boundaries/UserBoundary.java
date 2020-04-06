@@ -52,4 +52,14 @@ public class UserBoundary {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
+	
+	public void validation(){
+		if(role == null)
+			throw new RuntimeException("role was not instantiate");
+		if(userName == null)
+			throw new RuntimeException("userName was not instantiate");
+		if(avatar == null)
+			throw new RuntimeException("avatar was not instantiate");
+		userId.validation();
+	}
 }

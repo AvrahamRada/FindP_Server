@@ -43,7 +43,7 @@ public class UserController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary createNewUser(@RequestBody NewUserDetails input) {
-		return userService.createUser(new UserBoundary(new UserId(null, input.getEmail()), input.getRole(), input.getUserName(), input.getAvatar()));
+		return userService.createUser(new UserBoundary(new UserId(" ", input.getEmail()), input.getRole(), input.getUserName(), input.getAvatar()));
 	}
 	
 	/*--------------------- PUT APIS ------------------- */
