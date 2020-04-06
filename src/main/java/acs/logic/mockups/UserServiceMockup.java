@@ -63,7 +63,6 @@ public class UserServiceMockup implements UserService {
 	@Override
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
 		update.validation();
-		update.getUserId().validationDomain(projectName);
 		UserEntity updateUser = findUser(userDomain, userEmail);
 		Collections.replaceAll(allUsers, updateUser, userConverter.toEntity(update));
 		return update;
