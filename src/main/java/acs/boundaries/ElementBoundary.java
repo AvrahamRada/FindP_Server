@@ -26,6 +26,7 @@ public class ElementBoundary {
 
 	public ElementBoundary(ElementId elementId, String type, String name, Boolean active, Date createdTimeStamp,
 			CreatedBy createdBy, Location location, ElementAttributes elementAttributes) {
+		
 		super();
 		this.elementId = elementId;
 		this.type = type;
@@ -102,22 +103,22 @@ public class ElementBoundary {
 	}
 
 	public void validation() {
-			
-			elementId.validation();
-			createdBy.validation();
-			location.validation();
-			elementAttributes.validation();
 
-			if (type == null) {
-				throw new RuntimeException("type was not instantiate");
-			}
+		elementId.validation();
+		createdBy.validation();
+		location.validation();
+		elementAttributes.validation();
 
-			if (name == null) {
-				throw new RuntimeException("name was not instantiate");
-			}
+		if (type == null) {
+			throw new RuntimeException("type was not instantiate");
+		}
 
-			if (createdTimeStamp == null) {
-				throw new RuntimeException("createdTimeStamp was not instantiate");
-			}
+		if (name == null) {
+			throw new RuntimeException("name was not instantiate");
+		}
+
+		if (createdTimeStamp == null) {
+			throw new RuntimeException("createdTimeStamp was not instantiate");
+		}
 	}
 }
