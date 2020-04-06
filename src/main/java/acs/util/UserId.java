@@ -31,11 +31,15 @@ public class UserId {
 		this.email = email;
 	}
 	
-	public void validation(){
-		if(email == null)
-			throw new RuntimeException("email was not instantiate");
-		if(domain == null)
-			throw new RuntimeException("domain was not instantiate");
+	public void validation() {
+
+		if (domain == null) {
+			throw new RuntimeException("Domian wasnot instantiate");
+		}
+
+		if (email == null) {
+			throw new RuntimeException("Email wasnot instantiate");
+		}
 	}
 	
 }
