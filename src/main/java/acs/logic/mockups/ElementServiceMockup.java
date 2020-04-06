@@ -49,87 +49,70 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
 
-		try {
+		// Validate the element boundary fields;
+		elementBoundary.validation();
 
-			// Validate the element boundary fields;
-			elementBoundary.validation();
+		// Set the element's domain to the project name.
+		elementBoundary.getElementId().setDomain(getProjectName());
 
-			// Set the element's domain to the project name.
-			elementBoundary.getElementId().setDomain(getProjectName());
+		// Set the element's creation date.
+		elementBoundary.setCreatedTimeStamp(new Date(System.currentTimeMillis()));
 
-			// Set the element's creation date.
-			elementBoundary.setCreatedTimeStamp(new Date(System.currentTimeMillis()));
+		// Create the unique id for the element.
+		elementBoundary.getElementId().setId(UUID.randomUUID().toString());
 
-			// Create the unique id for the element.
-			elementBoundary.getElementId().setId(UUID.randomUUID().toString());
+		// Set element's manager details.
+		elementBoundary.getCreatedBy().getUserId().setDomain(managerDomain);
+		elementBoundary.getCreatedBy().getUserId().setEmail(managerEmail);
 
-			// Set element's manager details.
-			elementBoundary.getCreatedBy().getUserId().setDomain(managerDomain);
-			elementBoundary.getCreatedBy().getUserId().setEmail(managerEmail);
+		// Convert the element boundary to element entity
+		ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);
 
-			// Convert the element boundary to element entity
-			ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);
+		// Add the new element entity to DB.
+		allElements.add(elementEntity);
 
-			// Add the new element entity to DB.
-			allElements.add(elementEntity);
+		return elementBoundary;
 
-			return elementBoundary;
-		} catch (RuntimeException e) {
-			throw e;
-		}
 	}
 
 	@Override
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId,
 			ElementBoundary update) {
 
-		try {
+		// Validate the element boundary's fields
+		update.validation();
 
-			// Validate the element boundary's fields
-			update.validation();
+		// Fetching the specific element from DB.
+		ElementEntity foundedElement = searchElement(update.getElementId().getId());
 
-			// Fetching the specific element from DB.
-			ElementEntity foundedElement = searchElement(update.getElementId().getId());
+		// Convert the input to entity before update the values in element entity that
+		// is in the DB.
+		ElementEntity updateEntity = elementConverter.toEntity(update);
 
-			// Convert the input to entity before update the values in element entity that
-			// is in the DB.
-			ElementEntity updateEntity = elementConverter.toEntity(update);
+		// Update the element's values.
+		updateElementValues(foundedElement, updateEntity);
 
-			// Update the element's values.
-			updateElementValues(foundedElement, updateEntity);
+		// Convert the update entity to boundary and returns it.
+		return elementConverter.fromEntity(foundedElement);
 
-			// Convert the update entity to boundary and returns it.
-			return elementConverter.fromEntity(foundedElement);
-		}
-
-		catch (RuntimeException e) {
-			throw e;
-		}
 	}
 
 	@Override
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
 
-		return this.allElements
-		.stream()
-		.map(this.elementConverter::fromEntity)
-		.collect(Collectors.toList());
-		
+		return this.allElements.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
+
 	}
 
 	@Override
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
 
-		try {
-			// Fetching the specific element from DB.
-			ElementEntity foundedElement = searchElement(elementId);
+		// Fetching the specific element from DB.
+		ElementEntity foundedElement = searchElement(elementId);
 
-			return elementConverter.fromEntity(foundedElement);
+		return elementConverter.fromEntity(foundedElement);
 
-		} catch (RuntimeException e) {
-			throw e;
-		}
 	}
 
 	@Override
