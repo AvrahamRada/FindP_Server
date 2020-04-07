@@ -83,7 +83,7 @@ public class ElementServiceMockup implements ElementService {
 		update.validation();
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = searchElement(update.getElementId().getId());
+		ElementEntity foundedElement = searchElement(elementId);
 
 		// Convert the input to entity before update the values in element entity that
 		// is in the DB.
