@@ -61,6 +61,8 @@ public class AdminController {
 		this.elementService.deleteAllElements(adminDomain, adminEmail);
 	}
 
+	
+	// delete all user also admin!!
 	@RequestMapping(path = "/acs/admin/users/{adminDomain}/{adminEmail}", method = RequestMethod.DELETE)
 	public void deleteAllUsers(@PathVariable("adminDomain") String adminDomain,
 			@PathVariable("adminEmail") String adminEmail) {
