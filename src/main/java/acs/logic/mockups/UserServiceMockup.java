@@ -46,9 +46,11 @@ public class UserServiceMockup implements UserService {
 	@Override
 	public UserBoundary createUser(UserBoundary user) {
 		user.validation();
-		user.getUserId().setDomain(projectName);
 		UserEntity newUser = userConverter.toEntity(user);
+		newUser.getUserId().setDomain(projectName);
 		this.allUsers.add(newUser);
+		
+
 		return user;
 	}
 
@@ -91,11 +93,15 @@ public class UserServiceMockup implements UserService {
 
 	// check if user exist in the system
 	public UserEntity findUser(String userDomain, String userEmail) {
-		UserEntity user = this.allUsers.stream()
+		for(UserEntity s: this.allUsers)
+			System.out.println(s.getUserId().getDomain() + s.getUserId().getEmail());
+		System.out.println(userDomain);
+		System.out.println(userEmail);
+		return this.allUsers.stream()
 				.filter(userEntity -> userEntity.getUserId().getEmail().equals(userEmail)
 						&& userEntity.getUserId().getDomain().equals(userDomain))
 				.findFirst().orElseThrow(() -> new RuntimeException("Could not find user"));
-		return user;
+		
 	}
 
 	// check if user is admin and login
