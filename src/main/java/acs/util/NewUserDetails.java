@@ -1,20 +1,22 @@
 package acs.util;
 
+import acs.data.UserRole;
+
 public class NewUserDetails {
 	private String email;
-	private String role;
-	private String userName;
+	private UserRole role;
+	private String username;
 	private String avatar;
 	
 	public NewUserDetails() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public NewUserDetails(String email, String role, String userName, String avatar) {
+	public NewUserDetails(String email, UserRole role, String username, String avatar) {
 		super();
 		this.email = email;
 		this.role = role;
-		this.userName = userName;
+		this.username = username;
 		this.avatar = avatar;
 	}
 
@@ -26,20 +28,20 @@ public class NewUserDetails {
 		this.email = email;
 	}
 
-	public String getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 
-	public void setRole(String role) {
+	public void setRole(UserRole role) {
 		this.role = role;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsename(String username) {
+		this.username = username;
 	}
 
 	public String getAvatar() {

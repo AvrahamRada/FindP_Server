@@ -6,18 +6,18 @@ public class UserEntity {
 	
 	private UserId userId;
 	private UserRole role;
-	private String userName;
+	private String username;
 	private String avatar;
 	
 	public UserEntity() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public UserEntity(UserId userId, String role, String userName, String avatar) {
+	public UserEntity(UserId userId, String role, String username, String avatar) {
 		super();
 		this.userId = userId;
 		this.role = UserRole.valueOf(role);
-		this.userName = userName;
+		this.username = username;
 		this.avatar = avatar;
 	}
 
@@ -33,16 +33,16 @@ public class UserEntity {
 		return role;
 	}
 
-	public void setRole(String role) {
-		this.role = UserRole.valueOf(role);
+	public void setRole(UserRole role) {
+		this.role = role;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getAvatar() {

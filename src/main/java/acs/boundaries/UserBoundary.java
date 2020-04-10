@@ -1,23 +1,24 @@
 package acs.boundaries;
 
+import acs.data.UserRole;
 import acs.util.UserId;
 
 public class UserBoundary {
 	
 	private UserId userId;
-	private String role;
-	private String userName;
+	private UserRole role;
+	private String username;
 	private String avatar;
 	
 	public UserBoundary() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public UserBoundary(UserId userId, String role, String userName, String avatar) {
+	public UserBoundary(UserId userId, UserRole role, String username, String avatar) {
 		super();
 		this.userId = userId;
 		this.role = role;
-		this.userName = userName;
+		this.username = username;
 		this.avatar = avatar;
 	}
 
@@ -29,20 +30,20 @@ public class UserBoundary {
 		this.userId = userId;
 	}
 
-	public String getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 
-	public void setRole(String role) {
+	public void setRole(UserRole role) {
 		this.role = role;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getAvatar() {
@@ -56,7 +57,7 @@ public class UserBoundary {
 	public void validation(){
 		if(role == null)
 			throw new RuntimeException("role was not instantiate");
-		if(userName == null)
+		if(username == null)
 			throw new RuntimeException("userName was not instantiate");
 		if(avatar == null)
 			throw new RuntimeException("avatar was not instantiate");

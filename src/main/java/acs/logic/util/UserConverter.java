@@ -11,8 +11,8 @@ public class UserConverter {
 		UserBoundary rv = new UserBoundary();
 		rv.setUserId(entity.getUserId());
 		rv.setAvatar(entity.getAvatar());
-		rv.setUserName(entity.getUserName());
-		rv.setRole(entity.getRole().name());
+		rv.setUsername(entity.getUsername());
+		rv.setRole(entity.getRole());
 		return rv;
 	}
 
@@ -20,7 +20,7 @@ public class UserConverter {
 		UserEntity rv = new UserEntity();
 		rv.setUserId(boundary.getUserId());
 		rv.setAvatar(boundary.getAvatar());
-		rv.setUserName(boundary.getUserName());
+		rv.setUsername(boundary.getUsername());
 		rv.setRole(boundary.getRole());
 		return rv;
 	}

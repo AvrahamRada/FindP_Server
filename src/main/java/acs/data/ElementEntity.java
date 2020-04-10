@@ -1,9 +1,9 @@
 package acs.data;
 
 import java.util.Date;
+import java.util.Map;
 
 import acs.util.CreatedBy;
-import acs.util.ElementAttributes;
 import acs.util.ElementId;
 import acs.util.Location;
 
@@ -13,23 +13,23 @@ public class ElementEntity {
 	private String type;
 	private String name;
 	private Boolean active;
-	private Date createdTimeStamp;
+	private Date createdTimestamp;
 	private CreatedBy createdBy;
 	private Location location;
-	private ElementAttributes elementAttributes;
+	private Map<String,Object> elementAttributes;
 	
 	public ElementEntity() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ElementEntity(ElementId elementId, String type, String name, Boolean active, Date createdTimeStamp,
-			CreatedBy createdBy, Location location,ElementAttributes elementAttributes) {
+	public ElementEntity(ElementId elementId, String type, String name, Boolean active, Date createdTimestamp,
+			CreatedBy createdBy, Location location,Map<String,Object> elementAttributes) {
 		super();
 		this.elementId = elementId;
 		this.type = type;
 		this.name = name;
 		this.active = active;
-		this.createdTimeStamp = createdTimeStamp;
+		this.createdTimestamp = createdTimestamp;
 		this.createdBy = createdBy;
 		this.location = location;
 		this.elementAttributes = elementAttributes;
@@ -67,12 +67,12 @@ public class ElementEntity {
 		this.active = active;
 	}
 
-	public Date getCreatedTimeStamp() {
-		return createdTimeStamp;
+	public Date getCreatedTimestamp() {
+		return createdTimestamp;
 	}
 
-	public void setCreatedTimeStamp(Date createdTimeStamp) {
-		this.createdTimeStamp = createdTimeStamp;
+	public void setCreatedTimestamp(Date createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
 	}
 
 	public CreatedBy getCreatedBy() {
@@ -92,11 +92,11 @@ public class ElementEntity {
 		this.location = location;
 	}
 
-	public ElementAttributes getElementAttributes() {
+	public Map<String,Object> getElementAttributes() {
 		return elementAttributes;
 	}
 
-	public void setElementAttributes(ElementAttributes elementAttributes) {
+	public void setElementAttributes(Map<String,Object> elementAttributes) {
 		this.elementAttributes = elementAttributes;
 	}
 	

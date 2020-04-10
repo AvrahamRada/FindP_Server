@@ -1,6 +1,7 @@
 package acs.data;
 
 import java.util.Date;
+import java.util.Map;
 
 import acs.action.ActionAttributes;
 import acs.action.ActionId;
@@ -13,14 +14,14 @@ public class ActionEntity {
 	private Element element;
 	private Date createdTimestamp;
 	private InvokedBy invokedBy;
-	private ActionAttributes actionAttributes;
+	private Map<String,Object> actionAttributes;
 	
 	public ActionEntity() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	public ActionEntity(ActionId actionId, String type, Element element, Date createdTimestamp, InvokedBy invokedBy,
-			ActionAttributes actionAttributes) {
+			Map<String,Object> actionAttributes) {
 		super();
 		this.actionId = actionId;
 		this.type = type;
@@ -70,11 +71,11 @@ public class ActionEntity {
 		this.invokedBy = invokedBy;
 	}
 
-	public ActionAttributes getActionAttributes() {
+	public Map<String,Object> getActionAttributes() {
 		return actionAttributes;
 	}
 
-	public void setActionAttributes(ActionAttributes actionAttributes) {
+	public void setActionAttributes(Map<String,Object> actionAttributes) {
 		this.actionAttributes = actionAttributes;
 	}
 

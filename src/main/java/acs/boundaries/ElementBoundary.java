@@ -1,6 +1,7 @@
 package acs.boundaries;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
@@ -15,24 +16,24 @@ public class ElementBoundary {
 	private String type;
 	private String name;
 	private Boolean active;
-	private Date createdTimeStamp;
+	private Date createdTimestamp;
 	private CreatedBy createdBy;
 	private Location location;
-	private ElementAttributes elementAttributes;
+	private Map<String, Object> elementAttributes;
 
 	public ElementBoundary() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ElementBoundary(ElementId elementId, String type, String name, Boolean active, Date createdTimeStamp,
-			CreatedBy createdBy, Location location, ElementAttributes elementAttributes) {
-		
+	public ElementBoundary(ElementId elementId, String type, String name, Boolean active, Date createdTimestamp,
+			CreatedBy createdBy, Location location, Map<String, Object> elementAttributes) {
+
 		super();
 		this.elementId = elementId;
 		this.type = type;
 		this.name = name;
 		this.active = active;
-		this.createdTimeStamp = createdTimeStamp;
+		this.createdTimestamp = createdTimestamp;
 		this.createdBy = createdBy;
 		this.location = location;
 		this.elementAttributes = elementAttributes;
@@ -70,12 +71,12 @@ public class ElementBoundary {
 		this.active = active;
 	}
 
-	public Date getCreatedTimeStamp() {
-		return createdTimeStamp;
+	public Date getCreatedTimestamp() {
+		return createdTimestamp;
 	}
 
-	public void setCreatedTimeStamp(Date createdTimeStamp) {
-		this.createdTimeStamp = createdTimeStamp;
+	public void setCreatedTimestamp(Date createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
 	}
 
 	public CreatedBy getCreatedBy() {
@@ -94,11 +95,11 @@ public class ElementBoundary {
 		this.location = location;
 	}
 
-	public ElementAttributes getElementAttributes() {
+	public Map<String, Object> getElementAttributes() {
 		return elementAttributes;
 	}
 
-	public void setElementAttributes(ElementAttributes elementAttributes) {
+	public void setElementAttributes(Map<String, Object> elementAttributes) {
 		this.elementAttributes = elementAttributes;
 	}
 
@@ -107,7 +108,17 @@ public class ElementBoundary {
 		elementId.validation();
 		createdBy.validation();
 		location.validation();
-		elementAttributes.validation();
+		for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			
+			if (key == null) {
+				throw new RuntimeException("key in elementAtrributes was not instantiate");
+			}
+			if (value == null) {
+				throw new RuntimeException("value in elementAtrributes was not instantiate");
+			}
+		}
 
 		if (type == null) {
 			throw new RuntimeException("type was not instantiate");
@@ -117,8 +128,8 @@ public class ElementBoundary {
 			throw new RuntimeException("name was not instantiate");
 		}
 
-		if (createdTimeStamp == null) {
-			throw new RuntimeException("createdTimeStamp was not instantiate");
+		if (createdTimestamp == null) {
+			throw new RuntimeException("createdTimestamp was not instantiate");
 		}
 	}
 }
