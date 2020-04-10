@@ -11,7 +11,7 @@ public class ElementConverter {
 		ElementBoundary rv = new ElementBoundary();
 		rv.setActive(entity.getActive());
 		rv.setCreatedBy(entity.getCreatedBy());
-		rv.setCreatedTimeStamp(entity.getCreatedTimeStamp());
+		rv.setCreatedTimestamp(entity.getCreatedTimestamp());
 		rv.setElementAttributes(entity.getElementAttributes());
 		rv.setElementId(entity.getElementId());
 		rv.setLocation(entity.getLocation());
@@ -24,7 +24,7 @@ public class ElementConverter {
 		ElementEntity rv = new ElementEntity();
 		rv.setActive(boundary.getActive());
 		rv.setCreatedBy(boundary.getCreatedBy());
-		rv.setCreatedTimeStamp(boundary.getCreatedTimeStamp());
+		rv.setCreatedTimestamp(boundary.getCreatedTimestamp());
 		rv.setElementAttributes(boundary.getElementAttributes());
 		rv.setElementId(boundary.getElementId());
 		rv.setLocation(boundary.getLocation());

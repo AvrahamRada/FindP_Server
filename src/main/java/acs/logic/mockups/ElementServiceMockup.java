@@ -56,7 +56,7 @@ public class ElementServiceMockup implements ElementService {
 		elementBoundary.getElementId().setDomain(getProjectName());
 
 		// Set the element's creation date.
-		elementBoundary.setCreatedTimeStamp(new Date(System.currentTimeMillis()));
+		elementBoundary.setCreatedTimestamp(new Date(System.currentTimeMillis()));
 
 		// Create the unique id for the element.
 		elementBoundary.getElementId().setId(UUID.randomUUID().toString());
@@ -80,7 +80,7 @@ public class ElementServiceMockup implements ElementService {
 			ElementBoundary update) {
 
 		// Validate the element boundary's fields
-		update.validation();
+//		update.validation();
 
 		// Fetching the specific element from DB.
 		ElementEntity foundedElement = searchElement(elementId);
