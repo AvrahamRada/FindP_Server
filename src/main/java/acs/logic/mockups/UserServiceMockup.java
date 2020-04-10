@@ -93,10 +93,6 @@ public class UserServiceMockup implements UserService {
 
 	// check if user exist in the system
 	public UserEntity findUser(String userDomain, String userEmail) {
-		for(UserEntity s: this.allUsers)
-			System.out.println(s.getUserId().getDomain() + s.getUserId().getEmail());
-		System.out.println(userDomain);
-		System.out.println(userEmail);
 		return this.allUsers.stream()
 				.filter(userEntity -> userEntity.getUserId().getEmail().equals(userEmail)
 						&& userEntity.getUserId().getDomain().equals(userDomain))
@@ -106,7 +102,6 @@ public class UserServiceMockup implements UserService {
 
 	// check if user is admin and login
 	public void checkAdmin(String adminDomain, String adminEmail) {
-		System.out.println();
 		this.loginUsers.stream()
 				.filter(userEntity -> userEntity.getUserId().getEmail().equals(adminEmail)
 						&& userEntity.getUserId().getDomain().equals(adminDomain)
