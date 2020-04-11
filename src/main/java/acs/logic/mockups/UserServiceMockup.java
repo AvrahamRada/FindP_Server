@@ -45,12 +45,12 @@ public class UserServiceMockup implements UserService {
 
 	@Override
 	public UserBoundary createUser(UserBoundary user) {
+		//check if exists before we are adding new user to list????????
 		user.validation();
 		UserEntity newUser = userConverter.toEntity(user);
 		newUser.getUserId().setDomain(projectName);
 		this.allUsers.add(newUser);
 		
-
 		return user;
 	}
 
@@ -64,15 +64,14 @@ public class UserServiceMockup implements UserService {
 
 	@Override
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
-		// update.validation();
-
-		// check each attribute if is not null
+	
+		// check each attribute if is not null  waiting to eyal
 		UserEntity updateUser = findUser(userDomain, userEmail);
 		updateUser.setAvatar(update.getAvatar());
 		updateUser.setRole(update.getRole());
 		updateUser.setUserId(update.getUserId());
 		updateUser.setUsername(update.getUsername());
-		// Collections.replaceAll(allUsers, updateUser, userConverter.toEntity(update));
+//		updateUser.getUserId().setDomain(projectName);
 		return update;
 	}
 
