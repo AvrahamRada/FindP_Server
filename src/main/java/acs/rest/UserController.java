@@ -52,7 +52,8 @@ public class UserController {
 	@RequestMapping(path = "/acs/users/{userDomain}/{userEmail}",
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void updateUserDetails(@PathVariable("userDomain") String userDomain, @PathVariable("userEmail") String userEmail, @RequestBody UserBoundary update) {
+	public void updateUserDetails(@PathVariable("userDomain") String userDomain, 
+			@PathVariable("userEmail") String userEmail, @RequestBody UserBoundary update) {
 		userService.updateUser(userDomain, userEmail, update);
 	}
 	
