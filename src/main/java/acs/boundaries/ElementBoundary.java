@@ -108,17 +108,7 @@ public class ElementBoundary {
 		elementId.validation();
 		createdBy.validation();
 		location.validation();
-		for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
-			
-			if (key == null) {
-				throw new RuntimeException("key in elementAtrributes was not instantiate");
-			}
-			if (value == null) {
-				throw new RuntimeException("value in elementAtrributes was not instantiate");
-			}
-		}
+	
 
 		if (type == null) {
 			throw new RuntimeException("type was not instantiate");
@@ -131,5 +121,19 @@ public class ElementBoundary {
 		if (createdTimestamp == null) {
 			throw new RuntimeException("createdTimestamp was not instantiate");
 		}
+		
+		for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			
+			if (key == null) {
+				throw new RuntimeException("key in elementAtrributes was not instantiate");
+			}
+			if (value == null) {
+				throw new RuntimeException("value in elementAtrributes was not instantiate");
+			}
+		}
+		
+		
 	}
 }
