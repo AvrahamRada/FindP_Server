@@ -146,7 +146,7 @@ public class UserPOSTTests {
 				.getForObject(this.allUserUrl, 
 						UserBoundary[].class,admin.getUserId().getDomain(),admin.getUserId().getEmail());
 		
-		// THEN the server returns the same 42 users and 1 admin = 43 users in the database
+		// THEN the server returns the same 10 users and 1 admin = 11 users in the database
 		assertThat(UsersArray)
 			.usingRecursiveFieldByFieldElementComparator()
 			.containsExactlyInAnyOrderElementsOf(storedUsers);

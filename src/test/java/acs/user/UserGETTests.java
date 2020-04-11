@@ -91,6 +91,7 @@ public class UserGETTests {
 		
 		assertThat(newUser).usingRecursiveComparison().isEqualTo(user);
 		
+		
 	}
 	
 	
