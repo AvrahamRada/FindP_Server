@@ -95,8 +95,7 @@ public class ElementGETTests {
 				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}", ElementBoundary.class,
 				"2020b.lior.trachtman", "don't care", "2020b.lior.trachtman", id);
 
-		// THEN the server returns a element boundary with elementDomain :
-		// 2020b.lior.trachtman and id: x
+		// THEN the server returns a element boundary with elementDomain : 2020b.lior.trachtman AND id: x
 		assertThat(actualElement.getElementId().getId()).isEqualTo(id);
 	}
 
@@ -213,7 +212,7 @@ public class ElementGETTests {
 		// WHEN I GET /elements/{userDomain}/{userEmail}
 		ElementBoundary[] actualElementsArray = this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
 				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
-
+		
 		// THEN the server returns array of 0 element boundaries
 		assertThat(actualElementsArray).hasSize(ZERO);
 
