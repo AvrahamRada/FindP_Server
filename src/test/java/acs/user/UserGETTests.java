@@ -3,6 +3,7 @@ package acs.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import javax.annotation.PostConstruct;
 
@@ -18,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import acs.boundaries.UserBoundary;
 import acs.data.UserRole;
 import acs.util.NewUserDetails;
+import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserGETTests {
@@ -78,7 +80,7 @@ public class UserGETTests {
 	}
 	
 	@Test
-	public void testGetAddUserToDatabaseAndRetrieveUserBoundary() throws Exception{
+	public void testGetLoginUserToDatabaseAndReturnASpecificUserThatExistsInDatabase() throws Exception{
 		UserBoundary user= this.restTemplate.postForObject(this.createUserUrl, 
 				new NewUserDetails("user@gmail.com",UserRole.PLAYER,"user",":)"), UserBoundary.class);
 		
@@ -89,8 +91,18 @@ public class UserGETTests {
 		
 		assertThat(newUser).usingRecursiveComparison().isEqualTo(user);
 		
+		
 	}
 	
+	
+	@Test
+	public void testGetWithEmptyDatabaseAndTryLoginUserReturnsStatusDifferentThan2xx() throws Exception{
+		UserBoundary user= new UserBoundary(new UserId(" ","user@gmail.com"), UserRole.PLAYER, "user", ":)");						
+		assertThrows(Exception.class, () -> this.restTemplate
+				.getForObject(this.loginUrl, UserBoundary.class, user.getUserId().getDomain()
+						,user.getUserId().getEmail()));
+		
+	}
 	
 	
 

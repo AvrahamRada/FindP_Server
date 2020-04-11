@@ -85,7 +85,7 @@ public class UserPOSTTests {
 	
 	
 	@Test
-	public void testPostAddUserToEmptyDatabaseAndReturnDatabaseWith6User() throws Exception {
+	public void testPostAdd5UserAndAdminToEmptyDatabaseAndReturnDatabaseWith6Users() throws Exception {
 		
 		IntStream.range(0, 5)
 		.forEach(i->this.restTemplate
@@ -115,10 +115,10 @@ public class UserPOSTTests {
 	
 	
 	@Test
-	public void testGetAllMessagesFromServerWith42MessagesInDatabaseReturnsAllMessagesStoredInDatabase() throws Exception {
+	public void testPost10UsersAndAdminInDatabaseReturnsAllUsersStoredInDatabase() throws Exception {
 		// GIVEN database contains specific 42 messages
 		List<UserBoundary> storedUsers = new ArrayList<>();
-		for (int i = 0; i < 42; i++) {
+		for (int i = 0; i < 10; i++) {
 			storedUsers.add(
 				this.restTemplate
 				  .postForObject(
@@ -146,7 +146,7 @@ public class UserPOSTTests {
 				.getForObject(this.allUserUrl, 
 						UserBoundary[].class,admin.getUserId().getDomain(),admin.getUserId().getEmail());
 		
-		// THEN the server returns the same 42 users and 1 admin = 43 users in the database
+		// THEN the server returns the same 10 users and 1 admin = 11 users in the database
 		assertThat(UsersArray)
 			.usingRecursiveFieldByFieldElementComparator()
 			.containsExactlyInAnyOrderElementsOf(storedUsers);
