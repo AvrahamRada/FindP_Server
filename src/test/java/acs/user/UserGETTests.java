@@ -4,10 +4,15 @@ import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
+
+import acs.boundaries.UserBoundary;
+import acs.data.UserRole;
+import acs.util.NewUserDetails;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserGETTests {
@@ -15,6 +20,8 @@ public class UserGETTests {
 
 	private int port;
 	private String url;
+	private String createUserUrl;
+	private String deleteUrl;
 	private RestTemplate restTemplate;
 	
 	@LocalServerPort
@@ -24,20 +31,38 @@ public class UserGETTests {
 	
 	@PostConstruct
 	public void init() {
-		this.url = "http://localhost:" + port + "/users";
+		
+		this.url = "http://localhost:" + port + "/acs/users";
+		this.deleteUrl = "http://localhost:" + port + "/acs/users/elements/{adminDomain}/{adminEmail}";
+		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.restTemplate = new RestTemplate();
 	}
 	
 	@BeforeEach
 	public void setup() {
-		this.restTemplate
-			.delete(this.url);
+		// Create admin for clear DB
+				UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
+						new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
+						UserBoundary.class);
+
+				//Delete all elements from DB
+				this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
 	}
 	
 	@AfterEach
 	public void teardown() {
-		this.restTemplate
-			.delete(this.url);
+		// Create admin for clear DB
+				UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
+						new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
+						UserBoundary.class);
+
+				//Delete all elements from DB
+				this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+	}
+	
+	@Test
+	public void testContext() {
+		
 	}
 
 }
