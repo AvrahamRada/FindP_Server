@@ -20,7 +20,9 @@ public class Location {
 	}
 
 	public void setLat(Double lat) {
-		this.lat = lat;
+		if (lat != null) {
+			this.lat = lat;
+		}
 	}
 
 	public Double getLng() {
@@ -28,7 +30,9 @@ public class Location {
 	}
 
 	public void setLng(Double lng) {
-		this.lng = lng;
+		if (lng != null) {
+			this.lng = lng;
+		}
 	}
 
 	public void validation() {

@@ -105,7 +105,6 @@ public class ElementBoundary {
 
 	public void validation() {
 
-		elementId.validation();
 		createdBy.validation();
 		location.validation();
 	
@@ -118,9 +117,6 @@ public class ElementBoundary {
 			throw new RuntimeException("name was not instantiate");
 		}
 
-		if (createdTimestamp == null) {
-			throw new RuntimeException("createdTimestamp was not instantiate");
-		}
 		
 		for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
 			String key = entry.getKey();

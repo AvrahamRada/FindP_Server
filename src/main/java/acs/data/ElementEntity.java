@@ -1,6 +1,7 @@
 package acs.data;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import acs.util.CreatedBy;
@@ -8,7 +9,7 @@ import acs.util.ElementId;
 import acs.util.Location;
 
 public class ElementEntity {
-	
+
 	private ElementId elementId;
 	private String type;
 	private String name;
@@ -16,14 +17,14 @@ public class ElementEntity {
 	private Date createdTimestamp;
 	private CreatedBy createdBy;
 	private Location location;
-	private Map<String,Object> elementAttributes;
-	
+	private Map<String, Object> elementAttributes;
+
 	public ElementEntity() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public ElementEntity(ElementId elementId, String type, String name, Boolean active, Date createdTimestamp,
-			CreatedBy createdBy, Location location,Map<String,Object> elementAttributes) {
+			CreatedBy createdBy, Location location, Map<String, Object> elementAttributes) {
 		super();
 		this.elementId = elementId;
 		this.type = type;
@@ -48,7 +49,9 @@ public class ElementEntity {
 	}
 
 	public void setType(String type) {
-		this.type = type;
+		if (type != null) {
+			this.type = type;
+		}
 	}
 
 	public String getName() {
@@ -56,7 +59,9 @@ public class ElementEntity {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		if (name != null) {
+			this.name = name;
+		}
 	}
 
 	public Boolean getActive() {
@@ -64,7 +69,9 @@ public class ElementEntity {
 	}
 
 	public void setActive(Boolean active) {
-		this.active = active;
+		if (active != null) {
+			this.active = active;
+		}
 	}
 
 	public Date getCreatedTimestamp() {
@@ -80,25 +87,42 @@ public class ElementEntity {
 	}
 
 	public void setCreatedBy(CreatedBy createdBy) {
-		this.createdBy = createdBy;
+		if (createdBy != null) {
+			this.createdBy = createdBy;
+		}
 	}
-	
 
 	public Location getLocation() {
 		return location;
 	}
 
 	public void setLocation(Location location) {
-		this.location = location;
+		if (location != null) {
+			this.location = location;
+		}
 	}
 
-	public Map<String,Object> getElementAttributes() {
+	public Map<String, Object> getElementAttributes() {
 		return elementAttributes;
 	}
 
-	public void setElementAttributes(Map<String,Object> elementAttributes) {
-		this.elementAttributes = elementAttributes;
+	public void setElementAttributes(Map<String, Object> elementAttributes) {
+
+		Map<String, Object> notNullElementAttributes = new HashMap<>();
+
+		if (elementAttributes != null) {
+
+			for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
+
+				if (key != null && value != null) {
+					notNullElementAttributes.put(key, value);
+				}
+			}
+			
+			this.elementAttributes = notNullElementAttributes;
+		}
 	}
-	
-	
+
 }

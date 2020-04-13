@@ -48,18 +48,22 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
+		
+		if(!managerDomain.equals(getProjectName())) {
+			throw new RuntimeException("Invalid manager domain");
+		}
 
-		// Validate the element boundary fields;
+		// Validate that the important element boundary fields are not null;
 		elementBoundary.validation();
 
 		// Set the element's domain to the project name.
 		elementBoundary.getElementId().setDomain(getProjectName());
+		
+		// Create the unique id for the element.
+		elementBoundary.getElementId().setId(UUID.randomUUID().toString());
 
 		// Set the element's creation date.
 		elementBoundary.setCreatedTimestamp(new Date(System.currentTimeMillis()));
-
-		// Create the unique id for the element.
-		elementBoundary.getElementId().setId(UUID.randomUUID().toString());
 
 		// Set element's manager details.
 		elementBoundary.getCreatedBy().getUserId().setDomain(managerDomain);
@@ -78,12 +82,17 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId,
 			ElementBoundary update) {
-
-		// Validate the element boundary's fields
-//		update.validation();
+		
+		if(!managerDomain.equals(getProjectName())){
+			throw new RuntimeException("Invalid manager domain");
+		}
+		
+		if(!elementDomain.equals(getProjectName())) {
+			throw new RuntimeException("Invalid element domain");
+		}
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = searchElement(elementId);
+		ElementEntity foundedElement = findElement(elementId);
 
 		// Convert the input to entity before update the values in element entity that
 		// is in the DB.
@@ -99,6 +108,10 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
+		
+		if(!userDomain.equals(getProjectName())) {
+			throw new RuntimeException("Invalid user domain");
+		}
 
 		return this.allElements.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
 
@@ -107,9 +120,17 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
+		
+		if(!userDomain.equals(getProjectName())) {
+			throw new RuntimeException("Invalid admin domain");
+		}
+		
+		if(!elementDomain.equals(getProjectName())) {
+			throw new RuntimeException("Invalid element domain");
+		}
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = searchElement(elementId);
+		ElementEntity foundedElement = findElement(elementId);
 
 		return elementConverter.fromEntity(foundedElement);
 
@@ -117,13 +138,17 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public void deleteAllElements(String adminDomain, String adminEmail) {
+		
+		if(!adminDomain.equals(getProjectName())) {
+			throw new RuntimeException("Invalid admin domain");
+		}
 
 		// Clear all elements from DB.
 		allElements.clear();
 
 	}
 
-	private ElementEntity searchElement(String elementId) {
+	private ElementEntity findElement(String elementId) {
 
 		ElementEntity foundedElement = allElements.stream()
 				.filter(elementEntity -> elementEntity.getElementId().getId().equals(elementId)).findFirst()
@@ -132,14 +157,14 @@ public class ElementServiceMockup implements ElementService {
 
 	}
 
-	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity updatedEntity) {
+	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity inputEntity) {
 
 		// Copy the RELEVANT values from update entity to toBeUpdateEntity.
-		toBeUpdatedEntity.setActive(updatedEntity.getActive());
-		toBeUpdatedEntity.setElementAttributes(updatedEntity.getElementAttributes());
-		toBeUpdatedEntity.setLocation(updatedEntity.getLocation());
-		toBeUpdatedEntity.setName(updatedEntity.getName());
-		toBeUpdatedEntity.setType(updatedEntity.getType());
+		toBeUpdatedEntity.setActive(inputEntity.getActive());
+		toBeUpdatedEntity.setElementAttributes(inputEntity.getElementAttributes());
+		toBeUpdatedEntity.setLocation(inputEntity.getLocation());
+		toBeUpdatedEntity.setName(inputEntity.getName());
+		toBeUpdatedEntity.setType(inputEntity.getType());
 
 	}
 
