@@ -55,6 +55,7 @@ public class UserBoundary {
 	}
 	
 	public void validation(){
+		
 		if(role == null)
 			throw new RuntimeException("role was not instantiate");
 		if(username == null)
