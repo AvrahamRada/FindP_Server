@@ -1,6 +1,7 @@
 package acs.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -110,7 +111,7 @@ public class AdminDELETETests {
 	}
 	
 	@Test
-	public void testDeleteAllActions() throws Exception {
+	public void testDeleteAllActionsWithActionsAndAdmin() throws Exception {
 		//create and login admin
 		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
 				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),UserBoundary.class);
@@ -216,6 +217,97 @@ public class AdminDELETETests {
 		
 		// the server returns array of 1 admin  = 1 users
 		assertThat(rv).hasSize(1);
+	}
+	
+	@Test
+	public void testDeleteAllActionsWithActionsAndNotAdmin() throws Exception {
+		//create and login A NOT admin user
+		UserBoundary notAdmin = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("notAdmin@gmail.com", UserRole.PLAYER, "not Admin", "Avatar"),UserBoundary.class);
+		
+		this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, notAdmin.getUserId().getDomain(),notAdmin.getUserId().getEmail());
+		
+		final int X = 10;
+		// create X actions
+		IntStream.range(0, X)
+				.forEach(i -> this.restTemplate.postForObject(this.invokeActionUrl,
+						new ActionBoundary(null, "type",
+								new Element(new ElementId("2020b.lior.trachtman", "id " + i)),
+								new Date(System.currentTimeMillis()),
+								new InvokedBy(new UserId("2020b.lior.trachtman", "mor.soferian@s.afeka.ac.il")),
+								new HashMap<>()),
+						ActionBoundary.class, "2020b.lior.trachtman", "don't care"));
+				
+		// get all elements
+		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl,
+				ActionBoundary[].class, notAdmin.getUserId().getDomain(),notAdmin.getUserId().getEmail());
+
+		// the server returns array of X element
+		assertThat(rv).hasSize(X);
+		
+		//delete all elements from DB
+		this.restTemplate.delete(this.deleteActionsUrl, notAdmin.getUserId().getDomain(), notAdmin.getUserId().getEmail());
+		
+		// get all elements after delete
+		rv = this.restTemplate.getForObject(this.allActionsUrl,
+				ActionBoundary[].class, notAdmin.getUserId().getDomain(),notAdmin.getUserId().getEmail());
+
+		// the server returns an empty array
+		assertThat(rv).isEmpty();
+	}
+	
+	@Test
+	public void testDeleteAllElementsWithElementsAndNotAdmin() {
+		//create and login A NOT admin user
+		UserBoundary notAdmin = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("notAdmin@gmail.com", UserRole.PLAYER, "not Admin", "Avatar"),UserBoundary.class);
+		
+		this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, notAdmin.getUserId().getDomain(),notAdmin.getUserId().getEmail());
+		
+		final int X = 10;
+		// create X elements
+		IntStream.range(0, X)
+				.forEach(i -> this.restTemplate.postForObject(this.createElementUrl,
+						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
+								new Date(System.currentTimeMillis()),
+								new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
+								new Location(40.730610, -73.935242), new HashMap<>()),
+						ElementBoundary.class, "2020b.lior.trachtman", "don't care"));
+				
+		// get all elements
+		ElementBoundary[] rv = this.restTemplate.getForObject(this.allElementsUrl,
+				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
+
+		// the server returns array of X element
+		assertThat(rv).hasSize(X);
+		
+		//delete all elements from DB
+		this.restTemplate.delete(this.deleteElementsUrl, notAdmin.getUserId().getDomain(), notAdmin.getUserId().getEmail());
+		
+		// get all elements after delete
+		rv = this.restTemplate.getForObject(this.allElementsUrl,
+				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
+
+		// the server returns an empty array
+		assertThat(rv).isEmpty();	
+	}
+	
+	@Test
+	public void testDeleteAllUsersWithUsersAndNotAdmin() {
+		//create and login A NOT admin user
+		UserBoundary notAdmin = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("notAdmin@gmail.com", UserRole.PLAYER, "not Admin", "Avatar"),UserBoundary.class);
+		
+		this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, notAdmin.getUserId().getDomain(),notAdmin.getUserId().getEmail());
+		
+		final int X = 5;
+		// create users
+		IntStream.range(0, X).forEach(i->this.restTemplate.postForObject(this.createUserUrl, 
+			new NewUserDetails("user" + i + "@gmail.com",UserRole.PLAYER,"user","(=)"), UserBoundary.class));
+				
+		//delete all users from DB - include ADMIN
+		assertThrows(Exception.class, 
+				() -> this.restTemplate.delete(this.deleteUsersUrl, notAdmin.getUserId().getDomain(), notAdmin.getUserId().getEmail()));
 	}
 
 }
