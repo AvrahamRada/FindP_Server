@@ -46,18 +46,12 @@ public class ActionServiceMockup implements ActionService {
 
 	@Override
 	public Object invokeAction(ActionBoundary action) {
-		// TODO Check with Eyal the purpose of this method
-		
 		action.validation();
-		
-		if (action.getActionId() == null) {
-			action.setActionId(new ActionId(projectName, UUID.randomUUID().toString()));
-			action.setCreatedTimestamp(new Date());
-			ActionEntity entity = this.actionConverter.toEntity(action);
-			this.allActions.add(entity);
-			return entity;
-		}
-		throw new RuntimeException("actionId must be null");
+		action.setActionId(new ActionId(projectName, UUID.randomUUID().toString()));
+		action.setCreatedTimestamp(new Date());
+		ActionEntity entity = this.actionConverter.toEntity(action);
+		this.allActions.add(entity);
+		return entity;
 	}
 
 	@Override
