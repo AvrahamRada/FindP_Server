@@ -22,6 +22,13 @@ public class InvokedBy {
 	public void setUserId(UserId userId) {
 		this.userId = userId;
 	}
+
+	public void validation() {
+		if(this.userId == null) {
+			throw new RuntimeException("userId was not instantiate");
+		}
+		this.userId.validation();
+	}
 	
 	
 }

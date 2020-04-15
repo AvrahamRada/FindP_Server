@@ -31,4 +31,14 @@ public class ElementId {
 		this.id = id;
 	}
 
+	public void validation() {
+		if(this.domain == null) {
+			throw new RuntimeException("elementId domain was not instantiate");
+		}
+		if(this.id == null) {
+			throw new RuntimeException("elementId id was not instantiate");
+		}
+		
+	}
+
 }

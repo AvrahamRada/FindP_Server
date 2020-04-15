@@ -21,6 +21,12 @@ public class Element {
 	public void setElementId(ElementId elementId) {
 		this.elementId = elementId;
 	}
-	
+
+	public void validation() {
+		if(this.elementId == null) {
+			throw new RuntimeException("elementId was not instantiate");
+		}
+		elementId.validation();
+	}
 	
 }

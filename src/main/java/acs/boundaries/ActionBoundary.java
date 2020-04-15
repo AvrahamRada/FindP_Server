@@ -18,7 +18,7 @@ public class ActionBoundary {
 	private Map<String,Object> actionAttributes;
 	
 	public ActionBoundary() {
-		// TODO Auto-generated constructor stub
+		
 	}
 	
 	public ActionBoundary(ActionId actionId, String type, Element element, Date createdTimestamp, InvokedBy invokedBy,
@@ -78,5 +78,40 @@ public class ActionBoundary {
 
 	public void setActionAttributes(Map<String,Object> actionAttributes) {
 		this.actionAttributes = actionAttributes;
+	}
+
+	public void validation() {
+		
+		if(this.actionId != null) {
+			throw new RuntimeException("actionId must be null");
+		}
+		if (this.type == null) {
+			throw new RuntimeException("type was not instantiate");
+		}
+		if(this.element == null) {
+			throw new RuntimeException("element was not instantiate");
+		}
+		this.element.validation();
+		if(this.invokedBy == null) {
+			throw new RuntimeException("invokedBy was not instantiate");
+		}
+		this.invokedBy.validation();
+		
+		if(this.actionAttributes == null) {
+			throw new RuntimeException("actionAttributes was not instantiate");
+		}
+		
+		for (Map.Entry<String, Object> entry : actionAttributes.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			
+			if (key == null) {
+				throw new RuntimeException("key in actionAttributes was not instantiate");
+			}
+			if (value == null) {
+				throw new RuntimeException("value in actionAttributes was not instantiate");
+			}
+		}
+
 	}	
 }
