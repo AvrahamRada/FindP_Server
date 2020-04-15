@@ -18,7 +18,6 @@ public class ActionBoundary {
 	private Map<String,Object> actionAttributes;
 	
 	public ActionBoundary() {
-		
 	}
 	
 	public ActionBoundary(ActionId actionId, String type, Element element, Date createdTimestamp, InvokedBy invokedBy,
