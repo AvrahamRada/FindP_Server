@@ -19,7 +19,6 @@ import acs.data.ActionEntity;
 import acs.logic.ActionService;
 import acs.logic.util.ActionConverter;
 
-
 @Service
 public class ActionServiceMockup implements ActionService {
 	private String projectName;
@@ -46,31 +45,23 @@ public class ActionServiceMockup implements ActionService {
 
 	@Override
 	public Object invokeAction(ActionBoundary action) {
-		// TODO Check with Eyal the purpose of this method
-		
-		action.validation();
-		
-		if (action.getActionId() == null) {
-			action.setActionId(new ActionId(projectName, UUID.randomUUID().toString()));
-			action.setCreatedTimestamp(new Date());
-			ActionEntity entity = this.actionConverter.toEntity(action);
-			this.allActions.add(entity);
-			return entity;
-		}
-		throw new RuntimeException("actionId must be null");
+		action.validation(); // if one of the important value is null, it will throw an exception
+		action.setActionId(new ActionId(this.projectName, UUID.randomUUID().toString()));
+		action.setCreatedTimestamp(new Date());
+		this.allActions.add(this.actionConverter.toEntity(action));
+		return action;
 	}
 
 	@Override
 	public List<ActionBoundary> getAllActions(String adminDomain, String adminEmail) {
-		// TODO Find if user is admin
+		// TODO Find if user is Admin- Eyal told us to not check it in this sprint (sprint 3)
 		return this.allActions.stream().map(this.actionConverter::fromEntity).collect(Collectors.toList());
 	}
 
 	@Override
 	public void deleteAllActions(String adminDomain, String adminEmail) {
-		// TODO Find if user is admin
+		// TODO Find if user is Admin- Eyal told us to not check it in this sprint (sprint 3)
 		this.allActions.clear();
 	}
 
 }
-

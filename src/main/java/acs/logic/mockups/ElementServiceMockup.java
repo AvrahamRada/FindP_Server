@@ -17,6 +17,9 @@ import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
 import acs.logic.ElementService;
 import acs.logic.util.ElementConverter;
+import acs.util.CreatedBy;
+import acs.util.ElementId;
+import acs.util.UserId;
 
 @Service
 public class ElementServiceMockup implements ElementService {
@@ -56,18 +59,14 @@ public class ElementServiceMockup implements ElementService {
 		// Validate that the important element boundary fields are not null;
 		elementBoundary.validation();
 
-		// Set the element's domain to the project name.
-		elementBoundary.getElementId().setDomain(getProjectName());
+		// Set the element's domain to the project name and create the unique id for the element.
+		elementBoundary.setElementId(new ElementId(getProjectName(), UUID.randomUUID().toString()));
 		
-		// Create the unique id for the element.
-		elementBoundary.getElementId().setId(UUID.randomUUID().toString());
-
 		// Set the element's creation date.
 		elementBoundary.setCreatedTimestamp(new Date(System.currentTimeMillis()));
 
 		// Set element's manager details.
-		elementBoundary.getCreatedBy().getUserId().setDomain(managerDomain);
-		elementBoundary.getCreatedBy().getUserId().setEmail(managerEmail);
+		elementBoundary.setCreatedBy(new CreatedBy(new UserId(managerDomain, managerEmail)));
 
 		// Convert the element boundary to element entity
 		ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);
