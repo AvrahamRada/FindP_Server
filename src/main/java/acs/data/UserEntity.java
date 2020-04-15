@@ -10,7 +10,7 @@ public class UserEntity {
 	private String avatar;
 
 	public UserEntity() {
-		// TODO Auto-generated constructor stub
+		this.userId = new UserId();
 	}
 
 	public UserEntity(UserId userId, String role, String username, String avatar) {

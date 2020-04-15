@@ -47,8 +47,8 @@ public class UserServiceMockup implements UserService {
 	public UserBoundary createUser(UserBoundary user) {
 		//check if exists before we are adding new user to list????????
 		user.validation();
+		user.getUserId().setDomain(projectName);
 		UserEntity newUser = userConverter.toEntity(user);
-		newUser.getUserId().setDomain(projectName);
 		this.allUsers.add(newUser);
 		
 		return user;

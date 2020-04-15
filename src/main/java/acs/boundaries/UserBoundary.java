@@ -62,6 +62,9 @@ public class UserBoundary {
 			throw new RuntimeException("userName was not instantiate");
 		if(avatar == null)
 			throw new RuntimeException("avatar was not instantiate");
+		if(userId == null) {
+			throw new RuntimeException("userId was not instantiate");
+		}
 		userId.validation();
 	}
 }
