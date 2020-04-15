@@ -46,12 +46,11 @@ public class ActionServiceMockup implements ActionService {
 
 	@Override
 	public Object invokeAction(ActionBoundary action) {
-		action.validation();
-		action.setActionId(new ActionId(projectName, UUID.randomUUID().toString()));
+		action.validation(); //if one of the important value is null, it will throw an exception
+		action.setActionId(new ActionId(this.projectName, UUID.randomUUID().toString()));
 		action.setCreatedTimestamp(new Date());
-		ActionEntity entity = this.actionConverter.toEntity(action);
-		this.allActions.add(entity);
-		return entity;
+		this.allActions.add(this.actionConverter.toEntity(action));
+		return action;
 	}
 
 	@Override
