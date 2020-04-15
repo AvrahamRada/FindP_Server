@@ -64,15 +64,15 @@ public class UserServiceMockup implements UserService {
 
 	@Override
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
-	
-		// check each attribute if is not null  waiting to eyal
 		UserEntity updateUser = findUser(userDomain, userEmail);
+		
+		//---Inside the setters there are null checks---
 		updateUser.setAvatar(update.getAvatar());
 		updateUser.setRole(update.getRole());
 		updateUser.setUserId(update.getUserId());
 		updateUser.setUsername(update.getUsername());
-//		updateUser.getUserId().setDomain(projectName);
-		return update;
+		
+		return this.userConverter.fromEntity(updateUser);
 	}
 
 	@Override

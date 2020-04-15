@@ -22,7 +22,9 @@ public class UserId {
 	}
 
 	public void setDomain(String domain) {
-		this.domain = domain;
+		if (domain != null) {
+			this.domain = domain;
+		}
 	}
 
 	public String getEmail() {
@@ -30,7 +32,9 @@ public class UserId {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		if(email != null) {
+			this.email = email;
+		}
 	}
 
 	public void validation() {
