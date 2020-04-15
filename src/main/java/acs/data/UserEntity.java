@@ -3,12 +3,12 @@ package acs.data;
 import acs.util.UserId;
 
 public class UserEntity {
-	
+
 	private UserId userId;
 	private UserRole role;
 	private String username;
 	private String avatar;
-	
+
 	public UserEntity() {
 		// TODO Auto-generated constructor stub
 	}
@@ -26,7 +26,10 @@ public class UserEntity {
 	}
 
 	public void setUserId(UserId userId) {
-		this.userId = userId;
+		if (userId != null) {
+			this.userId.setDomain(userId.getDomain());
+			this.userId.setEmail(userId.getEmail());
+		}
 	}
 
 	public UserRole getRole() {
@@ -34,7 +37,9 @@ public class UserEntity {
 	}
 
 	public void setRole(UserRole role) {
-		this.role = role;
+		if (role != null) {
+			this.role = role;
+		}
 	}
 
 	public String getUsername() {
@@ -42,7 +47,9 @@ public class UserEntity {
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		if (username != null) {
+			this.username = username;
+		}
 	}
 
 	public String getAvatar() {
@@ -50,6 +57,8 @@ public class UserEntity {
 	}
 
 	public void setAvatar(String avatar) {
-		this.avatar = avatar;
+		if (avatar != null) {
+			this.avatar = avatar;
+		}
 	}
 }
