@@ -23,6 +23,7 @@ import acs.util.NewUserDetails;
 
 
 
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserPOSTTests {
 	
@@ -51,14 +52,7 @@ public class UserPOSTTests {
 	@BeforeEach
 	public void setup() {
 		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
-				UserBoundary.class);
-		
-		this.restTemplate
-		.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
-				,admin.getUserId().getEmail());
-
+		UserBoundary admin = createAdminAndLogin();
 		//Delete all users from DB
 		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
 	}
@@ -66,14 +60,8 @@ public class UserPOSTTests {
 	@AfterEach
 	public void teardown() {
 		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
-				UserBoundary.class);
 		
-		this.restTemplate
-		.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
-				,admin.getUserId().getEmail());
-
+		UserBoundary admin = createAdminAndLogin();
 		//Delete all users from DB
 		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
 	}
@@ -81,6 +69,17 @@ public class UserPOSTTests {
 	@Test
 	public void testContext() {
 		
+	}
+	
+	public UserBoundary createAdminAndLogin() {
+		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
+				UserBoundary.class);
+		
+		this.restTemplate
+		.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
+				,admin.getUserId().getEmail());
+		return admin;
 	}
 	
 	
@@ -95,13 +94,7 @@ public class UserPOSTTests {
 			UserBoundary.class));
 		
 		//create and login admin
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
-				UserBoundary.class);
-		
-		this.restTemplate
-		.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
-				,admin.getUserId().getEmail());
+		UserBoundary admin = createAdminAndLogin();
 	// WHEN
 	UserBoundary[] rv = 
 		this.restTemplate
@@ -130,26 +123,22 @@ public class UserPOSTTests {
 		
 		
 		//create and login admin
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
-				UserBoundary.class);
-		
-		this.restTemplate
-		.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
-				,admin.getUserId().getEmail());
+		UserBoundary admin = createAdminAndLogin();
 		
 		storedUsers.add(admin);
 		
 		// WHEN
-		UserBoundary[] UsersArray = 
+		UserBoundary[] usersArray = 
 			this.restTemplate
 				.getForObject(this.allUserUrl, 
 						UserBoundary[].class,admin.getUserId().getDomain(),admin.getUserId().getEmail());
 		
 		// THEN the server returns the same 10 users and 1 admin = 11 users in the database
-		assertThat(UsersArray)
+		assertThat(usersArray)
 			.usingRecursiveFieldByFieldElementComparator()
 			.containsExactlyInAnyOrderElementsOf(storedUsers);
 	}
+	
+
 
 }

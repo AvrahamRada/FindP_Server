@@ -1,13 +1,13 @@
 package acs.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
-import org.assertj.core.internal.FieldByFieldComparator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,28 +47,16 @@ public class UserGETTests {
 	@BeforeEach
 	public void setup() {
 		// Create admin for clear DB
-				UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-						new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
-						UserBoundary.class);
+		UserBoundary admin = createAdminAndLogin();
 				
-				this.restTemplate
-						.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
-								,admin.getUserId().getEmail());
-				
-				//Delete all users from DB
-				this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		//Delete all users from DB
+		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
 	}
 	
 	@AfterEach
 	public void teardown() {
 		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
-				UserBoundary.class);
-		
-		this.restTemplate
-				.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
-						,admin.getUserId().getEmail());
+		UserBoundary admin = createAdminAndLogin();
 		
 		//Delete all users from DB
 		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
@@ -77,6 +65,17 @@ public class UserGETTests {
 	@Test
 	public void testContext() {
 		
+	}
+	
+	public UserBoundary createAdminAndLogin() {
+		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
+				UserBoundary.class);
+		
+		this.restTemplate
+		.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
+				,admin.getUserId().getEmail());
+		return admin;
 	}
 	
 	@Test
@@ -101,6 +100,37 @@ public class UserGETTests {
 		assertThrows(Exception.class, () -> this.restTemplate
 				.getForObject(this.loginUrl, UserBoundary.class, user.getUserId().getDomain()
 						,user.getUserId().getEmail()));
+		
+	}
+	
+	//---
+	@Test
+	public void testGetDatabaseNotEmptyAndTryLoginUserThatDoesntExistsReturnStatusDifferentThan2xx() throws Exception{
+		IntStream.range(0, 5)
+		.forEach(i->this.restTemplate
+				.postForObject(
+			this.createUserUrl, 
+			new NewUserDetails("user" + i + "@gmail.com",UserRole.PLAYER,"user",":)"), 
+			UserBoundary.class));
+		
+		assertThrows(Exception.class, () -> this.restTemplate
+				.getForObject(this.loginUrl, UserBoundary.class, "userNoExists"
+						,"userNoExists@gmail.com"));
+		
+	}
+	
+	@Test
+	public void testGetDatabaseNotEmptyAndTryLoginUserWithWrongUserDomainReturnStatusDifferentThan2xx() throws Exception{
+		IntStream.range(0, 5)
+		.forEach(i->this.restTemplate
+				.postForObject(
+			this.createUserUrl, 
+			new NewUserDetails("user" + i + "@gmail.com",UserRole.PLAYER,"user",":)"), 
+			UserBoundary.class));
+		
+		assertThrows(Exception.class, () -> this.restTemplate
+				.getForObject(this.loginUrl, UserBoundary.class, "wrongDomain"
+						,"user1@gmail.com"));
 		
 	}
 	
