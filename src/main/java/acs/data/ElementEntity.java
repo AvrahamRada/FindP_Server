@@ -87,9 +87,9 @@ public class ElementEntity {
 	}
 
 	public void setCreatedBy(CreatedBy createdBy) {
-		if (createdBy != null) {
-			this.createdBy = createdBy;
-		}
+
+		this.createdBy = createdBy;
+
 	}
 
 	public Location getLocation() {
@@ -98,7 +98,8 @@ public class ElementEntity {
 
 	public void setLocation(Location location) {
 		if (location != null) {
-			this.location = location;
+			this.location.setLat(location.getLat());
+			this.location.setLng(location.getLng());
 		}
 	}
 
@@ -111,7 +112,8 @@ public class ElementEntity {
 		Map<String, Object> notNullElementAttributes = new HashMap<>();
 
 		if (elementAttributes != null) {
-
+			
+			//Check if there is a key or value that are null and if there is - do not add them
 			for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
 				String key = entry.getKey();
 				Object value = entry.getValue();
@@ -120,7 +122,7 @@ public class ElementEntity {
 					notNullElementAttributes.put(key, value);
 				}
 			}
-			
+
 			this.elementAttributes = notNullElementAttributes;
 		}
 	}

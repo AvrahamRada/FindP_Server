@@ -55,6 +55,8 @@ public class ElementServiceMockup implements ElementService {
 		if(!managerDomain.equals(getProjectName())) {
 			throw new RuntimeException("Invalid manager domain");
 		}
+		
+		//In the future manager email has to be be checked too.
 
 		// Validate that the important element boundary fields are not null;
 		elementBoundary.validation();
@@ -158,7 +160,7 @@ public class ElementServiceMockup implements ElementService {
 
 	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity inputEntity) {
 
-		// Copy the RELEVANT values from update entity to toBeUpdateEntity.
+		// Copy the important values from update entity to toBeUpdateEntity only if they are not null
 		toBeUpdatedEntity.setActive(inputEntity.getActive());
 		toBeUpdatedEntity.setElementAttributes(inputEntity.getElementAttributes());
 		toBeUpdatedEntity.setLocation(inputEntity.getLocation());
