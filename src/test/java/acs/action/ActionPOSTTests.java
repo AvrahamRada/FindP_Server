@@ -157,7 +157,7 @@ public class ActionPOSTTests {
 	}
 
 	@Test
-	public void testPostSingleActionWithElementContainsNullElementIdDatabaseReturnStatusDifferenceFrom2xx()
+	public void testPostSingleActionWithNoElementIdDatabaseReturnStatusDifferenceFrom2xx()
 			throws Exception {
 
 		// GIVEN the server is up
@@ -251,9 +251,113 @@ public class ActionPOSTTests {
 	}
 
 	@Test
-	public void testPostXValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
+	public void testPost10ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
 
 		final int X = 10;
+
+		// GIVEN the server is up
+		// do nothing
+
+		List<ActionBoundary> storedActions = new ArrayList<>();
+
+		for (int i = 0; i < X; i++) {
+			storedActions.add(this.restTemplate.postForObject(this.url,
+					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
+							new Date(System.currentTimeMillis()),
+							new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")),
+							new HashMap<String, Object>()),
+					ActionBoundary.class));
+		}
+
+		// Create admin for get all actions from DB.
+		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
+
+		// WHEN I POST X action boundaries to the server
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// THEN the server returns the same X actions in the database (which mean DB
+		// saved the action entites
+		assertThat(actualActionsArray).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyInAnyOrderElementsOf(storedActions);
+
+	}
+	
+	
+	@Test
+	public void testPost100ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
+
+		final int X = 100;
+
+		// GIVEN the server is up
+		// do nothing
+
+		List<ActionBoundary> storedActions = new ArrayList<>();
+
+		for (int i = 0; i < X; i++) {
+			storedActions.add(this.restTemplate.postForObject(this.url,
+					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
+							new Date(System.currentTimeMillis()),
+							new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")),
+							new HashMap<String, Object>()),
+					ActionBoundary.class));
+		}
+
+		// Create admin for get all actions from DB.
+		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
+
+		// WHEN I POST X action boundaries to the server
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// THEN the server returns the same X actions in the database (which mean DB
+		// saved the action entites
+		assertThat(actualActionsArray).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyInAnyOrderElementsOf(storedActions);
+
+	}
+	
+	
+	@Test
+	public void testPost1000ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
+
+		final int X = 1000;
+
+		// GIVEN the server is up
+		// do nothing
+
+		List<ActionBoundary> storedActions = new ArrayList<>();
+
+		for (int i = 0; i < X; i++) {
+			storedActions.add(this.restTemplate.postForObject(this.url,
+					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
+							new Date(System.currentTimeMillis()),
+							new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")),
+							new HashMap<String, Object>()),
+					ActionBoundary.class));
+		}
+
+		// Create admin for get all actions from DB.
+		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
+
+		// WHEN I POST X action boundaries to the server
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// THEN the server returns the same X actions in the database (which mean DB
+		// saved the action entites
+		assertThat(actualActionsArray).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyInAnyOrderElementsOf(storedActions);
+
+	}
+	
+	@Test
+	public void testPost10000ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
+
+		final int X = 10000;
 
 		// GIVEN the server is up
 		// do nothing

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import acs.logic.util.Helper;
 import acs.util.CreatedBy;
 import acs.util.ElementId;
 import acs.util.Location;
@@ -20,7 +21,9 @@ public class ElementEntity {
 	private Map<String, Object> elementAttributes;
 
 	public ElementEntity() {
-		// TODO Auto-generated constructor stub
+
+		this.location = new Location();
+
 	}
 
 	public ElementEntity(ElementId elementId, String type, String name, Boolean active, Date createdTimestamp,
@@ -99,13 +102,8 @@ public class ElementEntity {
 	public void setLocation(Location location) {
 
 		if (location != null) {
-			
-			if(this.location == null) {
-				this.location = new Location();
-			}
 			this.location.setLat(location.getLat());
 			this.location.setLng(location.getLng());
-			
 		}
 	}
 
@@ -115,22 +113,9 @@ public class ElementEntity {
 
 	public void setElementAttributes(Map<String, Object> elementAttributes) {
 
-		Map<String, Object> notNullElementAttributes = new HashMap<>();
-
 		if (elementAttributes != null) {
 
-			// Check if there is a key or value that are null and if there is - do not add
-			// them
-			for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
-				String key = entry.getKey();
-				Object value = entry.getValue();
-
-				if (key != null && value != null) {
-					notNullElementAttributes.put(key, value);
-				}
-			}
-
-			this.elementAttributes = notNullElementAttributes;
+			this.elementAttributes = Helper.filterNullValuesFromMap(elementAttributes);
 		}
 	}
 
