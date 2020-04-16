@@ -97,9 +97,15 @@ public class ElementEntity {
 	}
 
 	public void setLocation(Location location) {
+
 		if (location != null) {
+			
+			if(this.location == null) {
+				this.location = new Location();
+			}
 			this.location.setLat(location.getLat());
 			this.location.setLng(location.getLng());
+			
 		}
 	}
 
@@ -112,8 +118,9 @@ public class ElementEntity {
 		Map<String, Object> notNullElementAttributes = new HashMap<>();
 
 		if (elementAttributes != null) {
-			
-			//Check if there is a key or value that are null and if there is - do not add them
+
+			// Check if there is a key or value that are null and if there is - do not add
+			// them
 			for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
 				String key = entry.getKey();
 				Object value = entry.getValue();

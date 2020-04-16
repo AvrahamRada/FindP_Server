@@ -4,9 +4,10 @@ import org.springframework.stereotype.Component;
 
 import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
+
 @Component
 public class ElementConverter {
-	
+
 	public ElementBoundary fromEntity(ElementEntity entity) {
 		ElementBoundary rv = new ElementBoundary();
 		rv.setActive(entity.getActive());
@@ -22,6 +23,7 @@ public class ElementConverter {
 
 	public ElementEntity toEntity(ElementBoundary boundary) {
 		ElementEntity rv = new ElementEntity();
+
 		rv.setActive(boundary.getActive());
 		rv.setCreatedBy(boundary.getCreatedBy());
 		rv.setCreatedTimestamp(boundary.getCreatedTimestamp());
@@ -30,6 +32,7 @@ public class ElementConverter {
 		rv.setLocation(boundary.getLocation());
 		rv.setName(boundary.getName());
 		rv.setType(boundary.getType());
+
 		return rv;
 	}
 
