@@ -51,19 +51,21 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
-		
-		if(!managerDomain.equals(getProjectName())) {
+
+		if (!managerDomain.equals(getProjectName())) {
 			throw new RuntimeException("Invalid manager domain");
 		}
-		
-		//In the future manager email has to be be checked too.
+
+		// In the future manager email has to be be checked too.
 
 		// Validate that the important element boundary fields are not null;
+
 		elementBoundary.validation();
 
-		// Set the element's domain to the project name and create the unique id for the element.
+		// Set the element's domain to the project name and create the unique id for the
+		// element.
 		elementBoundary.setElementId(new ElementId(getProjectName(), UUID.randomUUID().toString()));
-		
+
 		// Set the element's creation date.
 		elementBoundary.setCreatedTimestamp(new Date(System.currentTimeMillis()));
 
@@ -83,12 +85,12 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId,
 			ElementBoundary update) {
-		
-		if(!managerDomain.equals(getProjectName())){
+
+		if (!managerDomain.equals(getProjectName())) {
 			throw new RuntimeException("Invalid manager domain");
 		}
-		
-		if(!elementDomain.equals(getProjectName())) {
+
+		if (!elementDomain.equals(getProjectName())) {
 			throw new RuntimeException("Invalid element domain");
 		}
 
@@ -109,8 +111,8 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
-		
-		if(!userDomain.equals(getProjectName())) {
+
+		if (!userDomain.equals(getProjectName())) {
 			throw new RuntimeException("Invalid user domain");
 		}
 
@@ -121,12 +123,12 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
-		
-		if(!userDomain.equals(getProjectName())) {
+
+		if (!userDomain.equals(getProjectName())) {
 			throw new RuntimeException("Invalid admin domain");
 		}
-		
-		if(!elementDomain.equals(getProjectName())) {
+
+		if (!elementDomain.equals(getProjectName())) {
 			throw new RuntimeException("Invalid element domain");
 		}
 
@@ -139,8 +141,8 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public void deleteAllElements(String adminDomain, String adminEmail) {
-		
-		if(!adminDomain.equals(getProjectName())) {
+
+		if (!adminDomain.equals(getProjectName())) {
 			throw new RuntimeException("Invalid admin domain");
 		}
 
@@ -160,7 +162,8 @@ public class ElementServiceMockup implements ElementService {
 
 	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity inputEntity) {
 
-		// Copy the important values from update entity to toBeUpdateEntity only if they are not null
+		// Copy the important values from update entity to toBeUpdateEntity only if they
+		// are not null
 		toBeUpdatedEntity.setActive(inputEntity.getActive());
 		toBeUpdatedEntity.setElementAttributes(inputEntity.getElementAttributes());
 		toBeUpdatedEntity.setLocation(inputEntity.getLocation());

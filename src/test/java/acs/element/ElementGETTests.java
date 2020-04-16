@@ -190,15 +190,12 @@ public class ElementGETTests {
 		// GIVEN the database contains a elementDomain 2020b.lior.trachtman with
 		// generated id
 
-		ElementBoundary newElement = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
+		this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
 				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
 						new Date(System.currentTimeMillis()),
 						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
 						new Location(40.730610, -73.935242), new HashMap<>()),
 				ElementBoundary.class, "2020b.lior.trachtman", "don't care");
-
-		// Retrieve the generated ID
-		String id = newElement.getElementId().getId();
 
 		// WHEN I GET /elements/{userDomain}/{userEmail}/2020b.lior.trachtman
 		// THEN the server returns status != 2xx
@@ -214,9 +211,9 @@ public class ElementGETTests {
 		final int X = 10;
 
 		// GIVEN database contains specific X messages
-		List<ElementBoundary> storedMessages = new ArrayList<>();
+		List<ElementBoundary> storedElements = new ArrayList<>();
 		for (int i = 0; i < X; i++) {
-			storedMessages.add(this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
+			storedElements.add(this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
 					new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
 							new Date(System.currentTimeMillis()),
 							new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
@@ -230,14 +227,14 @@ public class ElementGETTests {
 
 		// THEN the server returns the same X messages in the database
 		assertThat(actualElementsArray).usingRecursiveFieldByFieldElementComparator()
-				.containsExactlyInAnyOrderElementsOf(storedMessages);
+				.containsExactlyInAnyOrderElementsOf(storedElements);
 	}
 
 	@Test
 	public void testGetAllElementsFromServerWithXMessagesInDatabaseReturnArraysOfXMessages() throws Exception {
 
 		final int X = 10;
-		
+
 		// GIVEN the database contains X messages
 		IntStream.range(0, X)
 				.forEach(i -> this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
@@ -279,21 +276,17 @@ public class ElementGETTests {
 		// GIVEN the database contains a elementDomain 2020b.lior.trachtman with id
 		// generated id
 
-		ElementBoundary newElement = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
+		this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
 				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
 						new Date(System.currentTimeMillis()),
 						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
 						new Location(40.730610, -73.935242), new HashMap<>()),
 				ElementBoundary.class, "2020b.lior.trachtman", "don't care");
 
-		// Retrieve the generated ID
-		String id = newElement.getElementId().getId();
-
-		// WHEN I GET /elements/{userDomain}/{userEmail}/2020b.lior.trachtman
+		// WHEN I GET /elements/{userDomain}/{userEmail}/some user domain
 		// THEN the server returns status != 2xx
-		assertThrows(Exception.class,
-				() -> this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
-						ElementBoundary.class, "Some user domain", "don't care"));
+		assertThrows(Exception.class, () -> this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
+				ElementBoundary.class, "Some user domain", "don't care"));
 
 	}
 
