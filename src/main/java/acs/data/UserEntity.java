@@ -26,10 +26,7 @@ public class UserEntity {
 	}
 
 	public void setUserId(UserId userId) {
-		if (userId != null) {
-			this.userId.setDomain(userId.getDomain());
-			this.userId.setEmail(userId.getEmail());
-		}
+		this.userId = userId;
 	}
 
 	public UserRole getRole() {

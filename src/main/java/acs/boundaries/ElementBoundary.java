@@ -133,13 +133,7 @@ public class ElementBoundary {
 		}
 
 		for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
-
-			if (key == null) {
-				throw new RuntimeException("key in elementAtrributes was not instantiate");
-			}
-			if (value == null) {
+			if (entry.getValue() == null) {
 				throw new RuntimeException("value in elementAtrributes was not instantiate");
 			}
 		}
