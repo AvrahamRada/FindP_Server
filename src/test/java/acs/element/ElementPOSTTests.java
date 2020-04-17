@@ -3,8 +3,13 @@ package acs.element;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -16,8 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
-import acs.action.InvokedBy;
-import acs.boundaries.ActionBoundary;
 import acs.boundaries.ElementBoundary;
 import acs.boundaries.UserBoundary;
 import acs.data.UserRole;
@@ -85,8 +88,8 @@ public class ElementPOSTTests {
 		// GIVEN the server is up
 		// do nothing
 
-		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with Action
-		// Boundary with NO Action Id.
+		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with
+		// ElementBoundary with NO entity Id.
 
 		ElementBoundary newElement = this.restTemplate.postForObject(
 				this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
@@ -117,7 +120,7 @@ public class ElementPOSTTests {
 		// do nothing
 
 		// GIVEN the server is up do nothing
-		// WHEN I POST /acs/actions with Element Boundary with Action Id = "X".
+		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with Element Boundary with entity Id = "X".
 
 		final String id = "X";
 
@@ -144,22 +147,17 @@ public class ElementPOSTTests {
 	}
 
 	@Test
-	public void testPostSingleElementWithTypeDatabaseReturnStatusDifferenceFrom2xx() throws Exception {
-
+	public void testPostSingleElementWithWrongMangerDomainReturnStatusDifferenceFrom2xx() throws Exception {
 		// GIVEN the server is up
 		// do nothing
-
-		// WHEN I POST/acs/element//2020b.lior.trachtman/morsof48@gmail.com with Element
-		// Boundary with no CreatedBy
-
+		// WHEN I POST /acs/element/xxxx.xxxx.xxxx/morsof48@gmail.com with
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
-						new ElementBoundary(null, null, "mor", true, null,
+				() -> this.restTemplate.postForObject(this.url + "/xxxx.xxxx.xxxx/morsof48@gmail.com",
+						new ElementBoundary(null, "type", "mor", true, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
 						ElementBoundary.class));
-
 	}
 
 	@Test
@@ -393,7 +391,7 @@ public class ElementPOSTTests {
 						ElementBoundary.class));
 
 	}
-	
+
 	@Test
 	public void testPostSingleElementWithNullElementAttributeKeyLngEmailDatabaseReturnStatusDifferenceFrom2xx()
 			throws Exception {
@@ -415,6 +413,106 @@ public class ElementPOSTTests {
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.123456, 32.123456), map),
 						ElementBoundary.class));
+
+	}
+
+	@Test
+	public void test2019YearOnCreatedTimestampDatabaseStoreElementEntityWithGenereatedTimestamp()
+			throws ParseException {
+
+		// GIVEN the server is up
+		// do nothing
+
+		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with
+		// Element Boundary with NO Element Id.
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = formatter.parse("2019-03-01");
+
+		ElementBoundary newElement = this.restTemplate.postForObject(
+				this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				new ElementBoundary(null, "type", "mor", true, date,
+						new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
+						new Location(32.11111, 33.11111), new HashMap<String, Object>()),
+				ElementBoundary.class);
+
+		// THEN the server save the new element entity with
+		// elementDomain : 2020b.lior.trachtman AND
+		// generated UUID and returns it.
+
+		// Create user for get all Elements from DB.
+		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+
+		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
+				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+
+		assertThat(actualElementArray).usingRecursiveFieldByFieldElementComparator().contains(newElement);
+
+	}
+
+	@Test
+	public void testPost10ValidElementsServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
+
+		final int X = 10;
+
+		// GIVEN the server is up
+		// do nothing
+
+		List<ElementBoundary> storedElements = new ArrayList<>();
+
+		for (int i = 0; i < X; i++) {
+			storedElements.add(this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+					new ElementBoundary(null, "type", "mor", true, null,
+							new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
+							new Location(32.11111, 33.11111), new HashMap<String, Object>()),
+					ElementBoundary.class));
+		}
+
+		// Create user for get all Elements from DB.
+		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+		
+		// WHEN I POST X elements boundaries to the server
+		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
+				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+
+		// THEN the server returns the same X elements in the database (which mean DB
+		// saved the element entities
+		assertThat(actualElementArray).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyInAnyOrderElementsOf(storedElements);
+
+	}
+	
+	@Test
+	public void testPost10000ValidElementsServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
+
+		final int X = 10000;
+
+		// GIVEN the server is up
+		// do nothing
+
+		List<ElementBoundary> storedElements = new ArrayList<>();
+
+		for (int i = 0; i < X; i++) {
+			storedElements.add(this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+					new ElementBoundary(null, "type", "mor", true, null,
+							new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
+							new Location(32.11111, 33.11111), new HashMap<String, Object>()),
+					ElementBoundary.class));
+		}
+
+		// Create user for get all Elements from DB.
+		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+		
+		// WHEN I POST X elements boundaries to the server
+		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
+				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+
+		// THEN the server returns the same X elements in the database (which mean DB
+		// saved the element entities
+		assertThat(actualElementArray).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyInAnyOrderElementsOf(storedElements);
 
 	}
 
