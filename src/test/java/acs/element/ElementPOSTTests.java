@@ -120,7 +120,8 @@ public class ElementPOSTTests {
 		// do nothing
 
 		// GIVEN the server is up do nothing
-		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with Element Boundary with entity Id = "X".
+		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with
+		// Element Boundary with entity Id = "X".
 
 		final String id = "X";
 
@@ -471,7 +472,7 @@ public class ElementPOSTTests {
 		// Create user for get all Elements from DB.
 		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
 				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
-		
+
 		// WHEN I POST X elements boundaries to the server
 		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
 				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
@@ -482,7 +483,7 @@ public class ElementPOSTTests {
 				.containsExactlyInAnyOrderElementsOf(storedElements);
 
 	}
-	
+
 	@Test
 	public void testPost10000ValidElementsServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
 
@@ -504,7 +505,7 @@ public class ElementPOSTTests {
 		// Create user for get all Elements from DB.
 		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
 				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
-		
+
 		// WHEN I POST X elements boundaries to the server
 		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
 				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());

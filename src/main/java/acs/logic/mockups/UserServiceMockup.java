@@ -48,10 +48,14 @@ public class UserServiceMockup implements UserService {
 		//check if exists before we are adding new user to list????????
 		user.validation();
 		user.getUserId().setDomain(projectName);
-		UserEntity newUser = userConverter.toEntity(user);
-		this.allUsers.add(newUser);
-		
-		return user;
+		try {
+			findUser(user.getUserId().getDomain(), user.getUserId().getEmail()); //if it wont find it will throw an exception
+		}catch(RuntimeException re) {
+			UserEntity newUser = userConverter.toEntity(user);
+			this.allUsers.add(newUser);
+			return user;
+		}
+		throw new RuntimeException("user is already exists in the system");
 	}
 
 	@Override
