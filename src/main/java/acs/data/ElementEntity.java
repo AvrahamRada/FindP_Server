@@ -109,15 +109,11 @@ public class ElementEntity {
 	}
 
 	public void setElementAttributes(Map<String, Object> elementAttributes) {
-
 		if (elementAttributes != null) {
 			for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
-				String key = entry.getKey();
-				Object value = entry.getValue();
-
-//				if (key == null || value == null) {
-//					elementAttributes.remove(key);
-//				}
+				if (entry.getValue() == null) {
+					elementAttributes.remove(entry.getKey());
+				}
 			}
 			this.elementAttributes = elementAttributes;
 		}
