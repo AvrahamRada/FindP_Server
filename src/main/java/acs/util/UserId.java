@@ -39,7 +39,11 @@ public class UserId {
 
 	public void validation() {
 
-		if (email == null) {
+		if (this.domain == null) {
+			throw new RuntimeException("UserId domain was not instantiate");
+		}
+		
+		if (this.email == null) {
 			throw new RuntimeException("UserId email was not instantiate");
 		}
 	}
