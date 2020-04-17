@@ -69,7 +69,6 @@ public class UserServiceMockup implements UserService {
 		//---Inside the setters there are null checks---
 		updateUser.setAvatar(update.getAvatar());
 		updateUser.setRole(update.getRole());
-		updateUser.setUserId(update.getUserId());
 		updateUser.setUsername(update.getUsername());
 		
 		return this.userConverter.fromEntity(updateUser);

@@ -1,10 +1,7 @@
 package acs.data;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-
-import acs.logic.util.Helper;
 import acs.util.CreatedBy;
 import acs.util.ElementId;
 import acs.util.Location;
@@ -114,8 +111,15 @@ public class ElementEntity {
 	public void setElementAttributes(Map<String, Object> elementAttributes) {
 
 		if (elementAttributes != null) {
+			for (Map.Entry<String, Object> entry : elementAttributes.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 
-			this.elementAttributes = Helper.filterNullValuesFromMap(elementAttributes);
+//				if (key == null || value == null) {
+//					elementAttributes.remove(key);
+//				}
+			}
+			this.elementAttributes = elementAttributes;
 		}
 	}
 
