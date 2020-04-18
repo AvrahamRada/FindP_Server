@@ -64,7 +64,7 @@ public class ElementServiceMockup implements ElementService {
 		elementBoundary.setCreatedTimestamp(new Date(System.currentTimeMillis()));
 
 		// Set element's manager details.
-		elementBoundary.setCreatedBy(new CreatedBy(new UserId(managerDomain, managerEmail)));
+		elementBoundary.setCreatedBy(new CreatedBy(new UserId(getProjectName(), managerEmail)));
 
 		// Convert the element boundary to element entity
 		ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);
@@ -105,6 +105,10 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
+		
+		
+		System.out.println("user domain " + userDomain);
+		System.out.println("elemenet domain " + elementDomain);
 
 		// Fetching the specific element from DB.
 		ElementEntity foundedElement = findElement(elementId);
