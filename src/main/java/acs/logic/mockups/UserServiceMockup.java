@@ -45,6 +45,7 @@ public class UserServiceMockup implements UserService {
 
 	@Override
 	public UserBoundary createUser(UserBoundary user) {
+		
 		user.validation();
 		user.getUserId().setDomain(projectName);
 		try {
