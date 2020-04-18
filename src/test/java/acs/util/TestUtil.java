@@ -11,7 +11,6 @@ public class TestUtil {
 
 		// User URL
 		String createUserUrl = "http://localhost:" + port + "/acs/users";
-		String loginUrl = "http://localhost:" + port + "/acs/users/login/{userDomain}/{userEmail}";
 
 		// Admin URL
 		String deleteElementsUrl = "http://localhost:" + port + "/acs/admin/elements/{adminDomain}/{adminEmail}";
@@ -23,10 +22,6 @@ public class TestUtil {
 		// Create admin for clear DB
 		UserBoundary admin = restTemplate.postForObject(createUserUrl,
 				new NewUserDetails("adminspecial@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		// Admin login
-		restTemplate.getForObject(loginUrl, UserBoundary.class, admin.getUserId().getDomain(),
-				admin.getUserId().getEmail());
 		
 		// Delete all elements from DB
 		restTemplate.delete(deleteElementsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
