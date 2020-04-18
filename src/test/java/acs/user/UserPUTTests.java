@@ -21,15 +21,14 @@ import acs.data.UserRole;
 import acs.util.CreatedBy;
 import acs.util.Location;
 import acs.util.NewUserDetails;
+import acs.util.TestUtil;
 import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserPUTTests {
 
 	private int port;
-	private String url;
-	private String createUserUrl;
-	private String deleteUrl;
+	private String createUserUrl;;
 	private RestTemplate restTemplate;
 	private String loginUrl;
 	private String updateUserUrl;
@@ -42,8 +41,6 @@ public class UserPUTTests {
 	@PostConstruct
 	public void init() {
 
-		this.url = "http://localhost:" + port + "/acs/users";
-		this.deleteUrl = "http://localhost:" + port + "/acs/admin/users/{adminDomain}/{adminEmail}";
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.updateUserUrl = "http://localhost:" + port + "/acs/users/{userDomain}/{userEmail}";
 		this.loginUrl = "http://localhost:" + port + "/acs/users/login/{userDomain}/{userEmail}";
@@ -53,28 +50,14 @@ public class UserPUTTests {
 	@BeforeEach
 	public void setup() {
 
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain(),
-				admin.getUserId().getEmail());
-
-		// Delete all users from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		TestUtil.clearDB(port);
 
 	}
 
 	@AfterEach
 	public void teardown() {
 
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain(),
-				admin.getUserId().getEmail());
-
-		// Delete all users from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		TestUtil.clearDB(port);
 	}
 
 	@Test
@@ -147,7 +130,7 @@ public class UserPUTTests {
 		assertThat(this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, user.getUserId().getDomain(),
 				user.getUserId().getEmail()).getUserId().getDomain()).isEqualTo(user.getUserId().getDomain());
 	}
-	
+
 	@Test
 	public void testPutWithDatabaseContainigUserAndChangingItsUserIdEmailDoesNotChangedTheResultUserIdEmail()
 			throws Exception {
@@ -179,8 +162,7 @@ public class UserPUTTests {
 						new UserBoundary(null, UserRole.PLAYER, "mor", "avatar"), UserBoundary.class,
 						"2020b.lior.trachtman", "morsof48@gmail.com"));
 	}
-	
-	
+
 	@Test
 	public void testPutWith1UserInDatabaseChangingANonExistingUserReturnsStatusDifferentThan2xx() throws Exception {
 		// GIVEN the database is empty
@@ -192,7 +174,6 @@ public class UserPUTTests {
 		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
 				new NewUserDetails("test@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
 
-		
 		assertThrows(Exception.class,
 				() -> this.restTemplate.put(this.updateUserUrl,
 						new UserBoundary(null, UserRole.PLAYER, "mor", "avatar"), UserBoundary.class,
