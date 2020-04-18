@@ -21,7 +21,6 @@ import acs.logic.util.UserConverter;
 public class UserServiceMockup implements UserService {
 	private String projectName;
 	private List<UserEntity> allUsers;
-	private List<UserEntity> loginUsers;
 	private UserConverter userConverter;
 
 	@Autowired
@@ -34,7 +33,6 @@ public class UserServiceMockup implements UserService {
 	public void init() {
 		// synchronized Java collection
 		this.allUsers = Collections.synchronizedList(new ArrayList<>());
-		this.loginUsers = Collections.synchronizedList(new ArrayList<>());
 	}
 
 	// inject configuration value or inject default value
@@ -62,7 +60,6 @@ public class UserServiceMockup implements UserService {
 	public UserBoundary login(String userDomain, String userEmail) {
 		// mockup reads data from list
 		UserEntity user = findUser(userDomain, userEmail);
-		this.loginUsers.add(user);
 		return this.userConverter.fromEntity(user);
 	}
 
@@ -88,9 +85,7 @@ public class UserServiceMockup implements UserService {
 	@Override
 	public void deleteAllUsers(String adminDomain, String adminEmail) {
 		checkAdmin(adminDomain, adminEmail);
-		this.allUsers.clear();
-		this.loginUsers.clear();
-		
+		this.allUsers.clear();		
 	}
 
 	// check if user exist in the system
@@ -102,12 +97,9 @@ public class UserServiceMockup implements UserService {
 		
 	}
 
-	// check if user is admin and login
+	// check if user is admin and exists 
 	public void checkAdmin(String adminDomain, String adminEmail) {
-//		if(!(findUser(adminDomain,adminEmail).getRole() == UserRole.ADMIN)) {
-//			throw new RuntimeException("user is already exists in the system");
-//		}
-		this.loginUsers.stream()
+		this.allUsers.stream()
 				.filter(userEntity -> userEntity.getUserId().getEmail().equals(adminEmail)
 						&& userEntity.getUserId().getDomain().equals(adminDomain)
 						&& userEntity.getRole() == UserRole.ADMIN)
