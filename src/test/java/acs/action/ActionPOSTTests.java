@@ -100,7 +100,7 @@ public class ActionPOSTTests {
 	}
 
 	@Test
-	public void testPostSingleActionWithActionIdServerSaveToDBNewActionEntityWithGeneratedID() throws Exception {
+	public void testPostSingleActionServerSaveToDBNewActionEntityWithGeneratedID() throws Exception {
 
 		// GIVEN the server is up
 		// do nothing
