@@ -26,15 +26,17 @@ import acs.util.CreatedBy;
 import acs.util.ElementId;
 import acs.util.Location;
 import acs.util.NewUserDetails;
+import acs.util.TestUtil;
 import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ElementGETTests {
 
 	private int port;
+
+	// Element URL
 	private String url;
-	private String createUserUrl;
-	private String deleteUrl;
+
 	private RestTemplate restTemplate;
 
 	@LocalServerPort
@@ -44,32 +46,22 @@ public class ElementGETTests {
 
 	@PostConstruct
 	public void init() {
+
 		this.url = "http://localhost:" + port + "/acs/elements";
-		this.deleteUrl = "http://localhost:" + port + "/acs/admin/elements/{adminDomain}/{adminEmail}";
-		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.restTemplate = new RestTemplate();
 	}
 
 	@BeforeEach
 	public void setup() {
+		
+		TestUtil.clearDB(port);
 
-		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		// Delete all elements from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
 	}
 
 	@AfterEach
 	public void teardown() {
 
-		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		// Delete all elements from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		TestUtil.clearDB(port);
 	}
 
 	@Test
@@ -353,7 +345,7 @@ public class ElementGETTests {
 		assertThat(actualElementsArray).hasSize(X);
 
 	}
-	
+
 	public void testGetAllElementsFromServerWith1000MessagesInDatabaseReturnArraysOfXMessages() throws Exception {
 
 		final int X = 1000;
@@ -375,7 +367,7 @@ public class ElementGETTests {
 		assertThat(actualElementsArray).hasSize(X);
 
 	}
-	
+
 	public void testGetAllElementsFromServerWith10000MessagesInDatabaseReturnArraysOfXMessages() throws Exception {
 
 		final int X = 10000;

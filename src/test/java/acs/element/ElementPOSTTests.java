@@ -29,6 +29,7 @@ import acs.util.Element;
 import acs.util.ElementId;
 import acs.util.Location;
 import acs.util.NewUserDetails;
+import acs.util.TestUtil;
 import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -37,7 +38,6 @@ public class ElementPOSTTests {
 	private int port;
 	private String url;
 	private String createUserUrl;
-	private String deleteUrl;
 	private String getAllElementsUrl;
 	private RestTemplate restTemplate;
 
@@ -49,7 +49,6 @@ public class ElementPOSTTests {
 	@PostConstruct
 	public void init() {
 		this.url = "http://localhost:" + port + "/acs/elements";
-		this.deleteUrl = "http://localhost:" + port + "/acs/admin/elements/{adminDomain}/{adminEmail}";
 		this.getAllElementsUrl = "http://localhost:" + port + "/acs/elements/{userDomain}/{userEmail}";
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.restTemplate = new RestTemplate();
@@ -58,23 +57,13 @@ public class ElementPOSTTests {
 	@BeforeEach
 	public void setup() {
 
-		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		// Delete all elements from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		TestUtil.clearDB(port);
 	}
 
 	@AfterEach
 	public void teardown() {
 
-		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		// Delete all elements from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		TestUtil.clearDB(port);
 	}
 
 	@Test
@@ -146,21 +135,8 @@ public class ElementPOSTTests {
 		assertThat(actualElementArray).usingRecursiveFieldByFieldElementComparator().contains(newElement);
 
 	}
-
-	@Test
-	public void testPostSingleElementWithWrongMangerDomainReturnStatusDifferenceFrom2xx() throws Exception {
-		// GIVEN the server is up
-		// do nothing
-		// WHEN I POST /acs/element/xxxx.xxxx.xxxx/morsof48@gmail.com with
-		// THEN the server returns status != 2xx
-		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/xxxx.xxxx.xxxx/morsof48@gmail.com",
-						new ElementBoundary(null, "type", "mor", true, null,
-								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
-								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class));
-	}
-
+	
+	
 	@Test
 	public void testPostSingleElementWithNullTypeDatabaseReturnStatusDifferenceFrom2xx() throws Exception {
 
@@ -177,7 +153,6 @@ public class ElementPOSTTests {
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
 						ElementBoundary.class));
-
 	}
 
 	@Test

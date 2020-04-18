@@ -28,6 +28,7 @@ import acs.util.Element;
 import acs.util.ElementId;
 import acs.util.Location;
 import acs.util.NewUserDetails;
+import acs.util.TestUtil;
 import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -77,33 +78,16 @@ public class AdminDELETETests {
 	
 	@BeforeEach
 	public void setup() {
-		// Create admin
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-		// Admin login
-		this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		//Delete all users from DB
-		this.restTemplate.delete(this.deleteUsersUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		//Delete all elements from DB
-		this.restTemplate.delete(this.deleteElementsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		//Delete all actions from DB
-		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		
+		TestUtil.clearDB(port);
 	}
 	
 	@AfterEach
 	public void teardown() {
-		// Create admin
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-		// Admin login
-		this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		//Delete all users from DB
-		this.restTemplate.delete(this.deleteUsersUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		//Delete all elements from DB
-		this.restTemplate.delete(this.deleteElementsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		//Delete all actions from DB
-		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		
+		TestUtil.clearDB(port);
 	}
+		
 	
 	@Test
 	public void testContext() {

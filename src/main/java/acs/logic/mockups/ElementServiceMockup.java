@@ -52,12 +52,6 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
 
-		if (!managerDomain.equals(getProjectName())) {
-			throw new RuntimeException("Invalid manager domain");
-		}
-
-		// In the future manager email has to be be checked too.
-
 		// Validate that the important element boundary fields are not null;
 
 		elementBoundary.validation();
@@ -86,14 +80,6 @@ public class ElementServiceMockup implements ElementService {
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId,
 			ElementBoundary update) {
 
-		if (!managerDomain.equals(getProjectName())) {
-			throw new RuntimeException("Invalid manager domain");
-		}
-
-		if (!elementDomain.equals(getProjectName())) {
-			throw new RuntimeException("Invalid element domain");
-		}
-
 		// Fetching the specific element from DB.
 		ElementEntity foundedElement = findElement(elementId);
 
@@ -112,10 +98,6 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
 
-		if (!userDomain.equals(getProjectName())) {
-			throw new RuntimeException("Invalid user domain");
-		}
-
 		return this.allElements.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
 
 	}
@@ -123,14 +105,6 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
-
-		if (!userDomain.equals(getProjectName())) {
-			throw new RuntimeException("Invalid admin domain");
-		}
-
-		if (!elementDomain.equals(getProjectName())) {
-			throw new RuntimeException("Invalid element domain");
-		}
 
 		// Fetching the specific element from DB.
 		ElementEntity foundedElement = findElement(elementId);
@@ -141,10 +115,6 @@ public class ElementServiceMockup implements ElementService {
 
 	@Override
 	public void deleteAllElements(String adminDomain, String adminEmail) {
-
-		if (!adminDomain.equals(getProjectName())) {
-			throw new RuntimeException("Invalid admin domain");
-		}
 
 		// Clear all elements from DB.
 		allElements.clear();

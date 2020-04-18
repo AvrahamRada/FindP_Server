@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import acs.boundaries.UserBoundary;
 import acs.data.UserRole;
 import acs.util.NewUserDetails;
+import acs.util.TestUtil;
 import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -27,7 +28,6 @@ public class UserGETTests {
 
 	private int port;
 	private String createUserUrl;
-	private String deleteUrl;
 	private String loginUrl;
 	private RestTemplate restTemplate;
 	
@@ -38,7 +38,6 @@ public class UserGETTests {
 	
 	@PostConstruct
 	public void init() {
-		this.deleteUrl = "http://localhost:" + port + "/acs/admin/users/{adminDomain}/{adminEmail}";
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.loginUrl = "http://localhost:" + port + "/acs/users/login/{userDomain}/{userEmail}";
 		this.restTemplate = new RestTemplate();
@@ -46,20 +45,14 @@ public class UserGETTests {
 	
 	@BeforeEach
 	public void setup() {
-		// Create admin for clear DB
-		UserBoundary admin = createAdminAndLogin();
-				
-		//Delete all users from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		
+		TestUtil.clearDB(port);
 	}
 	
 	@AfterEach
 	public void teardown() {
-		// Create admin for clear DB
-		UserBoundary admin = createAdminAndLogin();
 		
-		//Delete all users from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		TestUtil.clearDB(port);
 	}
 	
 	@Test

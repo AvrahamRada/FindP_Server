@@ -28,6 +28,7 @@ import acs.util.Element;
 import acs.util.ElementId;
 import acs.util.Location;
 import acs.util.NewUserDetails;
+import acs.util.TestUtil;
 import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -36,7 +37,6 @@ public class ActionPOSTTests {
 	private int port;
 	private String url;
 	private String createUserUrl;
-	private String deleteUrl;
 	private String getUrl;
 	private RestTemplate restTemplate;
 
@@ -48,7 +48,6 @@ public class ActionPOSTTests {
 	@PostConstruct
 	public void init() {
 		this.url = "http://localhost:" + port + "/acs/actions";
-		this.deleteUrl = "http://localhost:" + port + "/acs/admin/actions/{adminDomain}/{adminEmail}";
 		this.getUrl = "http://localhost:" + port + "/acs/admin/actions/{adminDomain}/{adminEmail}";
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.restTemplate = new RestTemplate();
@@ -56,22 +55,14 @@ public class ActionPOSTTests {
 
 	@BeforeEach
 	public void setup() {
-		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
 
-		// Delete all elements from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		TestUtil.clearDB(port);
 	}
 
 	@AfterEach
 	public void teardown() {
-		// Create admin for clear DB
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		// Delete all elements from DB
-		this.restTemplate.delete(this.deleteUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		
+		TestUtil.clearDB(port);
 	}
 
 	@Test
@@ -157,8 +148,7 @@ public class ActionPOSTTests {
 	}
 
 	@Test
-	public void testPostSingleActionWithNoElementIdDatabaseReturnStatusDifferenceFrom2xx()
-			throws Exception {
+	public void testPostSingleActionWithNoElementIdDatabaseReturnStatusDifferenceFrom2xx() throws Exception {
 
 		// GIVEN the server is up
 		// do nothing
@@ -283,8 +273,7 @@ public class ActionPOSTTests {
 				.containsExactlyInAnyOrderElementsOf(storedActions);
 
 	}
-	
-	
+
 	@Test
 	public void testPost100ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
 
@@ -318,8 +307,7 @@ public class ActionPOSTTests {
 				.containsExactlyInAnyOrderElementsOf(storedActions);
 
 	}
-	
-	
+
 	@Test
 	public void testPost1000ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
 
@@ -353,7 +341,7 @@ public class ActionPOSTTests {
 				.containsExactlyInAnyOrderElementsOf(storedActions);
 
 	}
-	
+
 	@Test
 	public void testPost10000ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
 
