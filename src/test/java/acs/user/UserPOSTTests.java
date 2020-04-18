@@ -1,6 +1,7 @@
 package acs.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +132,53 @@ public class UserPOSTTests {
 			.usingRecursiveFieldByFieldElementComparator()
 			.containsExactlyInAnyOrderElementsOf(storedUsers);
 	}
+	
+	
+
+	@Test
+	public void testPostCreateUserWithNullEmailReturnsStatusDifferentFrom2xx() throws Exception {
+		
+		assertThrows(Exception.class,() -> this.restTemplate
+				  .postForObject(
+							this.createUserUrl, 
+							new NewUserDetails(null,UserRole.PLAYER,"user",":)"), 
+							UserBoundary.class));
+		
+	}
+	
+	@Test
+	public void testPostCreateUserWithNullRoleReturnsStatusDifferentFrom2xx() throws Exception {
+		
+		assertThrows(Exception.class,() -> this.restTemplate
+				  .postForObject(
+							this.createUserUrl, 
+							new NewUserDetails("user@gmail.com",null,"user",":)"), 
+							UserBoundary.class));
+		
+	}
+	
+	@Test
+	public void testPostCreateUserWithNullUsernameReturnsStatusDifferentFrom2xx() throws Exception {
+		
+		assertThrows(Exception.class,() -> this.restTemplate
+				  .postForObject(
+							this.createUserUrl, 
+							new NewUserDetails("user@gmail.com",UserRole.PLAYER,null,":)"), 
+							UserBoundary.class));
+		
+	}
+	
+	@Test
+	public void testPostCreateUserWithNullAvatarReturnsStatusDifferentFrom2xx() throws Exception {
+		
+		assertThrows(Exception.class,() -> this.restTemplate
+				  .postForObject(
+							this.createUserUrl, 
+							new NewUserDetails("user@gmail.com",UserRole.PLAYER,"user",null), 
+							UserBoundary.class));
+		
+	}
+	
 	
 
 
