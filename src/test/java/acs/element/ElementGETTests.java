@@ -53,7 +53,7 @@ public class ElementGETTests {
 
 	@BeforeEach
 	public void setup() {
-		
+
 		TestUtil.clearDB(port);
 
 	}
@@ -152,57 +152,12 @@ public class ElementGETTests {
 	}
 
 	@Test
-	public void testGetSingleElementWithUserDomianDiffereceFromProjectNameReturnStatusDifferenceFrom2xx()
-			throws Exception {
-
-		// GIVEN the database contains a elementDomain 2020b.lior.trachtman with id
-		// generated id
-
-		ElementBoundary newElement = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
-						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don't care");
-
-		// Retrieve the generated ID
-		String id = newElement.getElementId().getId();
-
-		// WHEN I GET /elements/{userDomain}/{userEmail}/2020b.lior.trachtman
-		// THEN the server returns status != 2xx
-		assertThrows(Exception.class,
-				() -> this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}/{elementDomain}",
-						ElementBoundary.class, "Some user domain", "don't care", "2020b.lior.trachtman"));
-	}
-
-	@Test
-	public void testGetSingleElementWithElementDomianDiffereceFromProjectNameReturnStatusDifferenceFrom2xx()
-			throws Exception {
-
-		// GIVEN the database contains a elementDomain 2020b.lior.trachtman with
-		// generated id
-
-		this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
-						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don't care");
-
-		// WHEN I GET /elements/{userDomain}/{userEmail}/2020b.lior.trachtman
-		// THEN the server returns status != 2xx
-		assertThrows(Exception.class,
-				() -> this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}/{elementDomain}",
-						ElementBoundary.class, "2020b.lior.trachtman", "don't care", "Some manager domian"));
-	}
-
-	@Test
-	public void testGetAllElementsFromServerWith10MessagesInDatabaseReturnsAllMessagesStoredInDatabase()
+	public void testGetAllElementsFromServerWith10ElementsInDatabaseReturnsAllElementsStoredInDatabase()
 			throws Exception {
 
 		final int X = 10;
 
-		// GIVEN database contains specific X messages
+		// GIVEN database contains specific X elements
 		List<ElementBoundary> storedElements = new ArrayList<>();
 		for (int i = 0; i < X; i++) {
 			storedElements.add(this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
@@ -217,18 +172,18 @@ public class ElementGETTests {
 		ElementBoundary[] actualElementsArray = this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
 				ElementBoundary[].class, "2020b.lior.trachtman", "any email");
 
-		// THEN the server returns the same X messages in the database
+		// THEN the server returns the same X elements in the database
 		assertThat(actualElementsArray).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyInAnyOrderElementsOf(storedElements);
 	}
 
 	@Test
-	public void testGetAllElementsFromServerWith100MessagesInDatabaseReturnsAllMessagesStoredInDatabase()
+	public void testGetAllElementsFromServerWith100ElementsInDatabaseReturnsAllElementsStoredInDatabase()
 			throws Exception {
 
 		final int X = 100;
 
-		// GIVEN database contains specific X messages
+		// GIVEN database contains specific X elements
 		List<ElementBoundary> storedElements = new ArrayList<>();
 		for (int i = 0; i < X; i++) {
 			storedElements.add(this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
@@ -243,18 +198,18 @@ public class ElementGETTests {
 		ElementBoundary[] actualElementsArray = this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
 				ElementBoundary[].class, "2020b.lior.trachtman", "any email");
 
-		// THEN the server returns the same X messages in the database
+		// THEN the server returns the same X elements in the database
 		assertThat(actualElementsArray).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyInAnyOrderElementsOf(storedElements);
 	}
 
 	@Test
-	public void testGetAllElementsFromServerWith1000MessagesInDatabaseReturnsAllMessagesStoredInDatabase()
+	public void testGetAllElementsFromServerWith1000ElementsInDatabaseReturnsAllElementsStoredInDatabase()
 			throws Exception {
 
 		final int X = 1000;
 
-		// GIVEN database contains specific X messages
+		// GIVEN database contains specific X elements
 		List<ElementBoundary> storedElements = new ArrayList<>();
 		for (int i = 0; i < X; i++) {
 			storedElements.add(this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
@@ -269,18 +224,18 @@ public class ElementGETTests {
 		ElementBoundary[] actualElementsArray = this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
 				ElementBoundary[].class, "2020b.lior.trachtman", "any email");
 
-		// THEN the server returns the same X messages in the database
+		// THEN the server returns the same X elements in the database
 		assertThat(actualElementsArray).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyInAnyOrderElementsOf(storedElements);
 	}
 
 	@Test
-	public void testGetAllElementsFromServerWith10000MessagesInDatabaseReturnsAllMessagesStoredInDatabase()
+	public void testGetAllElementsFromServerWith10000ElementsInDatabaseReturnsAllElementsStoredInDatabase()
 			throws Exception {
 
 		final int X = 10000;
 
-		// GIVEN database contains specific X messages
+		// GIVEN database contains specific X elements
 		List<ElementBoundary> storedElements = new ArrayList<>();
 		for (int i = 0; i < X; i++) {
 			storedElements.add(this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
@@ -295,17 +250,17 @@ public class ElementGETTests {
 		ElementBoundary[] actualElementsArray = this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
 				ElementBoundary[].class, "2020b.lior.trachtman", "any email");
 
-		// THEN the server returns the same X messages in the database
+		// THEN the server returns the same X elements in the database
 		assertThat(actualElementsArray).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyInAnyOrderElementsOf(storedElements);
 	}
 
 	@Test
-	public void testGetAllElementsFromServerWith10MessagesInDatabaseReturnArraysOfXMessages() throws Exception {
+	public void testGetAllElementsFromServerWith10ElementsInDatabaseReturnArraysOf10Elements() throws Exception {
 
 		final int X = 10;
 
-		// GIVEN the database contains X messages
+		// GIVEN the database contains X elements
 		IntStream.range(0, X)
 				.forEach(i -> this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
 						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
@@ -324,11 +279,11 @@ public class ElementGETTests {
 	}
 
 	@Test
-	public void testGetAllElementsFromServerWith100MessagesInDatabaseReturnArraysOfXMessages() throws Exception {
+	public void testGetAllElementsFromServerWith100ElementsInDatabaseReturnArraysOf100Elements() throws Exception {
 
 		final int X = 100;
 
-		// GIVEN the database contains X messages
+		// GIVEN the database contains X elements
 		IntStream.range(0, X)
 				.forEach(i -> this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
 						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
@@ -346,11 +301,11 @@ public class ElementGETTests {
 
 	}
 
-	public void testGetAllElementsFromServerWith1000MessagesInDatabaseReturnArraysOfXMessages() throws Exception {
+	public void testGetAllElementsFromServerWith1000ElementsInDatabaseReturnArraysOf1000Elements() throws Exception {
 
 		final int X = 1000;
 
-		// GIVEN the database contains X messages
+		// GIVEN the database contains X elements
 		IntStream.range(0, X)
 				.forEach(i -> this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
 						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
@@ -368,11 +323,11 @@ public class ElementGETTests {
 
 	}
 
-	public void testGetAllElementsFromServerWith10000MessagesInDatabaseReturnArraysOfXMessages() throws Exception {
+	public void testGetAllElementsFromServerWith10000ElementsInDatabaseReturnArraysOf10000Elements() throws Exception {
 
 		final int X = 10000;
 
-		// GIVEN the database contains X messages
+		// GIVEN the database contains X elements
 		IntStream.range(0, X)
 				.forEach(i -> this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
 						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
@@ -407,23 +362,83 @@ public class ElementGETTests {
 	}
 
 	@Test
-	public void testGetAllElementsWithUserDomianDiffereceFromProjectNameReturnStatusDifferenceFrom2xx()
+	public void testGetAllElementsWithUserDomianDiffereceFromProjectNameReturnsAllElementsStoredInDatabase()
 			throws Exception {
+
+
+		final int X = 10;
+
+		// GIVEN database contains specific X elements
+		List<ElementBoundary> storedElements = new ArrayList<>();
+		for (int i = 0; i < X; i++) {
+			storedElements.add(this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
+					new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
+							new Date(System.currentTimeMillis()),
+							new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
+							new Location(40.730610, -73.935242), new HashMap<>()),
+					ElementBoundary.class, "2020b.lior.trachtman", "don't care"));
+		}
+
+		// WHEN I GET /elements//{userDomain}/{userEmail}
+		ElementBoundary[] actualElementsArray = this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
+				ElementBoundary[].class, "2020b.sarel.micha", "any email");
+
+		// THEN the server returns the same X elements in the database
+		assertThat(actualElementsArray).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyInAnyOrderElementsOf(storedElements);
+	}
+
+	@Test
+	public void testGetSingleElementWithUserDomianDiffereceFromProjectNameRetreivesThatElement() throws Exception {
 
 		// GIVEN the database contains a elementDomain 2020b.lior.trachtman with id
 		// generated id
 
-		this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
+		ElementBoundary newElement = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
 				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
 						new Date(System.currentTimeMillis()),
 						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
 						new Location(40.730610, -73.935242), new HashMap<>()),
 				ElementBoundary.class, "2020b.lior.trachtman", "don't care");
 
-		// WHEN I GET /elements/{userDomain}/{userEmail}/some user domain
-		// THEN the server returns status != 2xx
-		assertThrows(Exception.class, () -> this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}",
-				ElementBoundary.class, "Some user domain", "don't care"));
+		// Retrieve the generated ID
+		String id = newElement.getElementId().getId();
+
+		// WHEN I GET /elements/{userDomain}/{userEmail}/2020b.lior.trachtman/id
+		ElementBoundary actualElement = this.restTemplate.getForObject(
+				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}", ElementBoundary.class,
+				"2020b.sarel.micha", "don't care", "2020b.lior.trachtman", id);
+
+		// THEN the server returns a element boundary with elementDomain :
+		// 2020b.lior.trachtman AND id: x
+		assertThat(actualElement.getElementId().getId()).isEqualTo(id);
+
+	}
+
+	@Test
+	public void testGetSingleElementWithElementDomianDiffereceFromProjectNameRetreivesThatElement() throws Exception {
+
+		// GIVEN the database contains a elementDomain 2020b.lior.trachtman with id
+		// generated id
+
+		ElementBoundary newElement = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+						new Date(System.currentTimeMillis()),
+						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
+						new Location(40.730610, -73.935242), new HashMap<>()),
+				ElementBoundary.class, "2020b.lior.trachtman", "don't care");
+
+		// Retrieve the generated ID
+		String id = newElement.getElementId().getId();
+
+		// WHEN I GET /elements/{userDomain}/{userEmail}/2020b.lior.trachtman/id
+		ElementBoundary actualElement = this.restTemplate.getForObject(
+				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}", ElementBoundary.class,
+				"2020b.lior.trachtman", "don't care", "2020b.sarel.micha", id);
+
+		// THEN the server returns a element boundary with elementDomain :
+		// 2020b.lior.trachtman AND id: x
+		assertThat(actualElement.getElementId().getId()).isEqualTo(id);
 
 	}
 
