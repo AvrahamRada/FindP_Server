@@ -460,7 +460,7 @@ public class AdminDELETETests {
 		// get all users - only admin
 		rv = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
 		
-		// the server returns array of 1 admin  = 1 users
+		// the server returns array of 10 users and 1 admin  = 11 users
 		assertThat(rv).isNotEmpty();
 	}
 	 
