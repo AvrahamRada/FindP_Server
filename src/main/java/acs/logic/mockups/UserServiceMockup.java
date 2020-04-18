@@ -105,6 +105,9 @@ public class UserServiceMockup implements UserService {
 
 	// check if user is admin and login
 	public void checkAdmin(String adminDomain, String adminEmail) {
+//		if(!(findUser(adminDomain,adminEmail).getRole() == UserRole.ADMIN)) {
+//			throw new RuntimeException("user is already exists in the system");
+//		}
 		this.loginUsers.stream()
 				.filter(userEntity -> userEntity.getUserId().getEmail().equals(adminEmail)
 						&& userEntity.getUserId().getDomain().equals(adminDomain)

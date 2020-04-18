@@ -96,7 +96,7 @@ public class UserGETTests {
 		
 	}
 	
-	//---
+
 	@Test
 	public void testGetDatabaseNotEmptyAndTryLoginUserThatDoesntExistsReturnStatusDifferentThan2xx() throws Exception{
 		IntStream.range(0, 5)
@@ -126,6 +126,38 @@ public class UserGETTests {
 						,"user1@gmail.com"));
 		
 	}
+	
+	
+	@Test
+	public void testGetLoginUserWithNullDomainReturnStatusDifferentThan2xx() throws Exception{
+		//Add user to database
+		this.restTemplate
+				.postForObject(
+			this.createUserUrl, 
+			new NewUserDetails("user@gmail.com",UserRole.PLAYER,"user",":)"), 
+			UserBoundary.class);
+		
+		assertThrows(Exception.class, () -> this.restTemplate
+				.getForObject(this.loginUrl, UserBoundary.class, null
+						,"user1@gmail.com"));
+		
+	}
+	
+	@Test
+	public void testGetLoginUserWithNullEmailReturnStatusDifferentThan2xx() throws Exception{
+		//Add user to database
+		this.restTemplate
+				.postForObject(
+			this.createUserUrl, 
+			new NewUserDetails("user@gmail.com",UserRole.PLAYER,"user",":)"), 
+			UserBoundary.class);
+		
+		assertThrows(Exception.class, () -> this.restTemplate
+				.getForObject(this.loginUrl, UserBoundary.class, "2020b.lior.trchtman"
+						,null));
+		
+	}
+	
 	
 	
 
