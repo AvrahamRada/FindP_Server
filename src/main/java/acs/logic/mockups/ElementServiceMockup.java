@@ -81,7 +81,7 @@ public class ElementServiceMockup implements ElementService {
 			ElementBoundary update) {
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = findElement(elementId);
+		ElementEntity foundedElement = findElement(elementDomain, elementId);
 
 		// Convert the input to entity before update the values in element entity that
 		// is in the DB.
@@ -105,13 +105,9 @@ public class ElementServiceMockup implements ElementService {
 	@Override
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
-		
-		
-		System.out.println("user domain " + userDomain);
-		System.out.println("elemenet domain " + elementDomain);
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = findElement(elementId);
+		ElementEntity foundedElement = findElement(elementDomain, elementId);
 
 		return elementConverter.fromEntity(foundedElement);
 
@@ -125,11 +121,12 @@ public class ElementServiceMockup implements ElementService {
 
 	}
 
-	private ElementEntity findElement(String elementId) {
+	private ElementEntity findElement(String elementDomain, String elementId) {
 
 		ElementEntity foundedElement = allElements.stream()
-				.filter(elementEntity -> elementEntity.getElementId().getId().equals(elementId)).findFirst()
-				.orElseThrow(() -> new RuntimeException("could not find element"));
+				.filter(elementEntity -> elementEntity.getElementId().getDomain().equals(elementDomain)
+						&& elementEntity.getElementId().getId().equals(elementId))
+				.findFirst().orElseThrow(() -> new RuntimeException("could not find element"));
 		return foundedElement;
 
 	}
