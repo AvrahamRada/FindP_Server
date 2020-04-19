@@ -365,7 +365,6 @@ public class ElementGETTests {
 	public void testGetAllElementsWithUserDomianDiffereceFromProjectNameReturnsAllElementsStoredInDatabase()
 			throws Exception {
 
-
 		final int X = 10;
 
 		// GIVEN database contains specific X elements
@@ -416,7 +415,7 @@ public class ElementGETTests {
 	}
 
 	@Test
-	public void testGetSingleElementWithElementDomianDiffereceFromProjectNameRetreivesThatElement() throws Exception {
+	public void testGetSingleElementWithElementDomianDiffereceFromProjectNameReturnStatusDifferenceFrom2xx() throws Exception {
 
 		// GIVEN the database contains a elementDomain 2020b.lior.trachtman with id
 		// generated id
@@ -432,13 +431,10 @@ public class ElementGETTests {
 		String id = newElement.getElementId().getId();
 
 		// WHEN I GET /elements/{userDomain}/{userEmail}/2020b.lior.trachtman/id
-		ElementBoundary actualElement = this.restTemplate.getForObject(
-				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}", ElementBoundary.class,
-				"2020b.lior.trachtman", "don't care", "2020b.sarel.micha", id);
-
-		// THEN the server returns a element boundary with elementDomain :
-		// 2020b.lior.trachtman AND id: x
-		assertThat(actualElement.getElementId().getId()).isEqualTo(id);
+		// THEN the server returns status != 2xx
+		assertThrows(Exception.class,
+				() -> this.restTemplate.getForObject(this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}",
+						ElementBoundary.class, "2020b.lior.trachtman", "don't care", "2020b.sarel.micha", id));
 
 	}
 
