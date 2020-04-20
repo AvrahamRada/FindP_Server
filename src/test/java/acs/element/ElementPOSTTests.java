@@ -85,7 +85,7 @@ public class ElementPOSTTests {
 		// do nothing
 
 		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with
-		// ElementBoundary with NO entity Id.
+		// ElementBoundary with NO element Id.
 
 		ElementBoundary newElement = this.restTemplate.postForObject(this.createNewElement,
 				new ElementBoundary(null, "type", "mor", true, null,
@@ -258,7 +258,7 @@ public class ElementPOSTTests {
 		// GIVEN the server is up
 		// do nothing
 
-		// WHEN I POST /acs/element//2020b.lior.trachtman/morsof48@gmail.com with
+		// WHEN I POST /acs/element/2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with null UserId - Email
 
 		// THEN the server returns status != 2xx
