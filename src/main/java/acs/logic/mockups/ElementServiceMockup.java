@@ -53,7 +53,7 @@ public class ElementServiceMockup implements ElementService {
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
 
 		// Validate that the important element boundary fields are not null;
-
+		// TODO Check in the future if the user is exists and manager
 		elementBoundary.validation();
 
 		// Set the element's domain to the project name and create the unique id for the
@@ -64,7 +64,7 @@ public class ElementServiceMockup implements ElementService {
 		elementBoundary.setCreatedTimestamp(new Date(System.currentTimeMillis()));
 
 		// Set element's manager details.
-		elementBoundary.setCreatedBy(new CreatedBy(new UserId(getProjectName(), managerEmail)));
+		elementBoundary.setCreatedBy(new CreatedBy(new UserId(managerDomain, managerEmail)));
 
 		// Convert the element boundary to element entity
 		ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);

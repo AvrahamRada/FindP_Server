@@ -104,12 +104,7 @@ public class ElementBoundary {
 	}
 
 	public void validation() {
-
-		if (createdBy == null) {
-			throw new RuntimeException("createdBy was not instantiate");
-		}
-		createdBy.validation();
-		
+	
 		if (location == null) {
 			throw new RuntimeException("location was not instantiate");
 		}
