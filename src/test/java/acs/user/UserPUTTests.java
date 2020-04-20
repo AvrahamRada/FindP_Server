@@ -160,7 +160,7 @@ public class UserPUTTests {
 		assertThrows(Exception.class,
 				() -> this.restTemplate.put(this.updateUserUrl,
 						new UserBoundary(null, UserRole.PLAYER, "mor", "avatar"), UserBoundary.class,
-						"2020b.lior.trachtman", "morsof48@gmail.com"));
+						"2020b.lior.trachtman", "test@gmail.com"));
 	}
 
 	@Test

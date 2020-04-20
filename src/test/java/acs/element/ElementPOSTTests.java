@@ -40,6 +40,7 @@ public class ElementPOSTTests {
 	private String createUserUrl;
 	private String getAllElementsUrl;
 	private RestTemplate restTemplate;
+	private String createNewElement;
 
 	@LocalServerPort
 	public void setPort(int port) {
@@ -48,9 +49,15 @@ public class ElementPOSTTests {
 
 	@PostConstruct
 	public void init() {
+
+		// Elements url's
 		this.url = "http://localhost:" + port + "/acs/elements";
+		this.createNewElement = "http://localhost:" + port + "/acs/elements/{managerDomain}/{managerEmail}";
 		this.getAllElementsUrl = "http://localhost:" + port + "/acs/elements/{userDomain}/{userEmail}";
+
+		// User url's
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
+
 		this.restTemplate = new RestTemplate();
 	}
 
@@ -78,14 +85,13 @@ public class ElementPOSTTests {
 		// do nothing
 
 		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with
-		// ElementBoundary with NO entity Id.
+		// ElementBoundary with NO element Id.
 
-		ElementBoundary newElement = this.restTemplate.postForObject(
-				this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+		ElementBoundary newElement = this.restTemplate.postForObject(this.createNewElement,
 				new ElementBoundary(null, "type", "mor", true, null,
 						new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 						new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-				ElementBoundary.class);
+				ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com");
 
 		// THEN the server save the new element entity with
 		// elementDomain : 2020b.lior.trachtman AND
@@ -114,12 +120,11 @@ public class ElementPOSTTests {
 
 		final String id = "X";
 
-		ElementBoundary newElement = this.restTemplate.postForObject(
-				this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+		ElementBoundary newElement = this.restTemplate.postForObject(this.createNewElement,
 				new ElementBoundary(new ElementId("koko", id), "type", "mor", true, null,
 						new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 						new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-				ElementBoundary.class);
+				ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com");
 
 		// THEN the server save the new element boundary and set
 		// elementDomain to 2020b.lior.trachtman AND
@@ -135,8 +140,7 @@ public class ElementPOSTTests {
 		assertThat(actualElementArray).usingRecursiveFieldByFieldElementComparator().contains(newElement);
 
 	}
-	
-	
+
 	@Test
 	public void testPostSingleElementWithNullTypeDatabaseReturnStatusDifferenceFrom2xx() throws Exception {
 
@@ -148,11 +152,11 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, null, "mor", true, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 	}
 
 	@Test
@@ -166,11 +170,11 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", null, true, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -185,11 +189,11 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", null, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -204,10 +208,10 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(new ElementId("koko", "momo"), "type", "mor", true, null, null,
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -222,10 +226,10 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null, new CreatedBy(null),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -240,11 +244,11 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId(null, "morsof48@gmail.com")), new Location(32.11111, 33.11111),
 								new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -254,16 +258,16 @@ public class ElementPOSTTests {
 		// GIVEN the server is up
 		// do nothing
 
-		// WHEN I POST /acs/element//2020b.lior.trachtman/morsof48@gmail.com with
+		// WHEN I POST /acs/element/2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with null UserId - Email
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", null)),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -278,11 +282,11 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")), null,
 								new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -297,11 +301,11 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(null, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -316,11 +320,11 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.11111, null), new HashMap<String, Object>()),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -336,11 +340,11 @@ public class ElementPOSTTests {
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.123456, 32.123456), null),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -360,11 +364,11 @@ public class ElementPOSTTests {
 		map.put("key", null);
 
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.123456, 32.123456), map),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -384,11 +388,11 @@ public class ElementPOSTTests {
 		map.put(null, "value");
 
 		assertThrows(Exception.class,
-				() -> this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.123456, 32.123456), map),
-						ElementBoundary.class));
+						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 
 	}
 
@@ -404,12 +408,11 @@ public class ElementPOSTTests {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = formatter.parse("2019-03-01");
 
-		ElementBoundary newElement = this.restTemplate.postForObject(
-				this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+		ElementBoundary newElement = this.restTemplate.postForObject(this.createNewElement,
 				new ElementBoundary(null, "type", "mor", true, date,
 						new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 						new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-				ElementBoundary.class);
+				ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com");
 
 		// THEN the server save the new element entity with
 		// elementDomain : 2020b.lior.trachtman AND
@@ -437,11 +440,11 @@ public class ElementPOSTTests {
 		List<ElementBoundary> storedElements = new ArrayList<>();
 
 		for (int i = 0; i < X; i++) {
-			storedElements.add(this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+			storedElements.add(this.restTemplate.postForObject(this.createNewElement,
 					new ElementBoundary(null, "type", "mor", true, null,
 							new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 							new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-					ElementBoundary.class));
+					ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 		}
 
 		// Create user for get all Elements from DB.
@@ -470,11 +473,11 @@ public class ElementPOSTTests {
 		List<ElementBoundary> storedElements = new ArrayList<>();
 
 		for (int i = 0; i < X; i++) {
-			storedElements.add(this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/morsof48@gmail.com",
+			storedElements.add(this.restTemplate.postForObject(this.createNewElement,
 					new ElementBoundary(null, "type", "mor", true, null,
 							new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 							new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-					ElementBoundary.class));
+					ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
 		}
 
 		// Create user for get all Elements from DB.
