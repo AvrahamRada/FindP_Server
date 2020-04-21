@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import acs.boundaries.UserBoundary;
-import acs.database.Database;
-import acs.helpers.UserHelper;
 import acs.logic.UserService;
 import acs.util.NewUserDetails;
 import acs.util.UserId;
