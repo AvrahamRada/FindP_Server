@@ -34,7 +34,7 @@ public class UserPOSTTests {
 	private String createUserUrl;
 	private String loginUrl;
 	private RestTemplate restTemplate;
-	private String allUserUrl;
+	private String allUsersUrl;
 	
 	@LocalServerPort
 	public void setPort(int port) {
@@ -43,7 +43,7 @@ public class UserPOSTTests {
 	
 	@PostConstruct
 	public void init() {
-		this.allUserUrl = "http://localhost:" + port + "/acs/admin/users/{adminDomain}/{adminEmail}";
+		this.allUsersUrl = "http://localhost:" + port + "/acs/admin/users/{adminDomain}/{adminEmail}";
 		this.loginUrl = "http://localhost:" + port + "/acs/users/login/{userDomain}/{userEmail}";
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.restTemplate = new RestTemplate();
@@ -92,7 +92,7 @@ public class UserPOSTTests {
 	// WHEN
 	UserBoundary[] rv = 
 		this.restTemplate
-			.getForObject(this.allUserUrl, 
+			.getForObject(this.allUsersUrl, 
 					UserBoundary[].class,admin.getUserId().getDomain(),admin.getUserId().getEmail());
 	
 	// THEN the server returns array of 5 users and 1 admin  = 6 users
@@ -103,7 +103,6 @@ public class UserPOSTTests {
 	
 	@Test
 	public void testPost10UsersAndAdminInDatabaseReturnsAllUsersStoredInDatabase() throws Exception {
-		// GIVEN database contains specific 42 messages
 		List<UserBoundary> storedUsers = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			storedUsers.add(
@@ -124,7 +123,7 @@ public class UserPOSTTests {
 		// WHEN
 		UserBoundary[] usersArray = 
 			this.restTemplate
-				.getForObject(this.allUserUrl, 
+				.getForObject(this.allUsersUrl, 
 						UserBoundary[].class,admin.getUserId().getDomain(),admin.getUserId().getEmail());
 		
 		// THEN the server returns the same 10 users and 1 admin = 11 users in the database
