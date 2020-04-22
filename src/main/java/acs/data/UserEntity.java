@@ -1,19 +1,25 @@
 package acs.data;
 
-import acs.util.UserId;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class UserEntity {
+@Entity
+@Table(name="USERS")
+public class UserEntity {//USERS
 
-	private UserId userId;
-	private UserRole role;
-	private String username;
-	private String avatar;
+	private String userId; // USER_ID PK VARCHAR(255)
+	private UserRole role; // ROLE VARCHAR(255) 
+	private String username; // USERNAME VARCHAR(255)
+	private String avatar; //AVATAR VARCHAR(255)
 
 	public UserEntity() {
-		this.userId = new UserId();
+//		this.userId = new UserId();
 	}
 
-	public UserEntity(UserId userId, String role, String username, String avatar) {
+	public UserEntity(String userId, String role, String username, String avatar) {
 		super();
 		this.userId = userId;
 		this.role = UserRole.valueOf(role);
@@ -21,14 +27,16 @@ public class UserEntity {
 		this.avatar = avatar;
 	}
 
-	public UserId getUserId() {
+	@Id
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(UserId userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public UserRole getRole() {
 		return role;
 	}
