@@ -81,7 +81,7 @@ public class ActionPOSTTests {
 		ActionBoundary newAction = this.restTemplate.postForObject(this.url,
 				new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
 						new Date(System.currentTimeMillis()),
-						new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")), new HashMap<String, Object>()),
+						new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")), new HashMap<String, Object>()),
 				ActionBoundary.class);
 
 		// THEN the server save the new action boundary with
@@ -113,7 +113,7 @@ public class ActionPOSTTests {
 				new ActionBoundary(new ActionId("2020b.lior.trachtman", id), "type",
 						new Element(new ElementId("2020b.lior.trachtman", "don't care")),
 						new Date(System.currentTimeMillis()),
-						new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")), new HashMap<String, Object>()),
+						new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")), new HashMap<String, Object>()),
 				ActionBoundary.class);
 
 		// THEN the server save the new action boundary and set
@@ -190,7 +190,7 @@ public class ActionPOSTTests {
 		// WHEN I POST /acs/actions with Action Boundary with no element
 		ActionBoundary newAction = this.restTemplate.postForObject(this.url,
 				new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")), null,
-						new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")), new HashMap<String, Object>()),
+						new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")), new HashMap<String, Object>()),
 				ActionBoundary.class);
 
 		// Create admin for get all actions from DB.
@@ -254,7 +254,7 @@ public class ActionPOSTTests {
 			storedActions.add(this.restTemplate.postForObject(this.url,
 					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
 							new Date(System.currentTimeMillis()),
-							new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")),
+							new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")),
 							new HashMap<String, Object>()),
 					ActionBoundary.class));
 		}
@@ -288,7 +288,7 @@ public class ActionPOSTTests {
 			storedActions.add(this.restTemplate.postForObject(this.url,
 					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
 							new Date(System.currentTimeMillis()),
-							new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")),
+							new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")),
 							new HashMap<String, Object>()),
 					ActionBoundary.class));
 		}
@@ -322,7 +322,7 @@ public class ActionPOSTTests {
 			storedActions.add(this.restTemplate.postForObject(this.url,
 					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
 							new Date(System.currentTimeMillis()),
-							new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")),
+							new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")),
 							new HashMap<String, Object>()),
 					ActionBoundary.class));
 		}
@@ -356,7 +356,7 @@ public class ActionPOSTTests {
 			storedActions.add(this.restTemplate.postForObject(this.url,
 					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
 							new Date(System.currentTimeMillis()),
-							new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")),
+							new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")),
 							new HashMap<String, Object>()),
 					ActionBoundary.class));
 		}
