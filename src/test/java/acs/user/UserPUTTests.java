@@ -98,7 +98,7 @@ public class UserPUTTests {
 	}
 
 	@Test
-	public void testPutWithDatabaseContainigElementAndChangingItsAvatarChangedTheResultAvatar() throws Exception {
+	public void testPutWithDatabaseContainigUserAndChangingItsAvatarChangedTheResultAvatar() throws Exception {
 		// GIVEN the database contains a single user with avatar
 		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
 				new NewUserDetails("test@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
@@ -112,7 +112,8 @@ public class UserPUTTests {
 		assertThat(this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, user.getUserId().getDomain(),
 				user.getUserId().getEmail()).getAvatar()).isEqualTo(changedUser.getAvatar());
 	}
-
+	
+	
 	@Test
 	public void testPutWithDatabaseContainigUserAndChangingItsUserIdDomainDoesNotChangedTheResultUserIdDomain()
 			throws Exception {
@@ -148,6 +149,43 @@ public class UserPUTTests {
 		assertThat(this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, user.getUserId().getDomain(),
 				user.getUserId().getEmail()).getUserId().getEmail()).isEqualTo(user.getUserId().getEmail());
 	}
+	
+	@Test
+	public void testPutWithDatabaseContainigUserWuthNullAvatarDoesNotChangedTheResultUserIdEmail()
+			throws Exception {
+		// GIVEN the database contains a single user
+		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("test@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+
+		// WHEN I PUT new email
+		UserBoundary changedUser = new UserBoundary(new UserId(user.getUserId().getDomain(), "test@gmail.com"),
+				UserRole.ADMIN, "user", null);
+		this.restTemplate.put(this.updateUserUrl, changedUser, user.getUserId().getDomain(),
+				user.getUserId().getEmail());
+
+		// THEN the database is not updated the user email
+		assertThat(this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, user.getUserId().getDomain(),
+				user.getUserId().getEmail()).getAvatar()).isEqualTo(user.getAvatar());
+	}
+	
+	@Test
+	public void testPutWithDatabaseContainigUserWuthEmptyStringAvatarDoesNotChangedTheResultUserIdEmail()
+			throws Exception {
+		// GIVEN the database contains a single user
+		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("test@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+
+		// WHEN I PUT new email
+		UserBoundary changedUser = new UserBoundary(new UserId(user.getUserId().getDomain(), "test@gmail.com"),
+				UserRole.ADMIN, "user", "");
+		this.restTemplate.put(this.updateUserUrl, changedUser, user.getUserId().getDomain(),
+				user.getUserId().getEmail());
+
+		// THEN the database is not updated the user email
+		assertThat(this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, user.getUserId().getDomain(),
+				user.getUserId().getEmail()).getAvatar()).isEqualTo(user.getAvatar());
+	}
+
 
 	@Test
 	public void testPutWithEmptyDatabaseChangingAUserReturnsStatusDifferentThan2xx() throws Exception {

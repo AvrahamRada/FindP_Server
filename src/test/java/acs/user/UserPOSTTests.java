@@ -22,25 +22,20 @@ import acs.data.UserRole;
 import acs.util.NewUserDetails;
 import acs.util.TestUtil;
 
-
-
-
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserPOSTTests {
-	
 
 	private int port;
 	private String createUserUrl;
 	private String loginUrl;
 	private RestTemplate restTemplate;
 	private String allUsersUrl;
-	
+
 	@LocalServerPort
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
+
 	@PostConstruct
 	public void init() {
 		this.allUsersUrl = "http://localhost:" + port + "/acs/admin/users/{adminDomain}/{adminEmail}";
@@ -48,137 +43,109 @@ public class UserPOSTTests {
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.restTemplate = new RestTemplate();
 	}
-	
+
 	@BeforeEach
 	public void setup() {
 		TestUtil.clearDB(port);
 	}
-	
+
 	@AfterEach
 	public void teardown() {
-		
+
 		TestUtil.clearDB(port);
 	}
-	
+
 	@Test
 	public void testContext() {
-		
+
 	}
-	
+
 	public UserBoundary createAdminAndLogin() {
 		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
-				UserBoundary.class);
-		
-		this.restTemplate
-		.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
-				,admin.getUserId().getEmail());
+				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
+
+		this.restTemplate.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain(),
+				admin.getUserId().getEmail());
 		return admin;
 	}
-	
-	
+
 	@Test
 	public void testPostAdd5UserAndAdminToEmptyDatabaseAndReturnDatabaseWith6Users() throws Exception {
-		
-		IntStream.range(0, 5)
-		.forEach(i->this.restTemplate
-				.postForObject(
-			this.createUserUrl, 
-			new NewUserDetails("user" + i + "@gmail.com",UserRole.PLAYER,"user",":)"), 
-			UserBoundary.class));
-		
-		//create and login admin
+
+		IntStream.range(0, 5).forEach(i -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("user" + i + "@gmail.com", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+
+		// create and login admin
 		UserBoundary admin = createAdminAndLogin();
-	// WHEN
-	UserBoundary[] rv = 
-		this.restTemplate
-			.getForObject(this.allUsersUrl, 
-					UserBoundary[].class,admin.getUserId().getDomain(),admin.getUserId().getEmail());
-	
-	// THEN the server returns array of 5 users and 1 admin  = 6 users
-	assertThat(rv)
-		.hasSize(6);
+		// WHEN
+		UserBoundary[] rv = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// THEN the server returns array of 5 users and 1 admin = 6 users
+		assertThat(rv).hasSize(6);
 	}
-	
-	
+
 	@Test
 	public void testPost10UsersAndAdminInDatabaseReturnsAllUsersStoredInDatabase() throws Exception {
 		List<UserBoundary> storedUsers = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			storedUsers.add(
-				this.restTemplate
-				  .postForObject(
-						this.createUserUrl, 
-						new NewUserDetails("user" + i + "@gmail.com",UserRole.PLAYER,"user",":)"), 
-						UserBoundary.class)
-				  );
+			storedUsers.add(this.restTemplate.postForObject(this.createUserUrl,
+					new NewUserDetails("user" + i + "@gmail.com", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
 		}
-		
-		
-		//create and login admin
+
+		// create and login admin
 		UserBoundary admin = createAdminAndLogin();
-		
+
 		storedUsers.add(admin);
-		
+
 		// WHEN
-		UserBoundary[] usersArray = 
-			this.restTemplate
-				.getForObject(this.allUsersUrl, 
-						UserBoundary[].class,admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// THEN the server returns the same 10 users and 1 admin = 11 users in the database
-		assertThat(usersArray)
-			.usingRecursiveFieldByFieldElementComparator()
-			.containsExactlyInAnyOrderElementsOf(storedUsers);
+		UserBoundary[] usersArray = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// THEN the server returns the same 10 users and 1 admin = 11 users in the
+		// database
+		assertThat(usersArray).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyInAnyOrderElementsOf(storedUsers);
 	}
-	
-	
 
 	@Test
 	public void testPostCreateUserWithNullEmailReturnsStatusDifferentFrom2xx() throws Exception {
-		
-		assertThrows(Exception.class,() -> this.restTemplate
-				  .postForObject(
-							this.createUserUrl, 
-							new NewUserDetails(null,UserRole.PLAYER,"user",":)"), 
-							UserBoundary.class));
-		
+
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails(null, UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+
 	}
-	
+
 	@Test
 	public void testPostCreateUserWithNullRoleReturnsStatusDifferentFrom2xx() throws Exception {
-		
-		assertThrows(Exception.class,() -> this.restTemplate
-				  .postForObject(
-							this.createUserUrl, 
-							new NewUserDetails("user@gmail.com",null,"user",":)"), 
-							UserBoundary.class));
-		
+
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("user@gmail.com", null, "user", ":)"), UserBoundary.class));
+
 	}
-	
+
 	@Test
 	public void testPostCreateUserWithNullUsernameReturnsStatusDifferentFrom2xx() throws Exception {
-		
-		assertThrows(Exception.class,() -> this.restTemplate
-				  .postForObject(
-							this.createUserUrl, 
-							new NewUserDetails("user@gmail.com",UserRole.PLAYER,null,":)"), 
-							UserBoundary.class));
-		
+
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("user@gmail.com", UserRole.PLAYER, null, ":)"), UserBoundary.class));
+
+	}
+
+	@Test
+	public void testPostCreateUserWithNullAvatarReturnsStatusDifferentFrom2xx() throws Exception {
+
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("user@gmail.com", UserRole.PLAYER, "user", null), UserBoundary.class));
+
 	}
 	
 	@Test
-	public void testPostCreateUserWithNullAvatarReturnsStatusDifferentFrom2xx() throws Exception {
-		
-		assertThrows(Exception.class,() -> this.restTemplate
-				  .postForObject(
-							this.createUserUrl, 
-							new NewUserDetails("user@gmail.com",UserRole.PLAYER,"user",null), 
-							UserBoundary.class));
-		
-	}
-	
-	
+	public void testPostCreateUserWithEmptyStringAvatarReturnsStatusDifferentFrom2xx() throws Exception {
 
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("user@gmail.com", UserRole.PLAYER, "user", ""), UserBoundary.class));
+
+	}
 
 }
