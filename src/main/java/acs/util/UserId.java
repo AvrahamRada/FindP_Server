@@ -1,7 +1,7 @@
 package acs.util;
 
 import javax.management.RuntimeErrorException;
-
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 public class UserId {
 
 	private String domain;
@@ -46,6 +46,11 @@ public class UserId {
 		if (this.email == null) {
 			throw new RuntimeException("UserId email was not instantiate");
 		}
+		
+		if (!new EmailValidator().isValid(this.email, null) || email.isEmpty() || this.email.contains("#")) {
+            throw new RuntimeException("The email is not in a valid format");
+        }
+
 	}
 
 }

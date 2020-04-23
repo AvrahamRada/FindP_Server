@@ -117,6 +117,61 @@ public class UserPOSTTests {
 	}
 
 	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest0() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+
+	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest1() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("mor", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+
+	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest2() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("mor@", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+
+	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest3() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("mor@gmail.", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+
+	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest4() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("mor@gmail.com.", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+	
+	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest5() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("mor@gmail.bla.bla.bla.bla.", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+	
+	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest6() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("mor@gmail.com#", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+	
+	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest7() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("mo#r@gmail.com", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+	
+	@Test
+	public void testPostCreateUserWithInvalidEmailReturnsStatusDifferentFrom2xxTest8() throws Exception {
+		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails(".mor@gmail.com", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
+	}
+	
+	
+	@Test
 	public void testPostCreateUserWithNullRoleReturnsStatusDifferentFrom2xx() throws Exception {
 
 		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.createUserUrl,
@@ -139,7 +194,7 @@ public class UserPOSTTests {
 				new NewUserDetails("user@gmail.com", UserRole.PLAYER, "user", null), UserBoundary.class));
 
 	}
-	
+
 	@Test
 	public void testPostCreateUserWithEmptyStringAvatarReturnsStatusDifferentFrom2xx() throws Exception {
 
