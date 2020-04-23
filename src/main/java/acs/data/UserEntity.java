@@ -62,7 +62,7 @@ public class UserEntity {//USERS
 	}
 
 	public void setAvatar(String avatar) {
-		if (avatar != null) {
+		if (avatar != null && avatar != "") {
 			this.avatar = avatar;
 		}
 	}
