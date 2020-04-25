@@ -1,9 +1,7 @@
 package acs.data;
 
 import java.util.Date;
-
 import java.util.Map;
-
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -12,12 +10,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import org.checkerframework.common.value.qual.BoolVal;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.BooleanString;
-
 import acs.util.CreatedBy;
-import acs.util.ElementId;
 import acs.util.Location;
 
 @Entity
