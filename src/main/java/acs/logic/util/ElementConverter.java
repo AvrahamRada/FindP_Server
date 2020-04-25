@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
+import acs.util.ElementId;
 
 @Component
 public class ElementConverter {
@@ -14,7 +15,7 @@ public class ElementConverter {
 		rv.setCreatedBy(entity.getCreatedBy());
 		rv.setCreatedTimestamp(entity.getCreatedTimestamp());
 		rv.setElementAttributes(entity.getElementAttributes());
-		rv.setElementId(entity.getElementId());
+		rv.setElementId(splitDomainEmail(entity.getElementId()));
 		rv.setLocation(entity.getLocation());
 		rv.setName(entity.getName());
 		rv.setType(entity.getType());
@@ -28,12 +29,22 @@ public class ElementConverter {
 		rv.setCreatedBy(boundary.getCreatedBy());
 		rv.setCreatedTimestamp(boundary.getCreatedTimestamp());
 		rv.setElementAttributes(boundary.getElementAttributes());
-		rv.setElementId(boundary.getElementId());
+		rv.setElementId(concatElementDomainElementId(boundary.getElementId().getDomain(),
+				boundary.getElementId().getId()));
 		rv.setLocation(boundary.getLocation());
 		rv.setName(boundary.getName());
 		rv.setType(boundary.getType());
 
 		return rv;
+	}
+	
+	public String concatElementDomainElementId(String domain, String id) {
+		return domain + "#" + id;
+	}
+	
+	public ElementId splitDomainEmail(String elementId) {
+		String elementIdSplit[] = elementId.split("#");
+		return new ElementId(elementIdSplit[0], elementIdSplit[1]);
 	}
 
 }

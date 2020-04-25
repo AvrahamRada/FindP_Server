@@ -1,11 +1,13 @@
 package acs.util;
 
-import javax.management.RuntimeErrorException;
+import javax.persistence.Embeddable;
+
 import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
+@Embeddable
 public class UserId {
 
-	private String domain;
-	private String email;
+	private String domain; // DOMAIN VARCHAR(255)
+	private String email;  // EMAIL VARCHAR(255)
 
 	public UserId() {
 		// TODO Auto-generated constructor stub

@@ -1,5 +1,8 @@
 package acs.util;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class Location {
 
 	private Double lat;
@@ -14,7 +17,7 @@ public class Location {
 		this.lat = d;
 		this.lng = e;
 	}
-
+	
 	public Double getLat() {
 		return lat;
 	}
