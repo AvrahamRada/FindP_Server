@@ -1,7 +1,6 @@
 package acs.logic.db;
 
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import acs.boundaries.ElementBoundary;
 import acs.dal.ElementDao;
 import acs.data.ElementEntity;
-import acs.data.UserEntity;
 import acs.logic.ElementService;
 import acs.logic.util.ElementConverter;
 import acs.util.CreatedBy;
@@ -27,7 +25,6 @@ import acs.util.UserId;
 @Service
 public class DatabaseElementService implements ElementService {
 	private String projectName;
-//	private List<ElementEntity> allElements;
 	private ElementConverter elementConverter;
 	private ElementDao elementDao;
 
@@ -40,8 +37,6 @@ public class DatabaseElementService implements ElementService {
 
 	@PostConstruct
 	public void init() {
-		// synchronized Java collection
-//		this.allElements = Collections.synchronizedList(new ArrayList<>());
 	}
 
 	// inject configuration value or inject default value
@@ -73,9 +68,9 @@ public class DatabaseElementService implements ElementService {
 
 		// Convert the element boundary to element entity
 		ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);
-
-		// Add the new element entity to DB.
-//		allElements.add(elementEntity);
+		
+		//Add to database
+		this.elementDao.save(elementEntity);
 
 		return elementBoundary;
 
@@ -95,6 +90,9 @@ public class DatabaseElementService implements ElementService {
 
 		// Update the element's values.
 		updateElementValues(foundedElement, updateEntity);
+		
+		//save updated element to the database 
+		this.elementDao.save(foundedElement);
 
 		// Convert the update entity to boundary and returns it.
 		return elementConverter.fromEntity(foundedElement);
@@ -106,8 +104,6 @@ public class DatabaseElementService implements ElementService {
 		return StreamSupport.stream(this.elementDao.findAll().spliterator(), false) // Stream<ElementEntity>
 				.map(this.elementConverter::fromEntity) // Stream<ElementBoundary>
 				.collect(Collectors.toList());
-//		return this.allElements.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
-
 	}
 
 	@Override
@@ -124,23 +120,14 @@ public class DatabaseElementService implements ElementService {
 
 	@Override
 	public void deleteAllElements(String adminDomain, String adminEmail) {
-		
 		// Clear all elements from DB.
 		this.elementDao.deleteAll();
-//		allElements.clear();
 
 	}
 	
 
 	private ElementEntity findElement(String elementId) {
 		return this.elementDao.findById(elementId).orElseThrow(() -> new RuntimeException("could not find user by userId"));
-
-//		ElementEntity foundedElement = allElements.stream()
-//				.filter(elementEntity -> elementEntity.getElementId().getDomain().equals(elementDomain)
-//						&& elementEntity.getElementId().getId().equals(elementId))
-//				.findFirst().orElseThrow(() -> new RuntimeException("could not find element"));
-//		return foundedElement;
-
 	}
 
 	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity inputEntity) {

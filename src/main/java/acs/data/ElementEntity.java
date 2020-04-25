@@ -29,15 +29,14 @@ public class ElementEntity {
 	private String name; // NAME VARCHAR(255)
 	private Boolean active; // ACTIVE BOOLEAN
 	private Date createdTimestamp; // CREATED_TIME_STAMP TIMESTAMP
-	private CreatedBy createdBy; //CHECK IT!!!!-------------------------------------
+	private CreatedBy createdBy; //DOMAIN VARCHAR(255)
+								//ID VARCHAR(255)
 	private Location location; //LAT DOUBLE
 							  // LNG DOUBLE
 	private Map<String, Object> elementAttributes; // ELEMENT_ATTRIBUTES CLOB
 
 	public ElementEntity() {
-
 		this.location = new Location();
-
 	}
 
 	public ElementEntity(String elementId, String type, String name, Boolean active, Date createdTimestamp,
@@ -90,6 +89,7 @@ public class ElementEntity {
 			this.active = active;
 		}
 	}
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreatedTimestamp() {
 		return createdTimestamp;
@@ -98,6 +98,7 @@ public class ElementEntity {
 	public void setCreatedTimestamp(Date createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
 	}
+	
 	@Embedded
 	public CreatedBy getCreatedBy() {
 		return createdBy;

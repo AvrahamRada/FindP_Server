@@ -1,7 +1,8 @@
 package acs.util;
 
 import javax.persistence.Embeddable;
-
+import javax.persistence.Embedded;
+@Embeddable
 public class CreatedBy {
 
 	private UserId userId;
@@ -14,7 +15,7 @@ public class CreatedBy {
 		super();
 		this.userId = userId;
 	}
-
+	@Embedded
 	public UserId getUserId() {
 		return userId;
 	}
