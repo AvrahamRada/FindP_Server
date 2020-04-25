@@ -1,5 +1,7 @@
 package acs.util;
 
+import javax.persistence.Embeddable;
+
 public class CreatedBy {
 
 	private UserId userId;

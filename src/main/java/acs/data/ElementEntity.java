@@ -1,21 +1,38 @@
 package acs.data;
 
 import java.util.Date;
+
 import java.util.Map;
+
+import javax.persistence.Convert;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.checkerframework.common.value.qual.BoolVal;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.BooleanString;
+
 import acs.util.CreatedBy;
 import acs.util.ElementId;
 import acs.util.Location;
 
+@Entity
+@Table(name="ELEMENTS")
 public class ElementEntity {
 
-	private ElementId elementId;
-	private String type;
-	private String name;
-	private Boolean active;
-	private Date createdTimestamp;
-	private CreatedBy createdBy;
-	private Location location;
-	private Map<String, Object> elementAttributes;
+	private String elementId;// ELEMENT_ID PK VARCHAR(255)
+	private String type; // TYPE VARCHAR(255)
+	private String name; // NAME VARCHAR(255)
+	private Boolean active; // ACTIVE BOOLEAN
+	private Date createdTimestamp; // CREATED_TIME_STAMP TIMESTAMP
+	private CreatedBy createdBy; //CHECK IT!!!!-------------------------------------
+	private Location location; //LAT DOUBLE
+							  // LNG DOUBLE
+	private Map<String, Object> elementAttributes; // ELEMENT_ATTRIBUTES CLOB
 
 	public ElementEntity() {
 
@@ -23,7 +40,7 @@ public class ElementEntity {
 
 	}
 
-	public ElementEntity(ElementId elementId, String type, String name, Boolean active, Date createdTimestamp,
+	public ElementEntity(String elementId, String type, String name, Boolean active, Date createdTimestamp,
 			CreatedBy createdBy, Location location, Map<String, Object> elementAttributes) {
 		super();
 		this.elementId = elementId;
@@ -35,12 +52,12 @@ public class ElementEntity {
 		this.location = location;
 		this.elementAttributes = elementAttributes;
 	}
-
-	public ElementId getElementId() {
+	@Id
+	public String getElementId() {
 		return elementId;
 	}
 
-	public void setElementId(ElementId elementId) {
+	public void setElementId(String elementId) {
 		this.elementId = elementId;
 	}
 
@@ -63,7 +80,7 @@ public class ElementEntity {
 			this.name = name;
 		}
 	}
-
+	
 	public Boolean getActive() {
 		return active;
 	}
@@ -73,7 +90,7 @@ public class ElementEntity {
 			this.active = active;
 		}
 	}
-
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreatedTimestamp() {
 		return createdTimestamp;
 	}
@@ -81,7 +98,7 @@ public class ElementEntity {
 	public void setCreatedTimestamp(Date createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
 	}
-
+	@Embedded
 	public CreatedBy getCreatedBy() {
 		return createdBy;
 	}
@@ -91,7 +108,7 @@ public class ElementEntity {
 		this.createdBy = createdBy;
 
 	}
-
+	@Embedded
 	public Location getLocation() {
 		return location;
 	}
@@ -103,7 +120,8 @@ public class ElementEntity {
 			this.location.setLng(location.getLng());
 		}
 	}
-
+	@Lob
+	@Convert(converter = acs.logic.util.MapToJsonConverter.class)
 	public Map<String, Object> getElementAttributes() {
 		return elementAttributes;
 	}
