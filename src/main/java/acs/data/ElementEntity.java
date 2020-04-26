@@ -22,7 +22,7 @@ public class ElementEntity {
 	private String name; // NAME VARCHAR(255)
 	private Boolean active; // ACTIVE BOOLEAN
 	private Date createdTimestamp; // CREATED_TIME_STAMP TIMESTAMP
-	private CreatedBy createdBy; //DOMAIN VARCHAR(255)
+	private String createdBy; //DOMAIN VARCHAR(255)
 								//ID VARCHAR(255)
 	private Location location; //LAT DOUBLE
 							  // LNG DOUBLE
@@ -33,7 +33,7 @@ public class ElementEntity {
 	}
 
 	public ElementEntity(String elementId, String type, String name, Boolean active, Date createdTimestamp,
-			CreatedBy createdBy, Location location, Map<String, Object> elementAttributes) {
+			String createdBy, Location location, Map<String, Object> elementAttributes) {
 		super();
 		this.elementId = elementId;
 		this.type = type;
@@ -92,12 +92,12 @@ public class ElementEntity {
 		this.createdTimestamp = createdTimestamp;
 	}
 	
-	@Embedded
-	public CreatedBy getCreatedBy() {
+
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(CreatedBy createdBy) {
+	public void setCreatedBy(String createdBy) {
 
 		this.createdBy = createdBy;
 

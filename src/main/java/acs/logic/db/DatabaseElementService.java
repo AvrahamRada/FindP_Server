@@ -12,6 +12,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import acs.boundaries.ElementBoundary;
 import acs.dal.ElementDao;
@@ -50,6 +52,7 @@ public class DatabaseElementService implements ElementService {
 	}
 
 	@Override
+	@Transactional // (readOnly = false)
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
 
 		// Validate that the important element boundary fields are not null;
@@ -77,12 +80,13 @@ public class DatabaseElementService implements ElementService {
 	}
 
 	@Override
+	@Transactional // (readOnly = false)
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId,
 			ElementBoundary update) {
 
 		// Fetching the specific element from DB.
 		ElementEntity foundedElement = findElement(this.elementConverter.
-				concatElementDomainElementId(elementDomain, elementId));
+				concat(elementDomain, elementId));
 
 		// Convert the input to entity before update the values in element entity that
 		// is in the DB.
@@ -100,6 +104,7 @@ public class DatabaseElementService implements ElementService {
 	}
 
 	@Override
+	@Transactional (readOnly = true)
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
 		return StreamSupport.stream(this.elementDao.findAll().spliterator(), false) // Stream<ElementEntity>
 				.map(this.elementConverter::fromEntity) // Stream<ElementBoundary>
@@ -107,18 +112,20 @@ public class DatabaseElementService implements ElementService {
 	}
 
 	@Override
+	@Transactional (readOnly = true)
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
 
 		// Fetching the specific element from DB.
 		ElementEntity foundedElement = findElement(this.elementConverter.
-				concatElementDomainElementId(elementDomain, elementId));
+				concat(elementDomain, elementId));
 
 		return elementConverter.fromEntity(foundedElement);
 
 	}
 
 	@Override
+	@Transactional //(readOnly = false)
 	public void deleteAllElements(String adminDomain, String adminEmail) {
 		// Clear all elements from DB.
 		this.elementDao.deleteAll();

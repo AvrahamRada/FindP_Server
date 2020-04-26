@@ -4,18 +4,19 @@ import org.springframework.stereotype.Component;
 
 import acs.boundaries.ElementBoundary;
 import acs.data.ElementEntity;
+import acs.util.CreatedBy;
 import acs.util.ElementId;
 
 @Component
-public class ElementConverter {
+public class ElementConverter extends Converter {
 
 	public ElementBoundary fromEntity(ElementEntity entity) {
 		ElementBoundary rv = new ElementBoundary();
 		rv.setActive(entity.getActive());
-		rv.setCreatedBy(entity.getCreatedBy());
+		rv.setCreatedBy(new CreatedBy(convertToUserId(entity.getCreatedBy())));
 		rv.setCreatedTimestamp(entity.getCreatedTimestamp());
 		rv.setElementAttributes(entity.getElementAttributes());
-		rv.setElementId(splitDomainEmail(entity.getElementId()));
+		rv.setElementId(convertToElementId(entity.getElementId()));
 		rv.setLocation(entity.getLocation());
 		rv.setName(entity.getName());
 		rv.setType(entity.getType());
@@ -26,10 +27,10 @@ public class ElementConverter {
 		ElementEntity rv = new ElementEntity();
 
 		rv.setActive(boundary.getActive());
-		rv.setCreatedBy(boundary.getCreatedBy());
+		rv.setCreatedBy(concat(boundary.getCreatedBy().getUserId().getDomain(),boundary.getCreatedBy().getUserId().getEmail()));
 		rv.setCreatedTimestamp(boundary.getCreatedTimestamp());
 		rv.setElementAttributes(boundary.getElementAttributes());
-		rv.setElementId(concatElementDomainElementId(boundary.getElementId().getDomain(),
+		rv.setElementId(concat(boundary.getElementId().getDomain(),
 				boundary.getElementId().getId()));
 		rv.setLocation(boundary.getLocation());
 		rv.setName(boundary.getName());
@@ -38,13 +39,10 @@ public class ElementConverter {
 		return rv;
 	}
 	
-	public String concatElementDomainElementId(String domain, String id) {
-		return domain + "#" + id;
-	}
 	
-	public ElementId splitDomainEmail(String elementId) {
-		String elementIdSplit[] = elementId.split("#");
+	public ElementId convertToElementId(String elementId) {
+		String elementIdSplit[] = elementId.split(DELIMITER);
 		return new ElementId(elementIdSplit[0], elementIdSplit[1]);
 	}
-
+	
 }

@@ -1,9 +1,7 @@
 package acs.util;
 
-import javax.persistence.Embeddable;
 
 import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
-@Embeddable
 public class UserId {
 
 	private String domain; // DOMAIN VARCHAR(255)
