@@ -1,5 +1,8 @@
 package acs.util;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class ElementId {
 
 	private String domain;

@@ -1,13 +1,17 @@
 package acs.action;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+
 import acs.util.UserId;
 
+@Embeddable
 public class InvokedBy {
 	
 	private UserId userId;
 	
 	public InvokedBy() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public InvokedBy(UserId userId) {
@@ -15,6 +19,7 @@ public class InvokedBy {
 		this.userId = userId;
 	}
 
+	@Embedded
 	public UserId getUserId() {
 		return userId;
 	}
