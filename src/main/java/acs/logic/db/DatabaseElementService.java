@@ -172,7 +172,7 @@ public class DatabaseElementService implements EnhancedElementService {
 			String elementId) {
 		return this.elementDao.findById(this.elementConverter.concat(elementDomain, elementId))
 				.orElseThrow(() -> new RuntimeException("could not find origin by id: " + elementId))
-				.getRelatedElements().stream().map(this.elementConverter::fromEntity).collect(Collectors.toSet());
+				.getChildrenElements().stream().map(this.elementConverter::fromEntity).collect(Collectors.toSet());
 	}
 
 	@Override

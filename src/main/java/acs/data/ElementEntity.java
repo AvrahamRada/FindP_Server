@@ -144,7 +144,7 @@ public class ElementEntity {
 	}
 	
 	@OneToMany(mappedBy = "origin", fetch = FetchType.LAZY)
-	public Set<ElementEntity> getRelatedElements() {
+	public Set<ElementEntity> getChildrenElements() {
 		return childrenElements;
 	}
 	
