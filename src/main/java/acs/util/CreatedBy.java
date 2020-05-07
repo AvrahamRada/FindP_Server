@@ -1,6 +1,5 @@
 package acs.util;
 
-import javax.persistence.Embedded;
 
 public class CreatedBy {
 

@@ -8,16 +8,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import acs.boundaries.ElementBoundary;
+import acs.boundaries.ElementIdBoundary;
 import acs.logic.ElementService;
+import acs.logic.EnhancedElementService;
+import acs.util.ElementId;
 
 
 @RestController
 public class ElementController {
 
-	private ElementService elementService;
+	private EnhancedElementService enhancedElementService;
 
-	public ElementController(ElementService elementService) {
-		this.elementService = elementService;
+	public ElementController(EnhancedElementService elementService) {
+		this.enhancedElementService = elementService;
 	}
 
 	/*--------------------- GET APIS ------------------- */
@@ -28,7 +31,7 @@ public class ElementController {
 			@PathVariable("userEmail") String userEmail, @PathVariable("elementDomain") String elementDomain,
 			@PathVariable("elementId") String elementId) {
 
-		return elementService.getSpecificElement(userDomain, userEmail, elementDomain, elementId);
+		return enhancedElementService.getSpecificElement(userDomain, userEmail, elementDomain, elementId);
 
 	}
 
@@ -36,9 +39,29 @@ public class ElementController {
 	public ElementBoundary[] getAllElements(@PathVariable("userDomain") String userDomain,
 			@PathVariable("userEmail") String userEmail) {
 
-		return elementService.getAll(userDomain, userEmail).toArray(new ElementBoundary[0]);
+		return enhancedElementService.getAll(userDomain, userEmail).toArray(new ElementBoundary[0]);
 
 	}
+	
+//	@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/{elementDomain}/{elementId}/children", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public ElementBoundary[] getAllChildrenElements(@PathVariable("userDomain") String userDomain,
+//			@PathVariable("userEmail") String userEmail, @PathVariable("elementDomain") String elementDomain,
+//			@PathVariable("elementId") String elementId) {
+//
+//		return enhancedElementService.getAllChildrenElements(userDomain, userEmail,elementDomain,elementId)
+//				.toArray(new ElementBoundary[0]);
+//
+//	}
+//	
+//	@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/{elementDomain}/{elementId}/parents", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public ElementBoundary[] getAllParentsElements(@PathVariable("userDomain") String userDomain,
+//			@PathVariable("userEmail") String userEmail, @PathVariable("elementDomain") String elementDomain,
+//			@PathVariable("elementId") String elementId) {
+//
+//		return enhancedElementService.getAllOriginsElements(userDomain, userEmail,elementDomain,elementId).toArray(new ElementBoundary[0]);
+//
+//	}
+	
 
 	/*--------------------- POST APIS ------------------- */
 
@@ -46,7 +69,7 @@ public class ElementController {
 	public ElementBoundary createNewElement(@PathVariable("managerDomain") String managerDomain,
 			@PathVariable("managerEmail") String managerEmail, @RequestBody ElementBoundary input) {
 
-		return elementService.create(managerDomain, managerEmail, input);
+		return enhancedElementService.create(managerDomain, managerEmail, input);
 
 	}
 
@@ -57,8 +80,18 @@ public class ElementController {
 			@PathVariable("managerEmail") String managerEmail, @PathVariable("elementDomain") String elementDomain,
 			@PathVariable("elementId") String elementId, @RequestBody ElementBoundary input) {
 
-		elementService.update(managerDomain, managerEmail, elementDomain, elementId, input);
+		enhancedElementService.update(managerDomain, managerEmail, elementDomain, elementId, input);
 
 	}
+//	
+//	@RequestMapping(path = "/acs/elements/{managerDomain}/{managerEmail}/{elementDomain}/{elementId}/children", 
+//			method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+//	public void bindParentElementToChildElement(@PathVariable("managerDomain") String managerDomain,
+//			@PathVariable("managerEmail") String managerEmail, @PathVariable("elementDomain") String elementDomain,
+//			@PathVariable("elementId") String elementId, @RequestBody ElementIdBoundary input) {
+//
+//		enhancedElementService.bindParentElementToChildElement(managerDomain, managerEmail, elementDomain, elementId, input);
+//	}
+	
 
 }
