@@ -2,11 +2,16 @@ package acs.data;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
+
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -26,6 +31,13 @@ public class ElementEntity {
 								//ID VARCHAR(255)
 	private Location location; //LAT DOUBLE
 							  // LNG DOUBLE
+	
+	// add another entity collection related to this one using ONE-TO-MANY relationship
+	private Set<ElementEntity> childrenElements;
+		
+		// add another entity related to this one using MANY-TO-ONE relationship
+	private ElementEntity origin;
+		
 	private Map<String, Object> elementAttributes; // ELEMENT_ATTRIBUTES CLOB
 
 	public ElementEntity() {
@@ -129,6 +141,29 @@ public class ElementEntity {
 			}
 			this.elementAttributes = elementAttributes;
 		}
+	}
+	
+	@OneToMany(mappedBy = "origin", fetch = FetchType.LAZY)
+	public Set<ElementEntity> getChildrenElements() {
+		return childrenElements;
+	}
+	
+	public void setChildrenElements(Set<ElementEntity> childrenElements) {
+		this.childrenElements = childrenElements;
+	}
+	
+	public void addChildElement(ElementEntity child) {
+		this.childrenElements.add(child);
+		child.setOrigin(this);
+	}
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	public ElementEntity getOrigin() {
+		return origin;
+	}
+	
+	public void setOrigin(ElementEntity origin) {
+		this.origin = origin;
 	}
 
 }

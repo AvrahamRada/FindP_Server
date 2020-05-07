@@ -1,8 +1,10 @@
 package acs.logic.db;
 
-
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -14,18 +16,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import acs.boundaries.ElementBoundary;
+import acs.boundaries.ElementIdBoundary;
 import acs.dal.ElementDao;
 import acs.data.ElementEntity;
 import acs.logic.ElementService;
+import acs.logic.EnhancedElementService;
 import acs.logic.util.ElementConverter;
 import acs.util.CreatedBy;
 import acs.util.ElementId;
 import acs.util.UserId;
 
 @Service
-public class DatabaseElementService implements ElementService {
+public class DatabaseElementService implements EnhancedElementService {
 	private String projectName;
 	private ElementConverter elementConverter;
 	private ElementDao elementDao;
@@ -71,8 +74,8 @@ public class DatabaseElementService implements ElementService {
 
 		// Convert the element boundary to element entity
 		ElementEntity elementEntity = elementConverter.toEntity(elementBoundary);
-		
-		//Add to database
+
+		// Add to database
 		this.elementDao.save(elementEntity);
 
 		return elementBoundary;
@@ -85,8 +88,7 @@ public class DatabaseElementService implements ElementService {
 			ElementBoundary update) {
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = findElement(this.elementConverter.
-				concat(elementDomain, elementId));
+		ElementEntity foundedElement = findElement(this.elementConverter.concat(elementDomain, elementId));
 
 		// Convert the input to entity before update the values in element entity that
 		// is in the DB.
@@ -94,8 +96,8 @@ public class DatabaseElementService implements ElementService {
 
 		// Update the element's values.
 		updateElementValues(foundedElement, updateEntity);
-		
-		//save updated element to the database 
+
+		// save updated element to the database
 		this.elementDao.save(foundedElement);
 
 		// Convert the update entity to boundary and returns it.
@@ -104,7 +106,7 @@ public class DatabaseElementService implements ElementService {
 	}
 
 	@Override
-	@Transactional (readOnly = true)
+	@Transactional(readOnly = true)
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
 		return StreamSupport.stream(this.elementDao.findAll().spliterator(), false) // Stream<ElementEntity>
 				.map(this.elementConverter::fromEntity) // Stream<ElementBoundary>
@@ -112,29 +114,28 @@ public class DatabaseElementService implements ElementService {
 	}
 
 	@Override
-	@Transactional (readOnly = true)
+	@Transactional(readOnly = true)
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = findElement(this.elementConverter.
-				concat(elementDomain, elementId));
+		ElementEntity foundedElement = findElement(this.elementConverter.concat(elementDomain, elementId));
 
 		return elementConverter.fromEntity(foundedElement);
 
 	}
 
 	@Override
-	@Transactional //(readOnly = false)
+	@Transactional // (readOnly = false)
 	public void deleteAllElements(String adminDomain, String adminEmail) {
 		// Clear all elements from DB.
 		this.elementDao.deleteAll();
 
 	}
-	
 
 	private ElementEntity findElement(String elementId) {
-		return this.elementDao.findById(elementId).orElseThrow(() -> new RuntimeException("could not find user by userId"));
+		return this.elementDao.findById(elementId)
+				.orElseThrow(() -> new RuntimeException("could not find user by userId"));
 	}
 
 	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity inputEntity) {
@@ -147,6 +148,48 @@ public class DatabaseElementService implements ElementService {
 		toBeUpdatedEntity.setName(inputEntity.getName());
 		toBeUpdatedEntity.setType(inputEntity.getType());
 
+	}
+
+	@Override
+	@Transactional // (readOnly = false)
+	public void bindParentElementToChildElement(String managerDomain, String managerEmail, String elementDomain,
+			String elementId, ElementIdBoundary elementIdBoundary) {
+		// TODO Waiting to eyal answer
+		ElementEntity originElement = this.elementDao.findById(this.elementConverter.concat(elementDomain, elementId))
+				.orElseThrow(() -> new RuntimeException("could not find origin by id: " + elementId));
+
+		ElementEntity childElement = this.elementDao
+				.findById(this.elementConverter.concat(elementIdBoundary.getDomain(), elementIdBoundary.getId()))
+				.orElseThrow(() -> new RuntimeException("could not find reply by id: " + elementIdBoundary.getId()));
+
+		originElement.addChildElement(childElement);
+		this.elementDao.save(originElement);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Set<ElementBoundary> getAllChildrenElements(String userDomain, String userEmail, String elementDomain,
+			String elementId) {
+		return this.elementDao.findById(this.elementConverter.concat(elementDomain, elementId))
+				.orElseThrow(() -> new RuntimeException("could not find origin by id: " + elementId))
+				.getChildrenElements().stream().map(this.elementConverter::fromEntity).collect(Collectors.toSet());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<ElementBoundary> getAllOriginsElements(String userDomain, String userEmail, String elementDomain,
+			String elementId) {
+		ElementEntity reply = this.elementDao.findById(this.elementConverter.concat(elementDomain, elementId))
+				.orElseThrow(() -> new RuntimeException("could not find reply by id: " + elementId));
+
+		ElementEntity origin = reply.getOrigin();
+		Set<ElementBoundary> rv = new HashSet<>();
+
+		if (origin != null) {
+			rv.add(this.elementConverter.fromEntity(origin));
+		}
+
+		return rv;
 	}
 
 }
