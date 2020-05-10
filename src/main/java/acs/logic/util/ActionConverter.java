@@ -26,10 +26,10 @@ public class ActionConverter extends Converter{
 	public ActionEntity toEntity(ActionBoundary boundary) {
 		ActionEntity rv = new ActionEntity();
 		rv.setActionAttributes(boundary.getActionAttributes());
-		rv.setActionId(concat(boundary.getActionId().getDomain(), boundary.getActionId().getId()));
+		rv.setActionId(convertToEntityId(boundary.getActionId().getDomain(), boundary.getActionId().getId()));
 		rv.setCreatedTimestamp(boundary.getCreatedTimestamp());
-		rv.setElement(concat(boundary.getElement().getElementId().getDomain(),boundary.getElement().getElementId().getId()));
-		rv.setInvokedBy(concat(boundary.getInvokedBy().getUserId().getDomain(),boundary.getInvokedBy().getUserId().getEmail()));
+		rv.setElement(convertToEntityId(boundary.getElement().getElementId().getDomain(),boundary.getElement().getElementId().getId()));
+		rv.setInvokedBy(convertToEntityId(boundary.getInvokedBy().getUserId().getDomain(),boundary.getInvokedBy().getUserId().getEmail()));
 		rv.setType(boundary.getType());
 		return rv;
 	}

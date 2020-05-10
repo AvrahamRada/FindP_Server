@@ -27,10 +27,10 @@ public class ElementConverter extends Converter {
 		ElementEntity rv = new ElementEntity();
 
 		rv.setActive(boundary.getActive());
-		rv.setCreatedBy(concat(boundary.getCreatedBy().getUserId().getDomain(),boundary.getCreatedBy().getUserId().getEmail()));
+		rv.setCreatedBy(convertToEntityId(boundary.getCreatedBy().getUserId().getDomain(),boundary.getCreatedBy().getUserId().getEmail()));
 		rv.setCreatedTimestamp(boundary.getCreatedTimestamp());
 		rv.setElementAttributes(boundary.getElementAttributes());
-		rv.setElementId(concat(boundary.getElementId().getDomain(),
+		rv.setElementId(convertToEntityId(boundary.getElementId().getDomain(),
 				boundary.getElementId().getId()));
 		rv.setLocation(boundary.getLocation());
 		rv.setName(boundary.getName());
