@@ -53,7 +53,7 @@ public class DatabaseUserService implements UserService {
 
 		try {
 			this.getUserEntityFromDatabase(
-			userConverter.concat(user.getUserId().getDomain(), user.getUserId().getEmail()));
+			userConverter.convertToEntityId(user.getUserId().getDomain(), user.getUserId().getEmail()));
 			// findUser(user.getUserId().getDomain(), user.getUserId().getEmail());
 		} catch (RuntimeException re) {
 			UserEntity newUser = userConverter.toEntity(user);
@@ -67,14 +67,14 @@ public class DatabaseUserService implements UserService {
 	@Transactional (readOnly = true)
 	public UserBoundary login(String userDomain, String userEmail) {
 		// mockup reads data from list
-		UserEntity user = this.getUserEntityFromDatabase(userConverter.concat(userDomain, userEmail));
+		UserEntity user = this.getUserEntityFromDatabase(userConverter.convertToEntityId(userDomain, userEmail));
 		return this.userConverter.fromEntity(user);
 	}
 
 	@Override
 	@Transactional // (readOnly = false)
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
-		UserEntity updateUser = this.getUserEntityFromDatabase(userConverter.concat(userDomain, userEmail));
+		UserEntity updateUser = this.getUserEntityFromDatabase(userConverter.convertToEntityId(userDomain, userEmail));
 		// ---Inside the setters there are null checks---
 		updateUser.setAvatar(update.getAvatar());
 		updateUser.setRole(update.getRole());
@@ -111,7 +111,7 @@ public class DatabaseUserService implements UserService {
 
 	// check if user is admin and exists
 	public void checkAdmin(String adminDomain, String adminEmail) {
-		UserEntity userEntity = getUserEntityFromDatabase(userConverter.concat(adminDomain, adminEmail));
+		UserEntity userEntity = getUserEntityFromDatabase(userConverter.convertToEntityId(adminDomain, adminEmail));
 		if (userEntity.getRole() != UserRole.ADMIN) {
 			throw new RuntimeException("User is not admin");
 		}

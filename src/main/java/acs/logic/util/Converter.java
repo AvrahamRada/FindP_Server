@@ -5,7 +5,7 @@ public class Converter {
 	
 	protected final String DELIMITER = "#";
 	
-	public String concat(String domain, String id) {
+	public String convertToEntityId(String domain, String id) {
 		return domain + DELIMITER + id;
 	}
 	

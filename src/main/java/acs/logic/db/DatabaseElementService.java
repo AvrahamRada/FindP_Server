@@ -20,6 +20,7 @@ import acs.boundaries.ElementBoundary;
 import acs.boundaries.ElementIdBoundary;
 import acs.dal.ElementDao;
 import acs.data.ElementEntity;
+import acs.logic.ElementNotFoundException;
 import acs.logic.ElementService;
 import acs.logic.EnhancedElementService;
 import acs.logic.util.ElementConverter;
@@ -88,7 +89,7 @@ public class DatabaseElementService implements EnhancedElementService {
 			ElementBoundary update) {
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = findElement(this.elementConverter.concat(elementDomain, elementId));
+		ElementEntity foundedElement = findElement(this.elementConverter.convertToEntityId(elementDomain, elementId));
 
 		// Convert the input to entity before update the values in element entity that
 		// is in the DB.
@@ -119,7 +120,7 @@ public class DatabaseElementService implements EnhancedElementService {
 			String elementId) {
 
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = findElement(this.elementConverter.concat(elementDomain, elementId));
+		ElementEntity foundedElement = findElement(this.elementConverter.convertToEntityId(elementDomain, elementId));
 
 		return elementConverter.fromEntity(foundedElement);
 
@@ -135,7 +136,7 @@ public class DatabaseElementService implements EnhancedElementService {
 
 	private ElementEntity findElement(String elementId) {
 		return this.elementDao.findById(elementId)
-				.orElseThrow(() -> new RuntimeException("could not find user by userId"));
+				.orElseThrow(() -> new ElementNotFoundException("could not find user by userId"));
 	}
 
 	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity inputEntity) {
@@ -154,13 +155,14 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Transactional // (readOnly = false)
 	public void bindParentElementToChildElement(String managerDomain, String managerEmail, String elementDomain,
 			String elementId, ElementIdBoundary elementIdBoundary) {
-		// TODO Waiting to eyal answer
-		ElementEntity originElement = this.elementDao.findById(this.elementConverter.concat(elementDomain, elementId))
-				.orElseThrow(() -> new RuntimeException("could not find origin by id: " + elementId));
+		
+		
+		ElementEntity originElement = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
+				.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId));
 
 		ElementEntity childElement = this.elementDao
-				.findById(this.elementConverter.concat(elementIdBoundary.getDomain(), elementIdBoundary.getId()))
-				.orElseThrow(() -> new RuntimeException("could not find reply by id: " + elementIdBoundary.getId()));
+				.findById(this.elementConverter.convertToEntityId(elementIdBoundary.getDomain(), elementIdBoundary.getId()))
+				.orElseThrow(() -> new ElementNotFoundException("could not find reply by id: " + elementIdBoundary.getId()));
 
 		originElement.addChildElement(childElement);
 		this.elementDao.save(originElement);
@@ -170,8 +172,8 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Transactional(readOnly = true)
 	public Set<ElementBoundary> getAllChildrenElements(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
-		return this.elementDao.findById(this.elementConverter.concat(elementDomain, elementId))
-				.orElseThrow(() -> new RuntimeException("could not find origin by id: " + elementId))
+		return this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
+				.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId))
 				.getChildrenElements().stream().map(this.elementConverter::fromEntity).collect(Collectors.toSet());
 	}
 
@@ -179,8 +181,8 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Transactional(readOnly = true)
 	public Collection<ElementBoundary> getAllOriginsElements(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
-		ElementEntity reply = this.elementDao.findById(this.elementConverter.concat(elementDomain, elementId))
-				.orElseThrow(() -> new RuntimeException("could not find reply by id: " + elementId));
+		ElementEntity reply = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
+				.orElseThrow(() -> new ElementNotFoundException("could not find reply by id: " + elementId));
 
 		ElementEntity origin = reply.getOrigin();
 		Set<ElementBoundary> rv = new HashSet<>();
