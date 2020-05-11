@@ -145,9 +145,6 @@ public class ElementPUTTests {
 				new Date(System.currentTimeMillis()),
 				new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
 				new Location(40.730610, -73.935242), new HashMap<>());
-		
-		
-		
 
 		// THEN the server returns a element boundary with elementDomain :
 		// 2020b.lior.trachtman AND id: x
@@ -179,8 +176,6 @@ public class ElementPUTTests {
 				new Date(System.currentTimeMillis()),
 				new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
 				new Location(40.730610, -73.935242), new HashMap<>());
-		
-		
 	
 		this.restTemplate.put(this.url + "/{managerDomain}/{managerEmail}/{elementDomain}/{elementId}", newElement, element.getCreatedBy().getUserId().getDomain(),
 				element.getCreatedBy().getUserId().getEmail(),element.getElementId().getDomain(),element.getElementId().getId());
@@ -210,10 +205,7 @@ public class ElementPUTTests {
 				new Date(System.currentTimeMillis()),
 				new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
 				new Location(50.730610, -22.935242), new HashMap<>());
-		
-		
-		
-
+	
 		this.restTemplate.put(this.url + "/{managerDomain}/{managerEmail}/{elementDomain}/{elementId}", newElement, element.getCreatedBy().getUserId().getDomain(),
 				element.getCreatedBy().getUserId().getEmail(),element.getElementId().getDomain(),element.getElementId().getId());
 		
@@ -248,10 +240,6 @@ public class ElementPUTTests {
 				new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
 				new Location(40.730610, -73.935242), new HashMap<>());
 		
-		
-		
-
-		
 		this.restTemplate.put(this.url + "/{managerDomain}/{managerEmail}/{elementDomain}/{elementId}", newElement, element.getCreatedBy().getUserId().getDomain(),
 				element.getCreatedBy().getUserId().getEmail(),element.getElementId().getDomain(),element.getElementId().getId());
 		
@@ -261,9 +249,5 @@ public class ElementPUTTests {
 		.isEqualTo(newElement.getActive());
 		
 		}
-	
-	
-
-	
 
 }
