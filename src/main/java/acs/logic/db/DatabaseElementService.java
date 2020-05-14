@@ -170,8 +170,8 @@ public class DatabaseElementService implements EnhancedElementService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Set<ElementBoundary> getAllChildrenElements(String userDomain, String userEmail, String elementDomain,
-			String elementId) {
+	public Collection<ElementBoundary> getAllChildrenElements(String userDomain, String userEmail, String elementDomain,
+			String elementId, int size, int page) {
 		return this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
 				.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId))
 				.getChildrenElements().stream().map(this.elementConverter::fromEntity).collect(Collectors.toSet());
@@ -180,7 +180,7 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Override
 	@Transactional(readOnly = true)
 	public Collection<ElementBoundary> getAllOriginsElements(String userDomain, String userEmail, String elementDomain,
-			String elementId) {
+			String elementId, int size, int page) {
 		ElementEntity reply = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
 				.orElseThrow(() -> new ElementNotFoundException("could not find reply by id: " + elementId));
 
@@ -192,6 +192,34 @@ public class DatabaseElementService implements EnhancedElementService {
 		}
 
 		return rv;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<ElementBoundary> getAll(String userDomain, String userEmail, int size, int page) {
+		// TODO Auto-generated method stub & 
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ElementBoundary> getAllElementsByName(String name, int size, int page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ElementBoundary> getAllElementsByType(String type, int size, int page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ElementBoundary> getAllElementsByLocation(String lat, String lng, String distance, int size, int page) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
