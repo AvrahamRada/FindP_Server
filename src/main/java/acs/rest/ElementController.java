@@ -33,7 +33,7 @@ public class ElementController {
 		return enhancedElementService.getSpecificElement(userDomain, userEmail, elementDomain, elementId);
 
 	}
-	// TODO - ask eyal if add or change getAllElements
+	
 	@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ElementBoundary[] getAllElements(@PathVariable("userDomain") String userDomain,
 			@PathVariable("userEmail") String userEmail,
@@ -73,8 +73,31 @@ public class ElementController {
 			@PathVariable("userEmail") String userEmail, @PathVariable("name") String name,
 			@RequestParam(name = "size", required = false, defaultValue = "10") int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+		
+		System.out.println("im here1");
 
 		return enhancedElementService.getAllElementsByName(userDomain,userEmail,name,size,page).toArray(new ElementBoundary[0]);
+
+	}
+	
+	@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/search/byType/{type}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ElementBoundary[] getAllElementsByType(@PathVariable("userDomain") String userDomain,
+			@PathVariable("userEmail") String userEmail, @PathVariable("type") String type,
+			@RequestParam(name = "size", required = false, defaultValue = "10") int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+		
+		return enhancedElementService.getAllElementsByType(userDomain,userEmail,type,size,page).toArray(new ElementBoundary[0]);
+
+	}
+	
+	@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/search/near/{lat}/{lng}/{distance}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ElementBoundary[] getAllElementsByLocation(@PathVariable("userDomain") String userDomain,
+			@PathVariable("userEmail") String userEmail, @PathVariable("lat") String lat,
+			@PathVariable("lng") String lng, @PathVariable("distance") String distance,
+			@RequestParam(name = "size", required = false, defaultValue = "10") int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+		
+		return enhancedElementService.getAllElementsByLocation(userDomain,userEmail,lat,lng,distance,size,page).toArray(new ElementBoundary[0]);
 
 	}
 	
