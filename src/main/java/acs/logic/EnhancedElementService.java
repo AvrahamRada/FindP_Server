@@ -14,7 +14,7 @@ public interface EnhancedElementService extends ElementService {
 	
 	public List<ElementBoundary> getAll(String userDomain, String userEmail, int size, int page);
 	
-	public List<ElementBoundary> getAllElementsByName(String name, int size, int page);
+	public List<ElementBoundary> getAllElementsByName(String userDomain,String userEmail,String name, int size, int page);
 	
 	public List<ElementBoundary> getAllElementsByType(String type, int size, int page);
 	
