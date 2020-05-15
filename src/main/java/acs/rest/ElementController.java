@@ -68,6 +68,16 @@ public class ElementController {
 
 	}
 	
+	@RequestMapping(path = "/acs/elements/{userDomain}/{userEmail}/search/byName/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ElementBoundary[] getAllElementsByName(@PathVariable("userDomain") String userDomain,
+			@PathVariable("userEmail") String userEmail, @PathVariable("name") String name,
+			@RequestParam(name = "size", required = false, defaultValue = "10") int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+
+		return enhancedElementService.getAllElementsByName(userDomain,userEmail,name,size,page).toArray(new ElementBoundary[0]);
+
+	}
+	
 
 	/*--------------------- POST APIS ------------------- */
 

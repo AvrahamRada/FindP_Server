@@ -13,6 +13,8 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -155,14 +157,16 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Transactional // (readOnly = false)
 	public void bindParentElementToChildElement(String managerDomain, String managerEmail, String elementDomain,
 			String elementId, ElementIdBoundary elementIdBoundary) {
-		
-		
-		ElementEntity originElement = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
+
+		ElementEntity originElement = this.elementDao
+				.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
 				.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId));
 
 		ElementEntity childElement = this.elementDao
-				.findById(this.elementConverter.convertToEntityId(elementIdBoundary.getDomain(), elementIdBoundary.getId()))
-				.orElseThrow(() -> new ElementNotFoundException("could not find reply by id: " + elementIdBoundary.getId()));
+				.findById(this.elementConverter.convertToEntityId(elementIdBoundary.getDomain(),
+						elementIdBoundary.getId()))
+				.orElseThrow(
+						() -> new ElementNotFoundException("could not find reply by id: " + elementIdBoundary.getId()));
 
 		originElement.addChildElement(childElement);
 		this.elementDao.save(originElement);
@@ -181,7 +185,8 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Transactional(readOnly = true)
 	public Collection<ElementBoundary> getAllOriginsElements(String userDomain, String userEmail, String elementDomain,
 			String elementId, int size, int page) {
-		ElementEntity reply = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
+		ElementEntity reply = this.elementDao
+				.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
 				.orElseThrow(() -> new ElementNotFoundException("could not find reply by id: " + elementId));
 
 		ElementEntity origin = reply.getOrigin();
@@ -193,17 +198,17 @@ public class DatabaseElementService implements EnhancedElementService {
 
 		return rv;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<ElementBoundary> getAll(String userDomain, String userEmail, int size, int page) {
-		// TODO Auto-generated method stub & 
-		return null;
+		return this.elementDao.findAll(PageRequest.of(page, size, Direction.ASC, "createdAt", "id")).getContent()
+				.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ElementBoundary> getAllElementsByName(String name, int size, int page) {
+	public List<ElementBoundary> getAllElementsByName(String userDomain,String userEmail,String name, int size, int page) {
 		// TODO Auto-generated method stub
 		return null;
 	}
