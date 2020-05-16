@@ -21,7 +21,6 @@ import acs.logic.util.UserConverter;
 @Service
 public class DatabaseUserService implements UserService {
 	private String projectName;
-//	private List<UserEntity> allUsers;
 	private UserConverter userConverter;
 	private UserDao userDao;
 
@@ -34,8 +33,6 @@ public class DatabaseUserService implements UserService {
 
 	@PostConstruct
 	public void init() {
-		// synchronized Java collection
-//		this.allUsers = Collections.synchronizedList(new ArrayList<>());
 	}
 
 	// inject configuration value or inject default value
@@ -52,9 +49,8 @@ public class DatabaseUserService implements UserService {
 		user.getUserId().setDomain(projectName);
 
 		try {
-			this.getUserEntityFromDatabase(
-			userConverter.convertToEntityId(user.getUserId().getDomain(), user.getUserId().getEmail()));
-			// findUser(user.getUserId().getDomain(), user.getUserId().getEmail());
+			getUserEntityFromDatabase(
+			userConverter.convertToEntityId(user.getUserId().getDomain(), user.getUserId().getEmail()),this.userDao);
 		} catch (RuntimeException re) {
 			UserEntity newUser = userConverter.toEntity(user);
 			this.userDao.save(newUser);
@@ -67,14 +63,14 @@ public class DatabaseUserService implements UserService {
 	@Transactional (readOnly = true)
 	public UserBoundary login(String userDomain, String userEmail) {
 		// mockup reads data from list
-		UserEntity user = this.getUserEntityFromDatabase(userConverter.convertToEntityId(userDomain, userEmail));
+		UserEntity user = getUserEntityFromDatabase(userConverter.convertToEntityId(userDomain, userEmail),this.userDao);
 		return this.userConverter.fromEntity(user);
 	}
 
 	@Override
 	@Transactional // (readOnly = false)
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
-		UserEntity updateUser = this.getUserEntityFromDatabase(userConverter.convertToEntityId(userDomain, userEmail));
+		UserEntity updateUser = getUserEntityFromDatabase(userConverter.convertToEntityId(userDomain, userEmail),this.userDao);
 		// ---Inside the setters there are null checks---
 		updateUser.setAvatar(update.getAvatar());
 		updateUser.setRole(update.getRole());
@@ -86,7 +82,7 @@ public class DatabaseUserService implements UserService {
 	@Override
 	@Transactional (readOnly = true)
 	public List<UserBoundary> getAllUsers(String adminDomain, String adminEmail) {
-		checkAdmin(adminDomain, adminEmail);
+		checkRole(adminDomain, adminEmail,UserRole.ADMIN,this.userDao,this.userConverter);
 
 		return StreamSupport.stream(this.userDao.findAll().spliterator(), false) // Stream<UserEntity>
 				.map(this.userConverter::fromEntity) // Stream<UserBoundary>
@@ -96,29 +92,24 @@ public class DatabaseUserService implements UserService {
 	@Override
 	@Transactional // (readOnly = false)
 	public void deleteAllUsers(String adminDomain, String adminEmail) {
-		checkAdmin(adminDomain, adminEmail);
+		checkRole(adminDomain, adminEmail,UserRole.ADMIN,this.userDao,this.userConverter);
 		this.userDao.deleteAll();
 	}
 
-	// check if user exist in the system
-//	public UserEntity findUser(String userDomain, String userEmail) {
-//		return this.allUsers.stream()
-//				.filter(userEntity -> userEntity.getUserId().getEmail().equals(userEmail)
-//						&& userEntity.getUserId().getDomain().equals(userDomain))
-//				.findFirst().orElseThrow(() -> new RuntimeException("Could not find user"));
-//
-//	}
 
-	// check if user is admin and exists
-	public void checkAdmin(String adminDomain, String adminEmail) {
-		UserEntity userEntity = getUserEntityFromDatabase(userConverter.convertToEntityId(adminDomain, adminEmail));
-		if (userEntity.getRole() != UserRole.ADMIN) {
-			throw new RuntimeException("User is not admin");
+	
+	public static void checkRole(String domain, String email,UserRole role,UserDao userDao,UserConverter userConverter) {
+		UserEntity userEntity = getUserEntityFromDatabase(userConverter.convertToEntityId(domain, email),userDao);
+		if (userEntity.getRole() != role) {
+			throw new RuntimeException("User is not " + role);
 		}
 	}
 
-	private UserEntity getUserEntityFromDatabase(String userId) {
-		return this.userDao.findById(userId).orElseThrow(() -> new RuntimeException("could not find user by userId"));
+	public static UserEntity getUserEntityFromDatabase(String userId,UserDao userDao) {
+		return userDao.findById(userId).
+				orElseThrow(() -> new RuntimeException("could not find user by userId"));
 	}
+	
+	
 
 }

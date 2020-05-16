@@ -72,6 +72,7 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Transactional // (readOnly = false)
 	public ElementBoundary create(String managerDomain, String managerEmail, ElementBoundary elementBoundary) {
 
+		DatabaseUserService.checkRole(managerDomain, managerEmail, UserRole.MANAGER, userDao, userConverter);
 		// Validate that the important element boundary fields are not null;
 		// TODO Check in the future if the user is exists and manager
 		elementBoundary.validation();
@@ -101,6 +102,7 @@ public class DatabaseElementService implements EnhancedElementService {
 	public ElementBoundary update(String managerDomain, String managerEmail, String elementDomain, String elementId,
 			ElementBoundary update) {
 
+		DatabaseUserService.checkRole(managerDomain, managerEmail, UserRole.MANAGER, userDao, userConverter);
 		// Fetching the specific element from DB.
 		ElementEntity foundedElement = findElement(this.elementConverter.convertToEntityId(elementDomain, elementId));
 
@@ -122,18 +124,44 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<ElementBoundary> getAll(String userDomain, String userEmail) {
-		return StreamSupport.stream(this.elementDao.findAll().spliterator(), false) // Stream<ElementEntity>
-				.map(this.elementConverter::fromEntity) // Stream<ElementBoundary>
-				.collect(Collectors.toList());
+		System.out.println("here1");
+		UserEntity userEntity = DatabaseUserService
+				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
+		if (userEntity.getRole() == UserRole.MANAGER) {
+			System.out.println("here2");
+			return StreamSupport.stream(this.elementDao.findAll().spliterator(), false) // Stream<ElementEntity>
+					.map(this.elementConverter::fromEntity) // Stream<ElementBoundary>
+					.collect(Collectors.toList());
+		} else if (userEntity.getRole() == UserRole.PLAYER) {
+			System.out.println("here3");
+			return StreamSupport.stream(this.elementDao.findAll().spliterator(), false) // Stream<ElementEntity>
+					.filter(user -> user.getActive()).map(this.elementConverter::fromEntity) // Stream<ElementBoundary>
+					.collect(Collectors.toList());
+		} else { // Role is ADMIN
+			System.out.println("here4");
+			throw new UserNotFoundException("Not valid operation for ADMIN user");
+		}
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public ElementBoundary getSpecificElement(String userDomain, String userEmail, String elementDomain,
 			String elementId) {
-
-		// Fetching the specific element from DB.
-		ElementEntity foundedElement = findElement(this.elementConverter.convertToEntityId(elementDomain, elementId));
+		ElementEntity foundedElement;
+		UserEntity userEntity = DatabaseUserService
+				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
+		if (userEntity.getRole() == UserRole.MANAGER) {
+			// Fetching the specific element from DB.
+			foundedElement = findElement(this.elementConverter.convertToEntityId(elementDomain, elementId));
+		} else if (userEntity.getRole()== UserRole.PLAYER) {
+			foundedElement = findElement(this.elementConverter.convertToEntityId(elementDomain, elementId));
+			if(!foundedElement.getActive()) {
+				throw new ElementNotFoundException("could not find Element");
+			}
+			
+		} else { // Role is ADMIN
+			throw new UserNotFoundException("Not valid operation for ADMIN user");
+		}
 
 		return elementConverter.fromEntity(foundedElement);
 
@@ -148,8 +176,9 @@ public class DatabaseElementService implements EnhancedElementService {
 	}
 
 	private ElementEntity findElement(String elementId) {
+
 		return this.elementDao.findById(elementId)
-				.orElseThrow(() -> new ElementNotFoundException("could not find user by userId"));
+				.orElseThrow(() -> new ElementNotFoundException("could not find Element with id : " + elementId));
 	}
 
 	private void updateElementValues(ElementEntity toBeUpdatedEntity, ElementEntity inputEntity) {
@@ -214,9 +243,25 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Transactional(readOnly = true)
 	public List<ElementBoundary> getAll(String userDomain, String userEmail, int size, int page) {
 
-		return this.elementDao.findAll(PageRequest.of(page, size, Direction.ASC, "elementId")).getContent().stream()
-				.filter(elementEntity -> elementEntity.getActive()).map(this.elementConverter::fromEntity)
-				.collect(Collectors.toList());
+		
+		System.out.println("here1");
+		UserEntity userEntity = DatabaseUserService
+				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
+		if (userEntity.getRole() == UserRole.MANAGER) {
+			System.out.println("here2");
+			return this.elementDao.findAll(PageRequest.of(page, size, Direction.ASC, "elementId")).getContent().stream()
+					.map(this.elementConverter::fromEntity)
+					.collect(Collectors.toList());
+		} else if (userEntity.getRole() == UserRole.PLAYER) {
+			System.out.println("here3");
+			return this.elementDao.findAll(PageRequest.of(page, size, Direction.ASC, "elementId")).getContent().stream()
+					.filter(elementEntity -> elementEntity.getActive()).map(this.elementConverter::fromEntity)
+					.collect(Collectors.toList());
+		} else { // Role is ADMIN
+			System.out.println("here4");
+			throw new UserNotFoundException("Not valid operation for ADMIN user");
+		}
+		
 	}
 
 	@Override
@@ -224,15 +269,7 @@ public class DatabaseElementService implements EnhancedElementService {
 	public List<ElementBoundary> getAllElementsByName(String userDomain, String userEmail, String name, int size,
 			int page) {
 
-		// Check if the user role is exist in the DB
-		String userId = userConverter.convertToEntityId(userDomain, userEmail);
-		UserEntity userEntity = userDao.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("could not find user by id: " + userId));
-
-		// Check if user role is PLAYER
-		if (userEntity.getRole() != UserRole.PLAYER) {
-			throw new UserNotFoundException("user role is not PLAYER " + userId);
-		}
+		DatabaseUserService.checkRole(userDomain, userEmail, UserRole.PLAYER, userDao, userConverter);
 
 		List<ElementEntity> entities = this.elementDao.findAllByNameLike(name,
 				PageRequest.of(page, size, Direction.ASC, "elementId"));
@@ -246,15 +283,7 @@ public class DatabaseElementService implements EnhancedElementService {
 	public List<ElementBoundary> getAllElementsByType(String userDomain, String userEmail, String type, int size,
 			int page) {
 
-		// Check if the user role is exist in the DB
-		String userId = userConverter.convertToEntityId(userDomain, userEmail);
-		UserEntity userEntity = userDao.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("could not find user by id: " + userId));
-
-		// Check if user role is PLAYER
-		if (userEntity.getRole() != UserRole.PLAYER) {
-			throw new UserNotFoundException("user role is not PLAYER " + userId);
-		}
+		DatabaseUserService.checkRole(userDomain, userEmail, UserRole.PLAYER, userDao, userConverter);
 
 		List<ElementEntity> entities = this.elementDao.findAllByTypeLike(type,
 				PageRequest.of(page, size, Direction.ASC, "elementId"));
@@ -262,22 +291,14 @@ public class DatabaseElementService implements EnhancedElementService {
 		return entities.stream().filter(elementEntity -> elementEntity.getActive())
 				.map(this.elementConverter::fromEntity).collect(Collectors.toList());
 	}
-	
-	//NEED TO ASK EYAL ABOUT CALCULATE DISTANCE
+
+	// NEED TO ASK EYAL ABOUT CALCULATE DISTANCE
 	@Override
 	@Transactional(readOnly = true)
 	public List<ElementBoundary> getAllElementsByLocation(String userDomain, String userEmail, String lat, String lng,
 			String distance, int size, int page) {
-			
-		// Check if the user role is exist in the DB
-		String userId = userConverter.convertToEntityId(userDomain, userEmail);
-		UserEntity userEntity = userDao.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("could not find user by id: " + userId));
 
-		// Check if user role is PLAYER
-		if (userEntity.getRole() != UserRole.PLAYER) {
-			throw new UserNotFoundException("user role is not PLAYER " + userId);
-		}
+		DatabaseUserService.checkRole(userDomain, userEmail, UserRole.PLAYER, userDao, userConverter);
 
 		List<ElementEntity> entities = this.elementDao.findAllByLocation(
 				new Location(Double.parseDouble(lat), Double.parseDouble(lng)),
