@@ -16,25 +16,39 @@ import org.springframework.transaction.annotation.Transactional;
 import acs.action.ActionId;
 import acs.boundaries.ActionBoundary;
 import acs.dal.ActionDao;
+import acs.dal.ElementDao;
+import acs.dal.UserDao;
+import acs.data.UserRole;
 import acs.logic.ActionService;
 import acs.logic.util.ActionConverter;
+import acs.logic.util.ElementConverter;
+import acs.logic.util.UserConverter;
 
 @Service
 public class DatabaseActionService implements ActionService {
 	private String projectName;
 	private ActionConverter actionConverter;
 	private ActionDao actionDao;
+	private UserConverter userConverter;
+	private UserDao userDao;
+	private ElementDao elementDao;
+	private ElementConverter elementConverter;
 
 	@Autowired
-	public DatabaseActionService(ActionConverter actionConverter,ActionDao actionDao) {
+	public DatabaseActionService(ActionConverter actionConverter, ActionDao actionDao, UserConverter userConverter,
+			UserDao userDao, ElementDao elementDao, ElementConverter elementConverter) {
 		super();
 		this.actionConverter = actionConverter;
 		this.actionDao = actionDao;
+		this.userConverter = userConverter;
+		this.userDao = userDao;
+		this.elementDao = elementDao;
+		this.elementConverter = elementConverter;
 	}
 
 	@PostConstruct
 	public void init() {
-		
+
 	}
 
 	// inject configuration value or inject default value
@@ -46,7 +60,13 @@ public class DatabaseActionService implements ActionService {
 	@Override
 	@Transactional // (readOnly = false)
 	public Object invokeAction(ActionBoundary action) {
-		
+
+		DatabaseUserService.checkRole(action.getInvokedBy().getUserId().getDomain(),
+				action.getInvokedBy().getUserId().getEmail(), UserRole.PLAYER, userDao, userConverter);
+
+		DatabaseElementService.findActiveElement(elementDao, this.elementConverter.convertToEntityId(
+				action.getElement().getElementId().getDomain(),action.getElement().getElementId().getId()));
+
 		action.validation(); // if one of the important value is null, it will throw an exception
 		action.setActionId(new ActionId(this.projectName, UUID.randomUUID().toString()));
 		action.setCreatedTimestamp(new Date(System.currentTimeMillis()));
@@ -54,20 +74,24 @@ public class DatabaseActionService implements ActionService {
 		return action;
 	}
 
+	// need to ask eyal about admin permission
 	@Override
-	@Transactional (readOnly = true)
+	@Transactional(readOnly = true)
 	public List<ActionBoundary> getAllActions(String adminDomain, String adminEmail) {
-		// TODO Find if user is Admin- Eyal told us to not check it in this sprint (sprint 3)
-		
+		// TODO Find if user is Admin- Eyal told us to not check it in this sprint
+		// (sprint 3)
+
 		return StreamSupport.stream(this.actionDao.findAll().spliterator(), false) // Stream<ElementEntity>
 				.map(this.actionConverter::fromEntity) // Stream<ElementBoundary>
-				.collect(Collectors.toList());		
+				.collect(Collectors.toList());
 	}
 
+	// need to ask eyal about admin permission
 	@Override
-	@Transactional //(readOnly = false)
+	@Transactional // (readOnly = false)
 	public void deleteAllActions(String adminDomain, String adminEmail) {
-		// TODO Find if user is Admin- Eyal told us to not check it in this sprint (sprint 3)
+		// TODO Find if user is Admin- Eyal told us to not check it in this sprint
+		// (sprint 3)
 		actionDao.deleteAll();
 	}
 
