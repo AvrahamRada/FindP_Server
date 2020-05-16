@@ -10,22 +10,26 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import acs.action.ActionId;
 import acs.boundaries.ActionBoundary;
+import acs.boundaries.UserBoundary;
 import acs.dal.ActionDao;
 import acs.dal.ElementDao;
 import acs.dal.UserDao;
 import acs.data.UserRole;
 import acs.logic.ActionService;
+import acs.logic.EnhancedActionService;
 import acs.logic.util.ActionConverter;
 import acs.logic.util.ElementConverter;
 import acs.logic.util.UserConverter;
 
 @Service
-public class DatabaseActionService implements ActionService {
+public class DatabaseActionService implements EnhancedActionService {
 	private String projectName;
 	private ActionConverter actionConverter;
 	private ActionDao actionDao;
@@ -93,6 +97,14 @@ public class DatabaseActionService implements ActionService {
 		// TODO Find if user is Admin- Eyal told us to not check it in this sprint
 		// (sprint 3)
 		actionDao.deleteAll();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ActionBoundary> getAllActions(String adminDomain, String adminEmail, int size, int page) {
+		DatabaseUserService.checkRole(adminDomain, adminEmail,UserRole.ADMIN,this.userDao,this.userConverter);
+		return this.actionDao.findAll(PageRequest.of(page, size, Direction.ASC, "actionId"))
+				.getContent().stream().map(this.actionConverter::fromEntity).collect(Collectors.toList());
 	}
 
 }

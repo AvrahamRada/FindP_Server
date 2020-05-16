@@ -7,6 +7,9 @@ import java.util.stream.StreamSupport;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 //import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +18,11 @@ import acs.boundaries.UserBoundary;
 import acs.dal.UserDao;
 import acs.data.UserEntity;
 import acs.data.UserRole;
-import acs.logic.UserService;
+import acs.logic.EnhancedUserService;
 import acs.logic.util.UserConverter;
 
 @Service
-public class DatabaseUserService implements UserService {
+public class DatabaseUserService implements EnhancedUserService {
 	private String projectName;
 	private UserConverter userConverter;
 	private UserDao userDao;
@@ -108,6 +111,15 @@ public class DatabaseUserService implements UserService {
 	public static UserEntity getUserEntityFromDatabase(String userId,UserDao userDao) {
 		return userDao.findById(userId).
 				orElseThrow(() -> new RuntimeException("could not find user by userId"));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<UserBoundary> getAllUsers(String adminDomain, String adminEmail, int size, int page) {
+		checkRole(adminDomain, adminEmail,UserRole.ADMIN,this.userDao,this.userConverter);
+		
+		return this.userDao.findAll(PageRequest.of(page, size, Direction.ASC, "userId"))
+				.getContent().stream().map(this.userConverter::fromEntity).collect(Collectors.toList());
 	}
 	
 	
