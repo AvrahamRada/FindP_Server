@@ -19,4 +19,5 @@ public interface EnhancedElementService extends ElementService {
 	public List<ElementBoundary> getAllElementsByType(String userDomain,String userEmail,String type, int size, int page);
 	
 	public List<ElementBoundary> getAllElementsByLocation(String userDomain,String userEmail,String lat, String lng, String distance, int size, int page);
+	
 }
