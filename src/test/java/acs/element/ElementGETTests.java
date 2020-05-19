@@ -54,9 +54,9 @@ public class ElementGETTests {
 		this.url = "http://localhost:" + port + "/acs/elements";
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.searchByNameUrl = "http://localhost:" + port
-				+ "/acs/elements/{userDomain}/{userEmail}/search/byName/{name}?page={page}&size={size}";
+				+ "/acs/elements/{userDomain}/{userEmail}/search/byName/{name}";
 		this.searchByTypeUrl = "http://localhost:" + port
-				+ "/acs/elements/{userDomain}/{userEmail}/search/byType/{type}?page={page}&size={size}";
+				+ "/acs/elements/{userDomain}/{userEmail}/search/byType/{type}";
 		this.restTemplate = new RestTemplate();
 	}
 
@@ -763,7 +763,7 @@ public class ElementGETTests {
 					ElementBoundary.class, "2020b.lior.trachtman", "don't care");
 		}
 
-		ElementBoundary[] elementsByName = this.restTemplate.getForObject(searchByNameUrl, ElementBoundary[].class,
+		ElementBoundary[] elementsByName = this.restTemplate.getForObject(searchByNameUrl + "?page={page}&size={size}", ElementBoundary[].class,
 				"2020b.lior.trachtman", "manager@gmail.com", "sameName",0,X);
 
 		assertThat(elementsByName).hasSize(X);
@@ -828,10 +828,10 @@ public class ElementGETTests {
 					ElementBoundary.class, "2020b.lior.trachtman", "don't care");
 		}
 
-		ElementBoundary[] elementsByName = this.restTemplate.getForObject(searchByTypeUrl, ElementBoundary[].class,
+		ElementBoundary[] elementsByType = this.restTemplate.getForObject(searchByTypeUrl + "?page={page}&size={size}", ElementBoundary[].class,
 				"2020b.lior.trachtman", "manager@gmail.com", "sameType",0,X);
 
-		assertThat(elementsByName).hasSize(X);
+		assertThat(elementsByType).hasSize(X);
 
 	}
 	
@@ -851,8 +851,8 @@ public class ElementGETTests {
 		}
 
 
-		assertThat(this.restTemplate.getForObject(searchByNameUrl, ElementBoundary[].class,
-				"2020b.lior.trachtman", "manager@gmail.com", "wrongName",0,X)).hasSize(0);
+		assertThat(this.restTemplate.getForObject(searchByTypeUrl, ElementBoundary[].class,
+				"2020b.lior.trachtman", "manager@gmail.com", "wrongType")).hasSize(0);
 		
 	}
 	
@@ -871,7 +871,7 @@ public class ElementGETTests {
 						ElementBoundary.class, "2020b.lior.trachtman", "don't care");
 		
 		assertThat(this.restTemplate.getForObject(searchByTypeUrl, ElementBoundary[].class,
-				"2020b.lior.trachtman", "manager@gmail.com", "type",0,10)[0].getType()).isEqualTo(type);
+				"2020b.lior.trachtman", "manager@gmail.com", "type")[0].getType()).isEqualTo(type);
 	}
 	
 	
