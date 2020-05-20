@@ -78,24 +78,23 @@ public class DatabaseActionService implements EnhancedActionService {
 		return action;
 	}
 
-	// need to ask eyal about admin permission
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionBoundary> getAllActions(String adminDomain, String adminEmail) {
-		// TODO Find if user is Admin- Eyal told us to not check it in this sprint
-		// (sprint 3)
+		
+		DatabaseUserService.checkRole(adminDomain, adminEmail, UserRole.ADMIN, userDao, userConverter);
 
 		return StreamSupport.stream(this.actionDao.findAll().spliterator(), false) // Stream<ElementEntity>
 				.map(this.actionConverter::fromEntity) // Stream<ElementBoundary>
 				.collect(Collectors.toList());
 	}
 
-	// need to ask eyal about admin permission
+	
 	@Override
 	@Transactional // (readOnly = false)
 	public void deleteAllActions(String adminDomain, String adminEmail) {
-		// TODO Find if user is Admin- Eyal told us to not check it in this sprint
-		// (sprint 3)
+		DatabaseUserService.checkRole(adminDomain, adminEmail, UserRole.ADMIN, userDao, userConverter);
 		actionDao.deleteAll();
 	}
 
