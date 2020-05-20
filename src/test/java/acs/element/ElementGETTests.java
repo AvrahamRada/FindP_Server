@@ -42,7 +42,7 @@ public class ElementGETTests {
 	private String createUserUrl;
 	private String searchByNameUrl;
 	private String searchByTypeUrl;
-
+	private String searchByLocationUrl;
 	@LocalServerPort
 	public void setPort(int port) {
 		this.port = port;
@@ -57,6 +57,8 @@ public class ElementGETTests {
 				+ "/acs/elements/{userDomain}/{userEmail}/search/byName/{name}";
 		this.searchByTypeUrl = "http://localhost:" + port
 				+ "/acs/elements/{userDomain}/{userEmail}/search/byType/{type}";
+		this.searchByLocationUrl = "http://localhost:" + port
+				+ "/acs/elements/{userDomain}/{userEmail}/search/near/{lat}/{lng}/{distance}";
 		this.restTemplate = new RestTemplate();
 	}
 
@@ -872,6 +874,85 @@ public class ElementGETTests {
 		
 		assertThat(this.restTemplate.getForObject(searchByTypeUrl, ElementBoundary[].class,
 				"2020b.lior.trachtman", "manager@gmail.com", "type")[0].getType()).isEqualTo(type);
+	}
+	
+	//location
+	@Test
+	public void testGetElementsByLocationWithSize15AndInDistanceAreaAndReturns15ElementsInSameDistanceArea() throws Exception {
+		int X = 15;
+		this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("manager@gmail.com", UserRole.MANAGER, "manager", "Avatar"), UserBoundary.class);
+
+		for (int i = 0; i < X; i++) {
+			this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/manager@gmail.com",
+					new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "sameType", "name", true,
+							new Date(System.currentTimeMillis()),
+							new CreatedBy(new UserId("2020b.lior.trachtman", "manager@gmail.com")),
+							new Location(0.0 + i, 0.0 + i), new HashMap<>()),
+					ElementBoundary.class, "2020b.lior.trachtman", "don't care");
+		}
+
+		ElementBoundary[] elementsByType = this.restTemplate.getForObject(searchByLocationUrl + "?page={page}&size={size}", ElementBoundary[].class,
+				"2020b.lior.trachtman", "manager@gmail.com",0,0,15,0,X);
+
+		assertThat(elementsByType).hasSize(X);
+
+	}
+	
+	@Test
+	public void testGetElementsByLocationAndSearchInEmptyFieldReturnsEmptyArray() throws Exception {
+		
+		this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("manager@gmail.com", UserRole.MANAGER, "manager", "Avatar"), UserBoundary.class);
+
+
+		ElementBoundary[] elementsByType = this.restTemplate.getForObject(searchByLocationUrl, ElementBoundary[].class,
+				"2020b.lior.trachtman", "manager@gmail.com",0,0,10);
+
+		assertThat(elementsByType).hasSize(0);
+		
+	}
+	
+	@Test
+	public void testGetElementsByLocationWhen8ElementsExistsInFieldAndOtherIsNOT() throws Exception {
+		this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("manager@gmail.com", UserRole.MANAGER, "manager", "Avatar"), UserBoundary.class);
+		int X = 10;
+		int distance = 7;
+		int actualSize = 8;
+		for (int i = 0; i < X; i++) {
+			this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/manager@gmail.com",
+					new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "sameType", "name", true,
+							new Date(System.currentTimeMillis()),
+							new CreatedBy(new UserId("2020b.lior.trachtman", "manager@gmail.com")),
+							new Location(0.0 + i, 0.0 + i), new HashMap<>()),
+					ElementBoundary.class, "2020b.lior.trachtman", "don't care");
+		}
+	
+		
+		assertThat(this.restTemplate.getForObject(searchByLocationUrl, ElementBoundary[].class,
+				"2020b.lior.trachtman", "manager@gmail.com", 0,0,distance)).hasSize(actualSize);
+	}
+	
+	@Test
+	public void testGetElementsByLocationWhenAllElementsHaveTheSameLatLng() throws Exception {
+		this.restTemplate.postForObject(this.createUserUrl,
+				new NewUserDetails("manager@gmail.com", UserRole.MANAGER, "manager", "Avatar"), UserBoundary.class);
+		int X = 10;
+		int distance = 1;
+		
+		for (int i = 0; i < X; i++) {
+			this.restTemplate.postForObject(this.url + "/2020b.lior.trachtman/manager@gmail.com",
+					new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "sameType", "name", true,
+							new Date(System.currentTimeMillis()),
+							new CreatedBy(new UserId("2020b.lior.trachtman", "manager@gmail.com")),
+							new Location(0.0, 0.0), new HashMap<>()),
+					ElementBoundary.class, "2020b.lior.trachtman", "don't care");
+		}
+	
+		
+		assertThat(this.restTemplate.getForObject(searchByLocationUrl, ElementBoundary[].class,
+				"2020b.lior.trachtman", "manager@gmail.com", 0,0,distance)).hasSize(X);
 	}
 	
 	
