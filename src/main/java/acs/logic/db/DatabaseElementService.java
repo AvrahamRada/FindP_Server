@@ -103,8 +103,9 @@ public class DatabaseElementService implements EnhancedElementService {
 
 		DatabaseUserService.checkRole(managerDomain, managerEmail, UserRole.MANAGER, userDao, userConverter);
 		// Fetching the specific element from DB.
-		ElementEntity foundedElement = this.elementDao.findById(elementId)
-				.orElseThrow(() -> new ElementNotFoundException("could not find Element with id : " + elementId));
+		ElementEntity foundedElement = this.elementDao
+				.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
+				.orElseThrow(() -> new ElementNotFoundException("could not find element"));
 
 		// Convert the input to entity before update the values in element entity that
 		// is in the DB.
@@ -208,12 +209,22 @@ public class DatabaseElementService implements EnhancedElementService {
 
 		UserEntity userEntity = DatabaseUserService
 				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
-		Set<ElementEntity> entities = this.elementDao
-				.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
-				.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId))
-				.getChildrenElements();
+		Set<ElementEntity> entities;
 
-		return getAllWithPermission(entities, userEntity.getRole());
+		if (userEntity.getRole() == UserRole.MANAGER) {
+			entities = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
+					.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId))
+					.getChildrenElements();
+			return findActiveAndInActiveElements(entities, elementDao, elementConverter);
+		} else if (userEntity.getRole() == UserRole.PLAYER) {
+			entities = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
+					.filter(elementEntity -> elementEntity.getActive())
+					.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId))
+					.getChildrenElements();
+			return findActiveElements(entities, elementDao, elementConverter);
+		} else {
+			throw new UserNotFoundException("Not valid operation for ADMIN user");
+		}
 
 	}
 
@@ -245,10 +256,17 @@ public class DatabaseElementService implements EnhancedElementService {
 		UserEntity userEntity = DatabaseUserService
 				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
 
-		List<ElementEntity> entities = this.elementDao.findAll(PageRequest.of(page, size, Direction.ASC, "elementId"))
-				.getContent();
+		List<ElementEntity> entities;
 
-		return getAllWithPermission(entities, userEntity.getRole());
+		if (userEntity.getRole() == UserRole.MANAGER) {
+			entities = this.elementDao.findAll(PageRequest.of(page, size, Direction.ASC, "elementId")).getContent();
+		} else if (userEntity.getRole() == UserRole.PLAYER) {
+			entities = this.elementDao.findAllByActive(true, PageRequest.of(page, size, Direction.ASC, "elementId"));
+		} else {
+			throw new UserNotFoundException("Not valid operation for ADMIN user");
+		}
+
+		return entities.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
 
 	}
 
@@ -260,10 +278,18 @@ public class DatabaseElementService implements EnhancedElementService {
 		UserEntity userEntity = DatabaseUserService
 				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
 
-		List<ElementEntity> entities = this.elementDao.findAllByNameLike(name,
-				PageRequest.of(page, size, Direction.ASC, "elementId"));
+		List<ElementEntity> entities;
 
-		return getAllWithPermission(entities, userEntity.getRole());
+		if (userEntity.getRole() == UserRole.MANAGER) {
+			entities = this.elementDao.findAllByNameLike(name, PageRequest.of(page, size, Direction.ASC, "elementId"));
+		} else if (userEntity.getRole() == UserRole.PLAYER) {
+			entities = this.elementDao.findAllByNameLikeAndActive(name, true,
+					PageRequest.of(page, size, Direction.ASC, "elementId"));
+		} else {
+			throw new UserNotFoundException("Not valid operation for ADMIN user");
+		}
+
+		return entities.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
 
 	}
 
@@ -272,29 +298,49 @@ public class DatabaseElementService implements EnhancedElementService {
 	public List<ElementBoundary> getAllElementsByType(String userDomain, String userEmail, String type, int size,
 			int page) {
 
+		List<ElementEntity> entities;
 		UserEntity userEntity = DatabaseUserService
 				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
-		List<ElementEntity> entities = this.elementDao.findAllByTypeLike(type,
-				PageRequest.of(page, size, Direction.ASC, "elementId"));
 
-		return getAllWithPermission(entities, userEntity.getRole());
+		if (userEntity.getRole() == UserRole.MANAGER) {
+			entities = this.elementDao.findAllByTypeLike(type, PageRequest.of(page, size, Direction.ASC, "elementId"));
+		} else if (userEntity.getRole() == UserRole.PLAYER) {
+			entities = this.elementDao.findAllByTypeLikeAndActive(type, true,
+					PageRequest.of(page, size, Direction.ASC, "elementId"));
+		} else {
+			throw new UserNotFoundException("Not valid operation for ADMIN user");
+		}
+
+		return entities.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
 
 	}
 
-	// NEED TO ASK EYAL ABOUT CALCULATE DISTANCE
 	@Override
 	@Transactional(readOnly = true)
 	public List<ElementBoundary> getAllElementsByLocation(String userDomain, String userEmail, String lat, String lng,
 			String distance, int size, int page) {
 
+		List<ElementEntity> entities;
+		Double minLat, maxLat, minLng, maxLng;
 		UserEntity userEntity = DatabaseUserService
 				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
 
-		List<ElementEntity> entities = this.elementDao.findAllByLocation(
-				new Location(Double.parseDouble(lat), Double.parseDouble(lng)),
-				PageRequest.of(page, size, Direction.ASC, "elementId"));
+		minLat = Double.parseDouble(lat) - Double.parseDouble(distance);
+		maxLat = Double.parseDouble(lat) + Double.parseDouble(distance);
+		minLng = Double.parseDouble(lng) - Double.parseDouble(distance);
+		maxLng = Double.parseDouble(lng) + Double.parseDouble(distance);
 
-		return getAllWithPermission(entities, userEntity.getRole());
+		if (userEntity.getRole() == UserRole.MANAGER) {
+			entities = this.elementDao.findAllByLocation_LatBetweenAndLocation_LngBetween(minLat, maxLat, minLng,
+					maxLng, PageRequest.of(page, size, Direction.ASC, "elementId"));
+		} else if (userEntity.getRole() == UserRole.PLAYER) {
+			entities = this.elementDao.findAllByLocation_LatBetweenAndLocation_LngBetweenAndActive(minLat, maxLat,
+					minLng, maxLng, true, PageRequest.of(page, size, Direction.ASC, "elementId"));
+		} else {
+			throw new UserNotFoundException("Not valid operation for ADMIN user");
+		}
+
+		return entities.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
 
 	}
 
@@ -314,32 +360,34 @@ public class DatabaseElementService implements EnhancedElementService {
 	private ElementEntity getSpecificElementWithPermission(String elementId, UserRole role) {
 		if (role == UserRole.MANAGER) {
 			// Fetching the specific element from DB.
-			return findActiveOrInActiveElement(elementDao,elementId);
+			return findActiveOrInActiveElement(elementDao, elementId);
 		} else if (role == UserRole.PLAYER) {
-			return findActiveElement(elementDao,elementId);
+			return findActiveElement(elementDao, elementId);
 
 		} else { // Role is ADMIN
 			throw new UserNotFoundException("Not valid operation for ADMIN user");
 		}
 
 	}
-	
+
+	// how to implement that: doing filter in ram or in db? , ask the crew
 	public static ElementEntity findActiveElement(ElementDao elementDao, String elementId) {
 		return elementDao.findById(elementId).filter(elementEntity -> elementEntity.getActive())
 				.orElseThrow(() -> new ElementNotFoundException("could not find element"));
 	}
+
 	public static ElementEntity findActiveOrInActiveElement(ElementDao elementDao, String elementId) {
-		return elementDao.findById(elementId)
-				.orElseThrow(() -> new ElementNotFoundException("could not find element"));
+		return elementDao.findById(elementId).orElseThrow(() -> new ElementNotFoundException("could not find element"));
 	}
-	
-	public static List<ElementBoundary> findActiveElements(Collection<ElementEntity> entities,ElementDao elementDao
-			,ElementConverter elementConverter) {
-		return entities.stream().filter(elementEntity -> elementEntity.getActive())
-				.map(elementConverter::fromEntity).collect(Collectors.toList());
+
+	public static List<ElementBoundary> findActiveElements(Collection<ElementEntity> entities, ElementDao elementDao,
+			ElementConverter elementConverter) {
+		return entities.stream().filter(elementEntity -> elementEntity.getActive()).map(elementConverter::fromEntity)
+				.collect(Collectors.toList());
 	}
-	public static List<ElementBoundary> findActiveAndInActiveElements(Collection<ElementEntity> entities,ElementDao elementDao
-			,ElementConverter elementConverter) {
+
+	public static List<ElementBoundary> findActiveAndInActiveElements(Collection<ElementEntity> entities,
+			ElementDao elementDao, ElementConverter elementConverter) {
 		return entities.stream().map(elementConverter::fromEntity).collect(Collectors.toList());
 	}
 
