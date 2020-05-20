@@ -160,10 +160,11 @@ public class DatabaseElementService implements EnhancedElementService {
 
 	}
 
-	// ask eyal about it
+	
 	@Override
 	@Transactional // (readOnly = false)
 	public void deleteAllElements(String adminDomain, String adminEmail) {
+		DatabaseUserService.checkRole(adminDomain, adminEmail, UserRole.ADMIN, userDao, userConverter);
 		// Clear all elements from DB.
 		this.elementDao.deleteAll();
 
