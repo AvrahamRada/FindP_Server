@@ -345,18 +345,6 @@ public class DatabaseElementService implements EnhancedElementService {
 
 	}
 
-	private List<ElementBoundary> getAllWithPermission(Collection<ElementEntity> entities, UserRole role) {
-
-		if (role == UserRole.MANAGER) {
-			return entities.stream().map(this.elementConverter::fromEntity).collect(Collectors.toList());
-		} else if (role == UserRole.PLAYER) {
-			return entities.stream().filter(elementEntity -> elementEntity.getActive())
-					.map(this.elementConverter::fromEntity).collect(Collectors.toList());
-		} else { // Role is ADMIN
-			throw new UserNotFoundException("Not valid operation for ADMIN user");
-		}
-
-	}
 
 	private ElementEntity getSpecificElementWithPermission(String elementId, UserRole role) {
 		if (role == UserRole.MANAGER) {

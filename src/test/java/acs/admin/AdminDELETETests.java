@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
-import acs.action.ActionId;
 import acs.action.InvokedBy;
 import acs.boundaries.ActionBoundary;
 import acs.boundaries.ElementBoundary;
@@ -34,418 +32,399 @@ import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AdminDELETETests {
-	
+
 	private int port;
-	//User
-	private String createUserUrl;
+	// User
 	private String allUsersUrl;
-	//Element
-	private String createElementUrl;
+	// Element
 	private String allElementsUrl;
-	//Action
-	private String invokeActionUrl;
+	// Action
 	private String allActionsUrl;
-	//Admin
+	// Admin
 	private String deleteActionsUrl;
 	private String deleteElementsUrl;
 	private String deleteUsersUrl;
-	
+
 	private RestTemplate restTemplate;
-	
+
 	@LocalServerPort
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
+
 	@PostConstruct
 	public void init() {
-		//for user
-		this.createUserUrl = "http://localhost:" + port + "/acs/users";
+		// for user
 		this.allUsersUrl = "http://localhost:" + port + "/acs/admin/users/{adminDomain}/{adminEmail}";
-		//for elements
-		this.createElementUrl = "http://localhost:" + port + "/acs/elements/{managerDomain}/{managerEmail}";
+		// for elements
 		this.allElementsUrl = "http://localhost:" + port + "/acs/elements/{userDomain}/{userEmail}";
-		//for invoke action
-		this.invokeActionUrl = "http://localhost:" + port + "/acs/actions";
+		// for invoke action
 		this.allActionsUrl = "http://localhost:" + port + "/acs/admin/actions/{adminDomain}/{adminEmail}";
-		//for DELETE of admin
+		// for DELETE of admin
 		this.deleteActionsUrl = "http://localhost:" + port + "/acs/admin/actions/{adminDomain}/{adminEmail}";
 		this.deleteElementsUrl = "http://localhost:" + port + "/acs/admin/elements/{adminDomain}/{adminEmail}";
 		this.deleteUsersUrl = "http://localhost:" + port + "/acs/admin/users/{adminDomain}/{adminEmail}";
 		this.restTemplate = new RestTemplate();
 	}
-	
+
 	@BeforeEach
 	public void setup() {
-		//TestUtil.clearDB(port);
+		// TestUtil.clearDB(port);
 	}
-	
+
 	@AfterEach
 	public void teardown() {
 		TestUtil.clearDB(port);
 	}
-		
-	
+
 	@Test
 	public void testContext() {
-		
+
 	}
-	
-	//helpful methods
-	public UserBoundary createNewUserByChoice(boolean create) {
-		UserBoundary user = null;
-		if(create == true) {
-			user = this.restTemplate.postForObject(this.createUserUrl,
-					new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),UserBoundary.class);
-		}
-		else {
-			user = this.restTemplate.postForObject(this.createUserUrl,
-					new NewUserDetails("notAdmin@gmail.com", UserRole.PLAYER, "not Admin", "Avatar"),UserBoundary.class);
-		}
-		return user;
-	}
-	
-	public void createActionOrElementsOrUsersByX(String option,int X)
-	{
-		switch(option) {
-			case "action":
-				IntStream.range(0, X)
-				.forEach(i -> this.restTemplate.postForObject(this.invokeActionUrl,
-						new ActionBoundary(null, "type",
-								new Element(new ElementId("2020b.lior.trachtman", "id " + i)),
-								new Date(System.currentTimeMillis()),
-								new InvokedBy(new UserId("2020b.lior.trachtman", "mor.soferian@s.afeka.ac.il")),
-								new HashMap<>()),
-						ActionBoundary.class, "2020b.lior.trachtman", "don't care"));
-				break;
-			case "element":
-				IntStream.range(0, X)
-				.forEach(i -> this.restTemplate.postForObject(this.createElementUrl,
-						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
-								new Date(System.currentTimeMillis()),
-								new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-								new Location(40.730610, -73.935242), new HashMap<>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "don't care"));
-				break;
-			case "user":
-				IntStream.range(0, X).forEach(i->this.restTemplate.postForObject(this.createUserUrl, 
-						new NewUserDetails("user" + i + "@gmail.com",UserRole.PLAYER,"user","(=)"), UserBoundary.class));
-				break;
-		}
-	}
-	
+
+
+
 	// Test with Admin
 	@Test
 	public void testDeleteAllActionsWith10ActionsAndAdmin() throws Exception {
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		//create X actions
-		final int X = 10;
-		createActionOrElementsOrUsersByX("action",X);
-		
-		// get all actions
-		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-
-		// the server returns array of X actions
-		assertThat(rv).hasSize(X);
-		
-		//delete all actions from DB
-		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		
-		// get all actions after delete
-		rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-
-		// the server returns an empty array
-		assertThat(rv).isEmpty();
-	}
-	
-	@Test
-	public void testDeleteAllActionsWith100ActionsAndAdmin() throws Exception {
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		//create X actions
-		final int X = 100;
-		createActionOrElementsOrUsersByX("action",X);
-		
-		// get all actions
-		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-
-		// the server returns array of X actions
-		assertThat(rv).hasSize(X);
-		
-		//delete all actions from DB
-		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		
-		// get all actions after delete
-		rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-
-		// the server returns an empty array
-		assertThat(rv).isEmpty();
-	}
-	
-	@Test
-	public void testDeleteAllElementsWith10ElementsAndAdmin() throws Exception {
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		// create X elements
-		final int X = 10;
-		createActionOrElementsOrUsersByX("element",X);
-
-		// get all elements
-		ElementBoundary[] rv = this.restTemplate.getForObject(this.allElementsUrl,
-				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
-
-		// the server returns array of X element
-		assertThat(rv).hasSize(X);
-		
-		//delete all elements from DB
-		this.restTemplate.delete(this.deleteElementsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		
-		// get all elements after delete
-		rv = this.restTemplate.getForObject(this.allElementsUrl,
-				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
-
-		// the server returns an empty array
-		assertThat(rv).isEmpty();	
-	}
-	
-	@Test
-	public void testDeleteAllElementsWith100ElementsAndAdmin() throws Exception {
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		// create X elements
-		final int X = 100;
-		createActionOrElementsOrUsersByX("element",X);
-
-		// get all elements
-		ElementBoundary[] rv = this.restTemplate.getForObject(this.allElementsUrl,
-				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
-
-		// the server returns array of X element
-		assertThat(rv).hasSize(X);
-		
-		//delete all elements from DB
-		this.restTemplate.delete(this.deleteElementsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		
-		// get all elements after delete
-		rv = this.restTemplate.getForObject(this.allElementsUrl,
-				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
-
-		// the server returns an empty array
-		assertThat(rv).isEmpty();	
-	}
-	
-	@Test
-	public void testDeleteAllUsersWith10UsersAndAdmin() throws Exception{
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		// create X users
-		final int X = 10;
-		createActionOrElementsOrUsersByX("user",X);
-		
-		// get all users
-		UserBoundary[] rv = this.restTemplate
-					.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// the server returns array of 10 users and 1 admin  = 11 users
-		assertThat(rv).hasSize(X +1);
-		
-		// delete all users from DB - include admin
-		this.restTemplate.delete(this.deleteUsersUrl, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		//recreate admin
-		admin = createNewUserByChoice(true);
-		
-		// get all users - only admin
-		rv = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// the server returns array of 1 admin  = 1 users
-		assertThat(rv).hasSize(1);
-	}
-	
-	@Test
-	public void testDeleteAllUsersWith100UsersAndAdmin() throws Exception{
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		// create X users
-		final int X = 100;
-		createActionOrElementsOrUsersByX("user",X);
-		
-		// get all users
-		UserBoundary[] rv = this.restTemplate
-					.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// the server returns array of 100 users and 1 admin  = 101 users
-		assertThat(rv).hasSize(X +1);
-		
-		// delete all users from DB - include admin
-		this.restTemplate.delete(this.deleteUsersUrl, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		//recreate admin
-		admin = createNewUserByChoice(true);
-		
-		// get all users - only admin
-		rv = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// the server returns array of 1 admin  = 1 users
-		assertThat(rv).hasSize(1);
-	}
-	
-	// Test with Not Admin
-	@Test
-	public void testDeleteAllActionsWithActionsAndNotAdmin() throws Exception {
-		//create A NOT admin user
-		UserBoundary notAdmin = createNewUserByChoice(false);
-		
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create elements
+		TestUtil.createElementsByX(10, manager,port);
+		ElementBoundary[] elementBoundaries = this.restTemplate.getForObject(this.allElementsUrl,
+				ElementBoundary[].class, manager.getUserId().getDomain(), manager.getUserId().getEmail());
 		// create X actions
 		final int X = 10;
-		createActionOrElementsOrUsersByX("action",X);
-				
-		// get all elements
-		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, notAdmin.getUserId().getDomain(),notAdmin.getUserId().getEmail());
+		TestUtil.createActionsByX(X, player, elementBoundaries,port);
 
-		// the server returns array of X element
-		assertThat(rv).hasSize(X);
-		
-		//delete all elements from DB
-		this.restTemplate.delete(this.deleteActionsUrl, notAdmin.getUserId().getDomain(), notAdmin.getUserId().getEmail());
-		
-		// get all elements after delete
-		rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, notAdmin.getUserId().getDomain(),notAdmin.getUserId().getEmail());
+		// delete all actions from DB
+		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// get all actions after delete
+		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl, ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
 
 		// the server returns an empty array
 		assertThat(rv).isEmpty();
 	}
-	
-	@Test
-	public void testDeleteAllElementsWithElementsAndNotAdmin() throws Exception {
-		//create A NOT admin user
-		UserBoundary notAdmin = createNewUserByChoice(false);
-		
-		// create X elements
-		final int X = 10;
-		createActionOrElementsOrUsersByX("element",X);
-				
-		// get all elements
-		ElementBoundary[] rv = this.restTemplate.getForObject(this.allElementsUrl,
-				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
 
-		// the server returns array of X element
-		assertThat(rv).hasSize(X);
-		
-		//delete all elements from DB
-		this.restTemplate.delete(this.deleteElementsUrl, notAdmin.getUserId().getDomain(), notAdmin.getUserId().getEmail());
-		
-		// get all elements after delete
-		rv = this.restTemplate.getForObject(this.allElementsUrl,
-				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
+	@Test
+	public void testDeleteAllActionsWith100ActionsAndAdmin() throws Exception {
+
+		// create X actions
+		final int X = 100;
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create elements
+		TestUtil.createElementsByX(X, manager,port);
+		ElementBoundary[] elementBoundaries = this.restTemplate.getForObject(
+				this.allElementsUrl + "?page={page}&size={size}", ElementBoundary[].class,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail(), 0, X);
+		// create X actions
+		TestUtil.createActionsByX(X, player, elementBoundaries,port);
+
+		// delete all actions from DB
+		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// get all actions after delete
+		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl + "?page={page}&size={size}",
+				ActionBoundary[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, X);
 
 		// the server returns an empty array
-		assertThat(rv).isEmpty();	
+		assertThat(rv).isEmpty();
 	}
-	
+
 	@Test
-	public void testDeleteAllUsersWithUsersAndNotAdmin() {
-		//create A NOT admin user
-		UserBoundary notAdmin = createNewUserByChoice(false);
-		
+	public void testDeleteAllElementsWith10ElementsAndAdmin() throws Exception {
+		final int X = 10;
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create elements
+		TestUtil.createElementsByX(X, manager,port);
+
+		// delete all elements from DB
+		this.restTemplate.delete(this.deleteElementsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// get all elements after delete
+		ElementBoundary[] rv = this.restTemplate.getForObject(this.allElementsUrl, ElementBoundary[].class,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail());
+
+		// the server returns an empty array
+		assertThat(rv).isEmpty();
+	}
+
+	@Test
+	public void testDeleteAllElementsWith100ElementsAndAdmin() throws Exception {
+		final int X = 100;
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create elements
+		TestUtil.createElementsByX(X, manager,port);
+
+		// delete all elements from DB
+		this.restTemplate.delete(this.deleteElementsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// get all elements after delete
+		ElementBoundary[] rv = this.restTemplate.getForObject(this.allElementsUrl, ElementBoundary[].class,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail());
+
+		// the server returns an empty array
+		assertThat(rv).isEmpty();
+	}
+
+	@Test
+	public void testDeleteAllUsersWith10UsersAndAdmin() throws Exception {
+		final int X = 10;
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+
+		// create X users
+		TestUtil.createUsersByX(X, UserRole.PLAYER,port);
+
+		// get all users
+		UserBoundary[] rv = this.restTemplate.getForObject(this.allUsersUrl + "?page={page}&size={size}",
+				UserBoundary[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, X + 1);
+
+		// the server returns array of 10 users and 1 admin = 11 users
+		assertThat(rv).hasSize(X + 1);
+
+		// delete all users from DB - include admin
+		this.restTemplate.delete(this.deleteUsersUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// Recreate admin
+		admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+
+		// get all users - only admin
+		rv = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),
+				admin.getUserId().getEmail());
+
+		// the server returns array of 1 admin = 1 users
+		assertThat(rv).hasSize(1);
+	}
+
+	@Test
+	public void testDeleteAllUsersWith100UsersAndAdmin() throws Exception {
+		final int X = 100;
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+
+		// create X users
+		TestUtil.createUsersByX(X, UserRole.PLAYER,port);
+
+		// get all users
+		UserBoundary[] rv = this.restTemplate.getForObject(this.allUsersUrl + "?page={page}&size={size}",
+				UserBoundary[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, X + 1);
+
+		// the server returns array of 100 users and 1 admin = 101 users
+		assertThat(rv).hasSize(X + 1);
+
+		// delete all users from DB - include admin
+		this.restTemplate.delete(this.deleteUsersUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// Recreate admin
+		admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+
+		// get all users - only admin
+		rv = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),
+				admin.getUserId().getEmail());
+
+		// the server returns array of 1 admin = 1 users
+		assertThat(rv).hasSize(1);
+	}
+
+	// Test with Not Admin - player
+	@Test
+	public void testDeleteAllActionsWithActionsAndPlayerReturnsStatusDiffrenceFrom2xx() throws Exception {
+
+		// create X actions
+		final int X = 10;
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create elements
+		TestUtil.createElementsByX(X, manager,port);
+		ElementBoundary[] elementBoundaries = this.restTemplate.getForObject(
+				this.allElementsUrl + "?page={page}&size={size}", ElementBoundary[].class,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail(), 0, X);
+		// create X actions
+		TestUtil.createActionsByX(X, player, elementBoundaries,port);
+
+		// delete all actions from DB with player - who is not admin
+		assertThrows(Exception.class, () -> this.restTemplate.delete(this.deleteActionsUrl,
+				player.getUserId().getDomain(), player.getUserId().getEmail()));
+
+	}
+
+	// Test with Not Admin - player
+	@Test
+	public void testDeleteAllActionsWithActionsAndManagerReturnsStatusDiffrenceFrom2xx() throws Exception {
+
+		// create X actions
+		final int X = 10;
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create elements
+		TestUtil.createElementsByX(X, manager,port);
+		ElementBoundary[] elementBoundaries = this.restTemplate.getForObject(
+				this.allElementsUrl + "?page={page}&size={size}", ElementBoundary[].class,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail(), 0, X);
+		// create X actions
+		TestUtil.createActionsByX(X, player, elementBoundaries,port);
+
+		// delete all actions from DB with player - who is not admin
+		assertThrows(Exception.class, () -> this.restTemplate.delete(this.deleteActionsUrl,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail()));
+
+	}
+
+	@Test
+	public void testDeleteAllElementsWithElementsAndPlayer() throws Exception {
+
+		// create X elements
+		final int X = 10;
+		// create A NOT admin user
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+		// create elements
+		TestUtil.createElementsByX(X, manager,port);
+
+		// delete all actions from DB with player - who is not admin
+		assertThrows(Exception.class, () -> this.restTemplate.delete(this.deleteActionsUrl,
+				player.getUserId().getDomain(), player.getUserId().getEmail()));
+
+	}
+
+	@Test
+	public void testDeleteAllElementsWithElementsAndManager() throws Exception {
+
+		// create X elements
+		final int X = 10;
+		// create A NOT admin user
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create elements
+		TestUtil.createElementsByX(X, manager,port);
+
+		// delete all actions from DB with player - who is not admin
+		assertThrows(Exception.class, () -> this.restTemplate.delete(this.deleteActionsUrl,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail()));
+
+	}
+
+	@Test
+	public void testDeleteAllUsersWithUsersAndPlayer() {
+		// create A NOT admin user
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+
 		// create X users
 		final int X = 10;
-		createActionOrElementsOrUsersByX("user",X);
-				
-		//delete all users from DB
-		assertThrows(Exception.class, 
-				() -> this.restTemplate.delete(this.deleteUsersUrl, notAdmin.getUserId().getDomain(), notAdmin.getUserId().getEmail()));
+		TestUtil.createUsersByX(X, UserRole.PLAYER,port);
+
+		// delete all users from DB
+		assertThrows(Exception.class, () -> this.restTemplate.delete(this.deleteUsersUrl,
+				player.getUserId().getDomain(), player.getUserId().getEmail()));
 	}
-	
+
+	@Test
+	public void testDeleteAllUsersWithUsersAndManager() {
+		// create A NOT admin user
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+
+		// create X users
+		final int X = 10;
+		TestUtil.createUsersByX(X, UserRole.PLAYER,port);
+
+		// delete all users from DB
+		assertThrows(Exception.class, () -> this.restTemplate.delete(this.deleteUsersUrl,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail()));
+	}
+
 	// Test with wrong path
 	@Test
-	public void testDeleteAllActionsWithWrongPath() throws Exception{
-		//create and login admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		//create X actions
-		final int X = 10;
-		createActionOrElementsOrUsersByX("action",X);
-		
-		// get all actions
-		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
+	public void testDeleteAllActionsWithWrongPath() throws Exception {
 
-		// the server returns array of X actions
-		assertThat(rv).hasSize(X);
-		
+		// create X actions
+		final int X = 100;
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create elements
+		TestUtil.createElementsByX(X, manager,port);
+		ElementBoundary[] elementBoundaries = this.restTemplate.getForObject(
+				this.allElementsUrl + "?page={page}&size={size}", ElementBoundary[].class,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail(), 0, X);
+		// create X actions
+		TestUtil.createActionsByX(X, player, elementBoundaries,port);
+
 		// not delete all elements from DB
 		this.restTemplate.delete(this.deleteElementsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		
+
 		// get all actions after delete elements
-		rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
+		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl, ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
 
 		// the server returns an isn't empty array
 		assertThat(rv).isNotEmpty();
 	}
-	
+
 	@Test
-	public void testDeleteAllElementsWithWrongPath() throws Exception{
-		//create and login admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
+	public void testDeleteAllElementsWithWrongPath() throws Exception {
+		// create and login admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+
 		// create X elements
 		final int X = 10;
-		createActionOrElementsOrUsersByX("element",X);
+		TestUtil.createElementsByX(X, manager,port);
 
-		// get all elements
-		ElementBoundary[] rv = this.restTemplate.getForObject(this.allElementsUrl,
-				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
-
-		// the server returns array of X element
-		assertThat(rv).hasSize(X);
-		
 		// not delete all elements from DB
 		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
-		
+
 		// get all elements after delete
-		rv = this.restTemplate.getForObject(this.allElementsUrl,
-				ElementBoundary[].class, "2020b.lior.trachtman", "don't care");
+		ElementBoundary[] rv = this.restTemplate.getForObject(this.allElementsUrl, ElementBoundary[].class,
+				manager.getUserId().getDomain(), manager.getUserId().getEmail());
 
 		// the server returns an empty array
 		assertThat(rv).isNotEmpty();
 	}
-	
+
 	@Test
-	public void testDeleteAllUsersWithWrongPath() throws Exception{
-		//create and login admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
+	public void testDeleteAllUsersWithWrongPath() throws Exception {
+		// create and login admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+
 		// create X users
 		final int X = 10;
-		createActionOrElementsOrUsersByX("user",X);
-		
-		// get all users
-		UserBoundary[] rv = this.restTemplate
-					.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
+		TestUtil.createUsersByX(X, UserRole.PLAYER,port);
+
+
 		// not delete all users from DB - include admin
-		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
+		this.restTemplate.delete(this.deleteActionsUrl, admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
 		// get all users - only admin
-		rv = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// the server returns array of 10 users and 1 admin  = 11 users
+		UserBoundary[] rv = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),
+				admin.getUserId().getEmail());
+
+		// the server returns array of 10 users and 1 admin = 11 users
 		assertThat(rv).isNotEmpty();
 	}
-	 
+
 }

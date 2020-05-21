@@ -34,221 +34,201 @@ import acs.util.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AdminGETTests {
-	
 
 	private int port;
-	private String url;
 	private String allUsersUrl;
 	private String createUserUrl;
 	private String allActionsUrl;
+	private String allElementsUrl;
 	private String invokeActionUrl;
+	private String createElementUrl;
 	private RestTemplate restTemplate;
 	
 	@LocalServerPort
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
+
 	@PostConstruct
 	public void init() {
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
 		this.invokeActionUrl = "http://localhost:" + port + "/acs/actions";
-		this.url = "http://localhost:" + port + "/acs/admin";
 		this.allUsersUrl = "http://localhost:" + port + "/acs/admin/users/{adminDomain}/{adminEmail}";
 		this.allActionsUrl = "http://localhost:" + port + "/acs/admin/actions/{adminDomain}/{adminEmail}";
+		this.createElementUrl = "http://localhost:" + port + "/acs/elements/{managerDomain}/{managerEmail}";
+		this.allElementsUrl = "http://localhost:" + port + "/acs/elements/{userDomain}/{userEmail}";
 		this.restTemplate = new RestTemplate();
 	}
-	
+
 	@BeforeEach
 	public void setup() {
-		
+
 		TestUtil.clearDB(port);
-		
+
 	}
-	
+
 	@AfterEach
 	public void teardown() {
-		
+
 		TestUtil.clearDB(port);
-		
+
 	}
-	
+
 	@Test
 	public void testContext() {
-		
+
 	}
+
 	
-	//helpful methods
-		public UserBoundary createNewUserByChoice(boolean create) {
-			UserBoundary user = null;
-			if(create == true) {
-				user = this.restTemplate.postForObject(this.createUserUrl,
-						new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),UserBoundary.class);
-			}
-			else {
-				user = this.restTemplate.postForObject(this.createUserUrl,
-						new NewUserDetails("notAdmin@gmail.com", UserRole.PLAYER, "not Admin", "Avatar"),UserBoundary.class);
-			}
-			return user;
-		}
-		
-		public void createActionOrElementsOrUsersByX(String option,int X)
-		{
-			switch(option) {
-				case "action":
-					IntStream.range(0, X)
-					.forEach(i -> this.restTemplate.postForObject(this.invokeActionUrl,
-							new ActionBoundary(null, "type",
-									new Element(new ElementId("2020b.lior.trachtman", "id " + i)),
-									new Date(System.currentTimeMillis()),
-									new InvokedBy(new UserId("2020b.lior.trachtman", "mor.soferian@s.afeka.ac.il")),
-									new HashMap<>()),
-							ActionBoundary.class, "2020b.lior.trachtman", "don't care"));
-					break;
-				case "user":
-					IntStream.range(0, X).forEach(i->this.restTemplate.postForObject(this.createUserUrl, 
-							new NewUserDetails("user" + i + "@gmail.com",UserRole.PLAYER,"user","(=)"), UserBoundary.class));
-					break;
-			}
-		}
-	
+
 	@Test
 	public void testGetAllActionsWith10ActionsReturnsDatabaseWith10Actions() throws Exception {
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		//create X actions
-		final int X = 10;
-		createActionOrElementsOrUsersByX("action",X);
-		
-		// get all actions
-		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-
-		// the server returns array of X actions
-		assertThat(rv).hasSize(X);
-	}
-	
-	@Test
-	public void testGetAllActionsWith100ActionsReturnDatabaseWith100Actions() throws Exception {
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		//create X actions
-		final int X = 100;
-		createActionOrElementsOrUsersByX("action",X);
-		
-		// get all actions
-		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-
-		// the server returns array of X actions
-		assertThat(rv).hasSize(X);
-		
-		
-	}
-	
-	@Test
-	public void testGetAllUsersWith10UsersAndAdmin() throws Exception{
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		// create X users
-		final int X = 10;
-		createActionOrElementsOrUsersByX("user",X);
-		
-		// get all users
-		UserBoundary[] rv = this.restTemplate
-					.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// the server returns array of 10 users and 1 admin  = 11 users
-		assertThat(rv).hasSize(X +1);
-		
-	}
-	
-	@Test
-	public void testGetAllUsersWith100UsersAndAdmin() throws Exception{
-		//create admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
-		// create X users
-		final int X = 100;
-		createActionOrElementsOrUsersByX("user",X);
-		
-		// get all users
-		UserBoundary[] rv = this.restTemplate
-					.getForObject(this.allUsersUrl, UserBoundary[].class, admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// the server returns array of 100 users and 1 admin  = 101 users
-		assertThat(rv).hasSize(X +1);
-		
-	}
-	
-	@Test
-	public void testGetAllActionsWithActionsAndNotAdmin() throws Exception {
-		//create A NOT admin user
-		UserBoundary notAdmin = createNewUserByChoice(false);
-		
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		//create elements
+		TestUtil.createElementsByX(10, manager,port);
+		ElementBoundary[] elementBoundaries = this.restTemplate.getForObject(this.allElementsUrl
+				, ElementBoundary[].class, manager.getUserId().getDomain(),manager.getUserId().getEmail());
 		// create X actions
 		final int X = 10;
-		createActionOrElementsOrUsersByX("action",X);
-				
-		// get all elements
-		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl,
-				ActionBoundary[].class, notAdmin.getUserId().getDomain(),notAdmin.getUserId().getEmail());
+		TestUtil.createActionsByX(X, player, elementBoundaries,port);
 
-		// the server returns array of X element
+		// get all actions
+		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl, ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		// the server returns array of X actions
 		assertThat(rv).hasSize(X);
 	}
-	
+
 	@Test
-	public void testGetAllUsersWithUsersAndNotAdmin() {
-		//create A NOT admin user
-		UserBoundary notAdmin = createNewUserByChoice(false);
+	public void testGetAllActionsWith100ActionsReturnDatabaseWith100Actions() throws Exception {
+		final int X = 100;
+		// create admin for get all actions
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create player for invoke 100 actions
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+
+		TestUtil.createElementsByX(X, manager,port);
+		ElementBoundary[] elementBoundaries = this.restTemplate.getForObject(
+				this.allElementsUrl + "?page={page}&size={size}"
+				, ElementBoundary[].class, manager.getUserId().getDomain(),manager.getUserId().getEmail(),0,X);
+		// create X actions
 		
+		TestUtil.createActionsByX(X, player, elementBoundaries,port);
+		
+
+		// get all actions
+		ActionBoundary[] rv = this.restTemplate.getForObject(this.allActionsUrl + "?page={page}&size={size}",
+				ActionBoundary[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, X);
+
+		// the server returns array of X actions
+		assertThat(rv).hasSize(X);
+
+	}
+
+	@Test
+	public void testGetAllUsersWith10UsersAndAdmin() throws Exception {
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+
 		// create X users
 		final int X = 10;
-		createActionOrElementsOrUsersByX("user",X);
-				
-		//delete all users from DB
-		assertThrows(Exception.class, 
-				() -> this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class, notAdmin.getUserId().getDomain(), notAdmin.getUserId().getEmail()));
+		TestUtil.createUsersByX(X, UserRole.PLAYER,port);
+		
+
+		// get all users
+		UserBoundary[] rv = this.restTemplate.getForObject(this.allUsersUrl+ "?page={page}&size={size}", UserBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail(),0,X+1);
+
+		// the server returns array of 10 users and 1 admin = 11 users
+		assertThat(rv).hasSize(X + 1);
+
 	}
-	
-	
+
+	@Test
+	public void testGetAllUsersWith100UsersAndAdmin() throws Exception {
+		// create admin
+				UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+
+				// create X users
+				final int X = 100;
+				TestUtil.createUsersByX(X, UserRole.PLAYER,port);
+				
+
+				// get all users
+				UserBoundary[] rv = this.restTemplate.getForObject(this.allUsersUrl+ "?page={page}&size={size}", UserBoundary[].class,
+						admin.getUserId().getDomain(), admin.getUserId().getEmail(),0,X+1);
+
+				// the server returns array of 100 users and 1 admin = 101 users
+				assertThat(rv).hasSize(X + 1);
+
+	}
+
+	@Test
+	public void testGetAllActionsWithActionsAndNotAdminReturnsStatusDiffrenceFrom2xx() throws Exception {
+		final int X = 10;
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		// create player for invoke 100 actions
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+
+		TestUtil.createElementsByX(X, manager,port);
+		ElementBoundary[] elementBoundaries = this.restTemplate.getForObject(
+				this.allElementsUrl
+				, ElementBoundary[].class, manager.getUserId().getDomain(),manager.getUserId().getEmail());
+		// create X actions
+		
+		TestUtil.createActionsByX(X, player, elementBoundaries,port);
+		
+		assertThrows(Exception.class, ()->this.restTemplate.getForObject(this.allActionsUrl,
+				ActionBoundary[].class, player.getUserId().getDomain(), player.getUserId().getEmail()));
+		
+	}
+
+	@Test
+	public void testGetAllUsersWithUsersAndNotAdmin() {
+		// create A NOT admin user
+		UserBoundary notAdmin = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+
+		// create X users
+		final int X = 10;
+		TestUtil.createUsersByX(X, UserRole.PLAYER,port);
+		
+
+		// delete all users from DB
+		assertThrows(Exception.class, () -> this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class,
+				notAdmin.getUserId().getDomain(), notAdmin.getUserId().getEmail()));
+	}
+
 	@Test
 	public void testGet10UsersAndAdminInDatabaseReturnAllUsersStoredInDatabase() throws Exception {
+		int x = 10;
 		List<UserBoundary> storedUsers = new ArrayList<>();
-		for (int i = 0; i < 10; i++) {
-			storedUsers.add(
-				this.restTemplate
-				  .postForObject(
-						this.createUserUrl, 
-						new NewUserDetails("user" + i + "@gmail.com",UserRole.PLAYER,"user",":)"), 
-						UserBoundary.class)
-				  );
+		for (int i = 0; i < x; i++) {
+			storedUsers.add(this.restTemplate.postForObject(this.createUserUrl,
+					new NewUserDetails("user" + i + "@gmail.com", UserRole.PLAYER, "user", ":)"), UserBoundary.class));
 		}
-		
-		
-		//create and login admin
-		UserBoundary admin = createNewUserByChoice(true);
-		
+
+		// create and login admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
+
 		storedUsers.add(admin);
-		
+
 		// WHEN
-		UserBoundary[] usersArray = 
-			this.restTemplate
-				.getForObject(this.allUsersUrl, 
-						UserBoundary[].class,admin.getUserId().getDomain(),admin.getUserId().getEmail());
-		
-		// THEN the server returns the same 10 users and 1 admin = 11 users in the database
-		assertThat(usersArray)
-			.usingRecursiveFieldByFieldElementComparator()
-			.containsExactlyInAnyOrderElementsOf(storedUsers);
+		UserBoundary[] usersArray = this.restTemplate.getForObject(this.allUsersUrl + "?page={page}&size={size}" , UserBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail(),0,x+1);
+
+		// THEN the server returns the same 10 users and 1 admin = 11 users in the
+		// database
+		assertThat(usersArray).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyInAnyOrderElementsOf(storedUsers);
 	}
-	
-	
-	
-	
 
 }
