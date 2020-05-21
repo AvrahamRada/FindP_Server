@@ -99,8 +99,8 @@ public class UserPOSTTests {
 		storedUsers.add(admin);
 
 		// WHEN
-		UserBoundary[] usersArray = this.restTemplate.getForObject(this.allUsersUrl, UserBoundary[].class,
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		UserBoundary[] usersArray = this.restTemplate.getForObject(this.allUsersUrl + "?page={page}&size={size}", UserBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail(),0,11);
 
 		// THEN the server returns the same 10 users and 1 admin = 11 users in the
 		// database

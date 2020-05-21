@@ -37,8 +37,10 @@ public class ActionPOSTTests {
 	private int port;
 	private String url;
 	private String createUserUrl;
-	private String getUrl;
+	private String getAllActionsUrl;
 	private RestTemplate restTemplate;
+	private String createElementUrl;
+	private String allElementsUrl;
 
 	@LocalServerPort
 	public void setPort(int port) {
@@ -48,8 +50,11 @@ public class ActionPOSTTests {
 	@PostConstruct
 	public void init() {
 		this.url = "http://localhost:" + port + "/acs/actions";
-		this.getUrl = "http://localhost:" + port + "/acs/admin/actions/{adminDomain}/{adminEmail}";
+		this.getAllActionsUrl = "http://localhost:" + port + "/acs/admin/actions/{adminDomain}/{adminEmail}";
 		this.createUserUrl = "http://localhost:" + port + "/acs/users";
+		this.createElementUrl = "http://localhost:" + port + "/acs/elements/{managerDomain}/{managerEmail}";
+		// for elements
+		this.allElementsUrl = "http://localhost:" + port + "/acs/elements/{userDomain}/{userEmail}";
 		this.restTemplate = new RestTemplate();
 	}
 
@@ -61,7 +66,7 @@ public class ActionPOSTTests {
 
 	@AfterEach
 	public void teardown() {
-		
+
 		TestUtil.clearDB(port);
 	}
 
@@ -73,27 +78,29 @@ public class ActionPOSTTests {
 	@Test
 	public void testPostSingleActionWithNoActionIdServerSaveToDBNewActionEntityWithGeneratedID() throws Exception {
 
-		// GIVEN the server is up
-		// do nothing
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN, port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER, port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER, port);
+		TestUtil.createElementsByX(1, manager, port);
 
-		// WHEN I POST /acs/actions with Action Boundary with NO Action Id.
+		// create element with manager
+		ElementBoundary newElement = this.restTemplate.postForObject(this.createElementUrl,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+						new Date(System.currentTimeMillis()), new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242), new HashMap<>()),
+				ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail());
 
 		ActionBoundary newAction = this.restTemplate.postForObject(this.url,
-				new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
-						new Date(System.currentTimeMillis()),
-						new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")), new HashMap<String, Object>()),
+				new ActionBoundary(null, "type", new Element(newElement.getElementId()),
+						new Date(System.currentTimeMillis()), new InvokedBy(player.getUserId()),
+						new HashMap<String, Object>()),
 				ActionBoundary.class);
 
-		// THEN the server save the new action boundary with
-		// elementDomain : 2020b.lior.trachtman AND
-		// generated UUID and returns it.
-
-		// Create admin for get all actions from DB.
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getAllActionsUrl,
+				ActionBoundary[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail());
 
 		assertThat(actualActionsArray).usingRecursiveFieldByFieldElementComparator().contains(newAction);
 
@@ -102,30 +109,29 @@ public class ActionPOSTTests {
 	@Test
 	public void testPostSingleActionServerSaveToDBNewActionEntityWithGeneratedID() throws Exception {
 
-		// GIVEN the server is up
-		// do nothing
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN, port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER, port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER, port);
+//		TestUtil.createElementsByX(1, manager, port);
 
-		// WHEN I POST /acs/actions with Action Boundary with Action Id = "X".
-
-		final String id = "X";
+		// create element with manager
+		ElementBoundary newElement = this.restTemplate.postForObject(this.createElementUrl,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+						new Date(System.currentTimeMillis()), new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242), new HashMap<>()),
+				ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail());
 
 		ActionBoundary newAction = this.restTemplate.postForObject(this.url,
-				new ActionBoundary(new ActionId("2020b.lior.trachtman", id), "type",
-						new Element(new ElementId("2020b.lior.trachtman", "don't care")),
-						new Date(System.currentTimeMillis()),
-						new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")), new HashMap<String, Object>()),
+				new ActionBoundary(new ActionId("2020b.lior.trachtman", "dont care"), "type",
+						new Element(newElement.getElementId()), new Date(System.currentTimeMillis()),
+						new InvokedBy(player.getUserId()), new HashMap<String, Object>()),
 				ActionBoundary.class);
 
-		// THEN the server save the new action boundary and set
-		// elementDomain to 2020b.lior.trachtman AND
-		// set the id to generated UUID and returns it.
-
-		// Create admin for get all actions from DB.
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getAllActionsUrl,
+				ActionBoundary[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail());
 
 		assertThat(actualActionsArray).usingRecursiveFieldByFieldElementComparator().contains(newAction);
 
@@ -133,6 +139,8 @@ public class ActionPOSTTests {
 
 	@Test
 	public void testPostSingleActionWithNoElementDatabaseReturnStatusDifferenceFrom2xx() throws Exception {
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER, port);
 
 		// GIVEN the server is up
 		// do nothing
@@ -140,26 +148,31 @@ public class ActionPOSTTests {
 		// WHEN I POST /acs/actions with Action Boundary with no element
 
 		// THEN the server returns status != 2xx
-		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.url,
-				new ActionBoundary(null, "type", null, new Date(System.currentTimeMillis()),
-						new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")), new HashMap<String, Object>()),
-				ActionBoundary.class));
+		assertThrows(Exception.class,
+				() -> this.restTemplate.postForObject(this.url,
+						new ActionBoundary(null, "type", null, new Date(System.currentTimeMillis()),
+								new InvokedBy(player.getUserId()), new HashMap<String, Object>()),
+						ActionBoundary.class));
 
 	}
 
 	@Test
 	public void testPostSingleActionWithNoElementIdDatabaseReturnStatusDifferenceFrom2xx() throws Exception {
-
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER, port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER, port);
 		// GIVEN the server is up
 		// do nothing
 
 		// WHEN I POST /acs/actions with Action Boundary with no element
 
 		// THEN the server returns status != 2xx
-		assertThrows(Exception.class, () -> this.restTemplate.postForObject(this.url,
-				new ActionBoundary(null, "type", new Element(null), new Date(System.currentTimeMillis()),
-						new InvokedBy(new UserId("2020b.lior.trachtman", "don't care")), new HashMap<String, Object>()),
-				ActionBoundary.class));
+		assertThrows(Exception.class,
+				() -> this.restTemplate.postForObject(this.url,
+						new ActionBoundary(null, "type", new Element(null), new Date(System.currentTimeMillis()),
+								new InvokedBy(player.getUserId()), new HashMap<String, Object>()),
+						ActionBoundary.class));
 
 	}
 
@@ -184,24 +197,29 @@ public class ActionPOSTTests {
 	public void testPostSingleActionWithNoCreatedTimestampDatabaseStoreActionEntityWithGenereatedTimestamp()
 			throws Exception {
 
-		// GIVEN the server is up
-		// do nothing
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN, port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER, port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER, port);
+//		TestUtil.createElementsByX(1, manager, port);
 
-		// WHEN I POST /acs/actions with Action Boundary with no element
+		// create element with manager
+		ElementBoundary newElement = this.restTemplate.postForObject(this.createElementUrl,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+						new Date(System.currentTimeMillis()), new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242), new HashMap<>()),
+				ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail());
+
 		ActionBoundary newAction = this.restTemplate.postForObject(this.url,
-				new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")), null,
-						new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")), new HashMap<String, Object>()),
+				new ActionBoundary(new ActionId("2020b.lior.trachtman", "dont care"), "type",
+						new Element(newElement.getElementId()), null, new InvokedBy(player.getUserId()),
+						new HashMap<String, Object>()),
 				ActionBoundary.class);
 
-		// Create admin for get all actions from DB.
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		// THEN the server save the new action boundary and set
-		// the timestamp to current time
-
-		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getAllActionsUrl,
+				ActionBoundary[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail());
 
 		assertThat(actualActionsArray).usingRecursiveFieldByFieldElementComparator().contains(newAction);
 
@@ -245,27 +263,32 @@ public class ActionPOSTTests {
 
 		final int X = 10;
 
-		// GIVEN the server is up
-		// do nothing
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN, port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER, port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER, port);
+		// create 100 elements
+		TestUtil.createElementsByX(X, manager, port);
+
+		ElementBoundary[] boundaries = this.restTemplate.getForObject(this.allElementsUrl + "?page={page}&size={size}",
+				ElementBoundary[].class, manager.getUserId().getDomain(), manager.getUserId().getEmail(), 0, X);
 
 		List<ActionBoundary> storedActions = new ArrayList<>();
 
 		for (int i = 0; i < X; i++) {
 			storedActions.add(this.restTemplate.postForObject(this.url,
-					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
-							new Date(System.currentTimeMillis()),
-							new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")),
+					new ActionBoundary(null, "type", new Element(boundaries[i].getElementId()),
+							new Date(System.currentTimeMillis()), new InvokedBy(player.getUserId()),
 							new HashMap<String, Object>()),
 					ActionBoundary.class));
 		}
 
-		// Create admin for get all actions from DB.
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
 		// WHEN I POST X action boundaries to the server
-		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(
+				this.getAllActionsUrl + "?page={page}&size={size}", ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, X);
 
 		// THEN the server returns the same X actions in the database (which mean DB
 		// saved the action entites
@@ -278,28 +301,32 @@ public class ActionPOSTTests {
 	public void testPost100ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
 
 		final int X = 100;
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN, port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER, port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER, port);
+		// create 100 elements
+		TestUtil.createElementsByX(X, manager, port);
 
-		// GIVEN the server is up
-		// do nothing
+		ElementBoundary[] boundaries = this.restTemplate.getForObject(this.allElementsUrl + "?page={page}&size={size}",
+				ElementBoundary[].class, manager.getUserId().getDomain(), manager.getUserId().getEmail(), 0, X);
 
 		List<ActionBoundary> storedActions = new ArrayList<>();
 
 		for (int i = 0; i < X; i++) {
 			storedActions.add(this.restTemplate.postForObject(this.url,
-					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
-							new Date(System.currentTimeMillis()),
-							new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")),
+					new ActionBoundary(null, "type", new Element(boundaries[i].getElementId()),
+							new Date(System.currentTimeMillis()), new InvokedBy(player.getUserId()),
 							new HashMap<String, Object>()),
 					ActionBoundary.class));
 		}
 
-		// Create admin for get all actions from DB.
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
 		// WHEN I POST X action boundaries to the server
-		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(
+				this.getAllActionsUrl + "?page={page}&size={size}", ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, X);
 
 		// THEN the server returns the same X actions in the database (which mean DB
 		// saved the action entites
@@ -312,28 +339,32 @@ public class ActionPOSTTests {
 	public void testPost1000ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
 
 		final int X = 1000;
+		// create admin
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN, port);
+		// create player
+		UserBoundary player = TestUtil.createNewUserByChoice(UserRole.PLAYER, port);
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER, port);
+		// create 100 elements
+		TestUtil.createElementsByX(X, manager, port);
 
-		// GIVEN the server is up
-		// do nothing
+		ElementBoundary[] boundaries = this.restTemplate.getForObject(this.allElementsUrl + "?page={page}&size={size}",
+				ElementBoundary[].class, manager.getUserId().getDomain(), manager.getUserId().getEmail(), 0, X);
 
 		List<ActionBoundary> storedActions = new ArrayList<>();
 
 		for (int i = 0; i < X; i++) {
 			storedActions.add(this.restTemplate.postForObject(this.url,
-					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
-							new Date(System.currentTimeMillis()),
-							new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")),
+					new ActionBoundary(null, "type", new Element(boundaries[i].getElementId()),
+							new Date(System.currentTimeMillis()), new InvokedBy(player.getUserId()),
 							new HashMap<String, Object>()),
 					ActionBoundary.class));
 		}
 
-		// Create admin for get all actions from DB.
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
 		// WHEN I POST X action boundaries to the server
-		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(
+				this.getAllActionsUrl + "?page={page}&size={size}", ActionBoundary[].class,
+				admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, X);
 
 		// THEN the server returns the same X actions in the database (which mean DB
 		// saved the action entites
@@ -342,37 +373,4 @@ public class ActionPOSTTests {
 
 	}
 
-	@Test
-	public void testPost10000ValidActionServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
-
-		final int X = 10000;
-
-		// GIVEN the server is up
-		// do nothing
-
-		List<ActionBoundary> storedActions = new ArrayList<>();
-
-		for (int i = 0; i < X; i++) {
-			storedActions.add(this.restTemplate.postForObject(this.url,
-					new ActionBoundary(null, "type", new Element(new ElementId("2020b.lior.trachtman", "don't care")),
-							new Date(System.currentTimeMillis()),
-							new InvokedBy(new UserId("2020b.lior.trachtman", "mor@gmail.com")),
-							new HashMap<String, Object>()),
-					ActionBoundary.class));
-		}
-
-		// Create admin for get all actions from DB.
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"), UserBoundary.class);
-
-		// WHEN I POST X action boundaries to the server
-		ActionBoundary[] actualActionsArray = this.restTemplate.getForObject(this.getUrl, ActionBoundary[].class,
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
-
-		// THEN the server returns the same X actions in the database (which mean DB
-		// saved the action entites
-		assertThat(actualActionsArray).usingRecursiveFieldByFieldElementComparator()
-				.containsExactlyInAnyOrderElementsOf(storedActions);
-
-	}
 }

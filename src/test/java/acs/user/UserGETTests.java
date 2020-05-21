@@ -60,16 +60,6 @@ public class UserGETTests {
 		
 	}
 	
-	public UserBoundary createAdminAndLogin() {
-		UserBoundary admin = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.ADMIN, "Admin", "Avatar"),
-				UserBoundary.class);
-		
-		this.restTemplate
-		.getForObject(this.loginUrl, UserBoundary.class, admin.getUserId().getDomain()
-				,admin.getUserId().getEmail());
-		return admin;
-	}
 	
 	@Test
 	public void testGetLoginUserToDatabaseAndReturnASpecificUserThatExistsInDatabase() throws Exception{
