@@ -34,8 +34,12 @@ public interface ElementDao extends PagingAndSortingRepository<ElementEntity, St
 			@Param("maxLng") Double maxLng,@Param("active") Boolean active, Pageable pageable);
 	
 	
-	// SELECT * FROM ELEMENTS WHERE NAME LIKE ?
+	// SELECT * FROM ELEMENTS WHERE ACTIVE IS TRUE ?
 		public List<ElementEntity> findAllByActive(@Param("active") Boolean active,Pageable pageable);
+		
+	// SELECT * FROM ELEMENTS WHERE ELEMENT_ID LIKE AND ACTIVE IS TRUE ?
+		public List<ElementEntity> findOneByElementIdAndActive(@Param("elementId") String elementId,
+				@Param("active") Boolean active,Pageable pageable);
 		
 
 }
