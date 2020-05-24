@@ -213,14 +213,11 @@ public class DatabaseElementService implements EnhancedElementService {
 		Set<ElementEntity> entities;
 
 		if (userEntity.getRole() == UserRole.MANAGER) {
-			entities = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
-					.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId))
+			entities = findActiveOrInActiveElement(elementDao,this.elementConverter.convertToEntityId(elementDomain, elementId))
 					.getChildrenElements();
 			return findActiveAndInActiveElements(entities, elementDao, elementConverter);
 		} else if (userEntity.getRole() == UserRole.PLAYER) {
-			entities = this.elementDao.findById(this.elementConverter.convertToEntityId(elementDomain, elementId))
-					.filter(elementEntity -> elementEntity.getActive())
-					.orElseThrow(() -> new ElementNotFoundException("could not find origin by id: " + elementId))
+			entities = findActiveElement(elementDao, this.elementConverter.convertToEntityId(elementDomain, elementId))
 					.getChildrenElements();
 			return findActiveElements(entities, elementDao, elementConverter);
 		} else {
@@ -359,10 +356,14 @@ public class DatabaseElementService implements EnhancedElementService {
 
 	}
 
-	// how to implement that: doing filter in ram or in db? , ask the crew
+	
 	public static ElementEntity findActiveElement(ElementDao elementDao, String elementId) {
-		return elementDao.findById(elementId).filter(elementEntity -> elementEntity.getActive())
-				.orElseThrow(() -> new ElementNotFoundException("could not find element"));
+		List<ElementEntity> elements = elementDao.findOneByElementIdAndActive(elementId,true,
+				PageRequest.of(0, 1, Direction.ASC, "elementId"));
+		if(elements.size() == 0 ) {
+			throw new ElementNotFoundException("could not find element");
+		}
+		return elements.get(0);	
 	}
 
 	public static ElementEntity findActiveOrInActiveElement(ElementDao elementDao, String elementId) {
