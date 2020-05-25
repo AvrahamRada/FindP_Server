@@ -86,24 +86,37 @@ public class ElementGETTests {
 	public void testGet10ChildrenOfExistingParent() throws Exception {
 		final int X = 10;
 		// GIVEN the database contains a Parent with X children
+		
+//		create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		/* Creating Parent */
 		ElementBoundary elementParent = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), 
+						"type",
+						"name",
+						true,
 						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don'tcare1");
+						new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242),
+						new HashMap<>()),
+				ElementBoundary.class,
+				manager.getUserId().getDomain(),
+				manager.getUserId().getEmail());
 
 		ElementBoundary[] elementChild = new ElementBoundary[X];
 
 		IntStream.range(0, X).forEach(
 				i -> elementChild[i] = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
+						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i),
+								"type",
+								"name", true,
 								new Date(System.currentTimeMillis()),
-								new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
+								new CreatedBy(manager.getUserId()),
 								new Location(40.730610, -73.935242), new HashMap<>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "don't care" + i));
+						ElementBoundary.class,
+						manager.getUserId().getDomain(),
+						manager.getUserId().getEmail()));
 
 		IntStream.range(0, X)
 				.forEach(i -> this.restTemplate.put(
@@ -111,7 +124,8 @@ public class ElementGETTests {
 						new ElementIdBoundary(elementChild[i].getElementId().getDomain(),
 								elementChild[i].getElementId().getId()),
 						elementParent.getCreatedBy().getUserId().getDomain(),
-						elementParent.getCreatedBy().getUserId().getEmail(), elementParent.getElementId().getDomain(),
+						elementParent.getCreatedBy().getUserId().getEmail(), 
+						elementParent.getElementId().getDomain(),
 						elementParent.getElementId().getId()));
 
 		// WHEN I GET
@@ -119,7 +133,8 @@ public class ElementGETTests {
 		ElementBoundary[] actualElementsChildrenArray = this.restTemplate.getForObject(
 				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}/children", ElementBoundary[].class,
 				elementParent.getCreatedBy().getUserId().getDomain(),
-				elementParent.getCreatedBy().getUserId().getEmail(), elementParent.getElementId().getDomain(),
+				elementParent.getCreatedBy().getUserId().getEmail(), 
+				elementParent.getElementId().getDomain(),
 				elementParent.getElementId().getId());
 
 		// THEN the server returns array of X element children boundaries
@@ -127,29 +142,40 @@ public class ElementGETTests {
 	}
 
 	@Test
-	public void testGet100ChildrenOfExistingParent() throws Exception {
-
+	public void testGet100ChildrenOfExistingParentUsingPagination() throws Exception {
 		final int X = 100;
-
 		// GIVEN the database contains a Parent with X children
+		
+//		create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		/* Creating Parent */
 		ElementBoundary elementParent = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), 
+						"type",
+						"name",
+						true,
 						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don'tcare1");
+						new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242),
+						new HashMap<>()),
+				ElementBoundary.class,
+				manager.getUserId().getDomain(),
+				manager.getUserId().getEmail());
 
 		ElementBoundary[] elementChild = new ElementBoundary[X];
 
 		IntStream.range(0, X).forEach(
 				i -> elementChild[i] = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i), "type", "name", true,
+						new ElementBoundary(new ElementId("2020b.lior.trachtman", "id " + i),
+								"type",
+								"name", true,
 								new Date(System.currentTimeMillis()),
-								new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
+								new CreatedBy(manager.getUserId()),
 								new Location(40.730610, -73.935242), new HashMap<>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "don't care" + i));
+						ElementBoundary.class,
+						manager.getUserId().getDomain(),
+						manager.getUserId().getEmail()));
 
 		IntStream.range(0, X)
 				.forEach(i -> this.restTemplate.put(
@@ -157,16 +183,20 @@ public class ElementGETTests {
 						new ElementIdBoundary(elementChild[i].getElementId().getDomain(),
 								elementChild[i].getElementId().getId()),
 						elementParent.getCreatedBy().getUserId().getDomain(),
-						elementParent.getCreatedBy().getUserId().getEmail(), elementParent.getElementId().getDomain(),
+						elementParent.getCreatedBy().getUserId().getEmail(), 
+						elementParent.getElementId().getDomain(),
 						elementParent.getElementId().getId()));
 
 		// WHEN I GET
 		// /elements/{userDomain}/{userEmail}/{elementDomain}/{elementId}/children
 		ElementBoundary[] actualElementsChildrenArray = this.restTemplate.getForObject(
-				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}/children", ElementBoundary[].class,
+				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}/children" + "?page={page}&size={size}",
+				ElementBoundary[].class,
 				elementParent.getCreatedBy().getUserId().getDomain(),
-				elementParent.getCreatedBy().getUserId().getEmail(), elementParent.getElementId().getDomain(),
-				elementParent.getElementId().getId());
+				elementParent.getCreatedBy().getUserId().getEmail(), 
+				elementParent.getElementId().getDomain(),
+				elementParent.getElementId().getId(),
+				0,X);
 
 		// THEN the server returns array of X element children boundaries
 		assertThat(actualElementsChildrenArray).hasSize(X);
@@ -271,36 +301,57 @@ public class ElementGETTests {
 	public void testGetExactlyOneParentOfExistingChildren() throws Exception {
 
 		// GIVEN the database contains a Parent with X children
-
+		
+//		create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		
 		/* Creating Parents */
 		ElementBoundary elementParent1 = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"),
+						"type",
+						"name",
+						true,
 						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don'tcare1");
+						new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242), 
+						new HashMap<>()),
+				ElementBoundary.class, 
+				manager.getUserId().getDomain(), 
+				manager.getUserId().getEmail());
 
 		ElementBoundary elementParent2 = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"),
+						"type",
+						"name",
+						true,
 						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
+						new CreatedBy(manager.getUserId()),
 						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don'tcare2");
+				ElementBoundary.class, 
+				manager.getUserId().getDomain(), 
+				manager.getUserId().getEmail());
 
 		/* Creating Children */
 		ElementBoundary elementsChildren = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "id "), "type", "name", true,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "id"), 
+						"type", 
+						"name",
+						true,
 						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don't care3");
+						new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242),
+						new HashMap<>()),
+				ElementBoundary.class, 
+				manager.getUserId().getDomain(), 
+				manager.getUserId().getEmail());
 
 		/* Bind Children to parent1 */
 		this.restTemplate.put(this.url + "/{managerDomain}/{managerEmail}/{elementDomain}/{elementId}/children",
 				new ElementIdBoundary(elementsChildren.getElementId().getDomain(),
 						elementsChildren.getElementId().getId()),
 				elementParent1.getCreatedBy().getUserId().getDomain(),
-				elementParent1.getCreatedBy().getUserId().getEmail(), elementParent1.getElementId().getDomain(),
+				elementParent1.getCreatedBy().getUserId().getEmail(), 
+				elementParent1.getElementId().getDomain(),
 				elementParent1.getElementId().getId());
 
 		/* Bind Children to parent2 */
@@ -308,7 +359,8 @@ public class ElementGETTests {
 				new ElementIdBoundary(elementsChildren.getElementId().getDomain(),
 						elementsChildren.getElementId().getId()),
 				elementParent2.getCreatedBy().getUserId().getDomain(),
-				elementParent2.getCreatedBy().getUserId().getEmail(), elementParent2.getElementId().getDomain(),
+				elementParent2.getCreatedBy().getUserId().getEmail(), 
+				elementParent2.getElementId().getDomain(),
 				elementParent2.getElementId().getId());
 
 		/* getting all parents of specific element children */
@@ -328,25 +380,36 @@ public class ElementGETTests {
 	public void testGetExactlyZeroParentOfExistingChild() throws Exception {
 
 		// GIVEN the database contains a Parent with X children
+		
+//		create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		
 		/* Creating Children */
 		ElementBoundary elementsChildren = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "id "), "type", "name", true,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "id "),
+						"type",
+						"name",
+						true,
 						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don't care3");
+						new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242),
+						new HashMap<>()),
+				ElementBoundary.class, 
+				manager.getUserId().getDomain(), 
+				manager.getUserId().getEmail());
 
 		/* getting all parents of specific element children */
 		ElementBoundary[] ElementsParentsArray = this.restTemplate.getForObject(
-				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}/parents", ElementBoundary[].class,
+				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}/parents",
+				ElementBoundary[].class,
 				elementsChildren.getCreatedBy().getUserId().getDomain(),
-				elementsChildren.getCreatedBy().getUserId().getEmail(), elementsChildren.getElementId().getDomain(),
+				elementsChildren.getCreatedBy().getUserId().getEmail(), 
+				elementsChildren.getElementId().getDomain(),
 				elementsChildren.getElementId().getId());
 
 		// THEN the server returns array of X element parent boundaries that contain
 		// only 1 parent
 		assertThat(ElementsParentsArray).isEmpty();
-
 	}
 
 	@Test
@@ -355,28 +418,37 @@ public class ElementGETTests {
 		final int X = 0;
 
 		// GIVEN the database contains a Parent with X children
+		
+//		create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		/* Creating Parent */
 		ElementBoundary elementParent = this.restTemplate.postForObject(this.url + "/{managerDomain}/{managerEmail}",
-				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), "type", "name", true,
+				new ElementBoundary(new ElementId("2020b.lior.trachtman", "x"), 
+						"type",
+						"name", 
+						true,
 						new Date(System.currentTimeMillis()),
-						new CreatedBy(new UserId("2020b.lior.trachtman", "sarel.micha@s.afeka.ac.il")),
-						new Location(40.730610, -73.935242), new HashMap<>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "don'tcare1");
+						new CreatedBy(manager.getUserId()),
+						new Location(40.730610, -73.935242), 
+						new HashMap<>()),
+				ElementBoundary.class, 
+				manager.getUserId().getDomain(),
+				manager.getUserId().getEmail());
 
 		// WHEN I GET
 		// /elements/{userDomain}/{userEmail}/{elementDomain}/{elementId}/children
 		ElementBoundary[] actualElementsChildrenArray = this.restTemplate.getForObject(
 				this.url + "/{userDomain}/{userEmail}/{elementDomain}/{elementId}/children", ElementBoundary[].class,
 				elementParent.getCreatedBy().getUserId().getDomain(),
-				elementParent.getCreatedBy().getUserId().getEmail(), elementParent.getElementId().getDomain(),
+				elementParent.getCreatedBy().getUserId().getEmail(), 
+				elementParent.getElementId().getDomain(),
 				elementParent.getElementId().getId());
 
 		// THEN the server returns array of X element children boundaries
 		assertThat(actualElementsChildrenArray).hasSize(X);
 	}
 
-	///
 
 	@Test
 	public void testGetSingleElementWithDatabaseContatingThatElementRetreivesThatElement() throws Exception {
