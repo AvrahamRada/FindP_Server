@@ -86,23 +86,28 @@ public class ElementPOSTTests {
 
 		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with
 		// ElementBoundary with NO element Id.
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		ElementBoundary newElement = this.restTemplate.postForObject(this.createNewElement,
 				new ElementBoundary(null, "type", "mor", true, null,
 						new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 						new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com");
+				ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail());
 
 		// THEN the server save the new element entity with
 		// elementDomain : 2020b.lior.trachtman AND
 		// generated UUID and returns it.
 
 		// Create user for get all Elements from DB.
-		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
-
-		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
-				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+//		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+//				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+//
+//		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
+//				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+		
+		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl + "?page={page}&size={size}"
+				, ElementBoundary[].class, manager.getUserId().getDomain(),manager.getUserId().getEmail(),0,1);
 
 		assertThat(actualElementArray).usingRecursiveFieldByFieldElementComparator().contains(newElement);
 
@@ -117,6 +122,8 @@ public class ElementPOSTTests {
 		// GIVEN the server is up do nothing
 		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with entity Id = "X".
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		final String id = "X";
 
@@ -124,18 +131,21 @@ public class ElementPOSTTests {
 				new ElementBoundary(new ElementId("koko", id), "type", "mor", true, null,
 						new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 						new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com");
+				ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail());
 
 		// THEN the server save the new element boundary and set
 		// elementDomain to 2020b.lior.trachtman AND
 		// set the id to generated UUID and returns it.
 
 		// Create user for get all Elements from DB.
-		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+//		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+//				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
 
-		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
-				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+//		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
+//				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+		
+		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl + "?page={page}&size={size}"
+				, ElementBoundary[].class, manager.getUserId().getDomain(),manager.getUserId().getEmail(),0,1);
 
 		assertThat(actualElementArray).usingRecursiveFieldByFieldElementComparator().contains(newElement);
 
@@ -149,14 +159,16 @@ public class ElementPOSTTests {
 
 		// WHEN I POST /acs/element//2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with no Type
-
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
+		
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
 				() -> this.restTemplate.postForObject(this.createNewElement,
 						new ElementBoundary(null, null, "mor", true, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 	}
 
 	@Test
@@ -167,6 +179,8 @@ public class ElementPOSTTests {
 
 		// WHEN I POST /acs/element//2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with no Name
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
@@ -174,7 +188,7 @@ public class ElementPOSTTests {
 						new ElementBoundary(null, "type", null, true, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 
 	}
 
@@ -186,6 +200,8 @@ public class ElementPOSTTests {
 
 		// WHEN I POST /acs/element/2020b.lior.trachtman/morsof48@gmail.com with Element
 		// Boundary with null active
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
@@ -193,10 +209,9 @@ public class ElementPOSTTests {
 						new ElementBoundary(null, "type", "Joe", null, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 
 	}
-	
 
 	@Test
 	public void testPostSingleElementWithNullLocationEmailDatabaseReturnStatusDifferenceFrom2xx() throws Exception {
@@ -206,6 +221,8 @@ public class ElementPOSTTests {
 
 		// WHEN I POST /acs/element//2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with null Location
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
@@ -213,7 +230,7 @@ public class ElementPOSTTests {
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")), null,
 								new HashMap<String, Object>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 
 	}
 
@@ -225,6 +242,8 @@ public class ElementPOSTTests {
 
 		// WHEN I POST /acs/element//2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with null lat Location
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
@@ -232,7 +251,7 @@ public class ElementPOSTTests {
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(null, 33.11111), new HashMap<String, Object>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 
 	}
 
@@ -244,6 +263,8 @@ public class ElementPOSTTests {
 
 		// WHEN I POST /acs/element//2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with null lng Location
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
@@ -251,7 +272,7 @@ public class ElementPOSTTests {
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.11111, null), new HashMap<String, Object>()),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 
 	}
 
@@ -264,6 +285,8 @@ public class ElementPOSTTests {
 
 		// WHEN I POST /acs/element//2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with null ElementAttributes
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		// THEN the server returns status != 2xx
 		assertThrows(Exception.class,
@@ -271,7 +294,7 @@ public class ElementPOSTTests {
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.123456, 32.123456), null),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 
 	}
 
@@ -286,6 +309,8 @@ public class ElementPOSTTests {
 		// Element Boundary with null ElementAttributes value
 
 		// THEN the server returns status != 2xx
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("key", null);
@@ -295,7 +320,7 @@ public class ElementPOSTTests {
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.123456, 32.123456), map),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 
 	}
 
@@ -310,6 +335,8 @@ public class ElementPOSTTests {
 		// Element Boundary with null ElementAttributes key
 
 		// THEN the server returns status != 2xx
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put(null, "value");
@@ -319,7 +346,7 @@ public class ElementPOSTTests {
 						new ElementBoundary(null, "type", "Joe", false, null,
 								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 								new Location(33.123456, 32.123456), map),
-						ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+						ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 
 	}
 
@@ -329,6 +356,8 @@ public class ElementPOSTTests {
 
 		// GIVEN the server is up
 		// do nothing
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		// WHEN I POST /acs/elements/2020b.lior.trachtman/morsof48@gmail.com with
 		// Element Boundary with NO Element Id.
@@ -339,18 +368,21 @@ public class ElementPOSTTests {
 				new ElementBoundary(null, "type", "mor", true, date,
 						new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 						new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-				ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com");
+				ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail());
 
 		// THEN the server save the new element entity with
 		// elementDomain : 2020b.lior.trachtman AND
 		// generated UUID and returns it.
 
 		// Create user for get all Elements from DB.
-		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
-
-		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
-				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+//		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+//				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+//
+//		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
+//				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+		
+		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl + "?page={page}&size={size}"
+				, ElementBoundary[].class, manager.getUserId().getDomain(),manager.getUserId().getEmail(),0,1);
 
 		assertThat(actualElementArray).usingRecursiveFieldByFieldElementComparator().contains(newElement);
 
@@ -363,6 +395,8 @@ public class ElementPOSTTests {
 
 		// GIVEN the server is up
 		// do nothing
+		// create manager
+		UserBoundary manager = TestUtil.createNewUserByChoice(UserRole.MANAGER,port);
 
 		List<ElementBoundary> storedElements = new ArrayList<>();
 
@@ -371,16 +405,18 @@ public class ElementPOSTTests {
 					new ElementBoundary(null, "type", "mor", true, null,
 							new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
 							new Location(32.11111, 33.11111), new HashMap<String, Object>()),
-					ElementBoundary.class, "2020b.lior.trachtman", "morsof48@gmail.com"));
+					ElementBoundary.class, manager.getUserId().getDomain(), manager.getUserId().getEmail()));
 		}
 
 		// Create user for get all Elements from DB.
-		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
-				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
+//		UserBoundary user = this.restTemplate.postForObject(this.createUserUrl,
+//				new NewUserDetails("admin@gmail.com", UserRole.PLAYER, "user", "Avatar"), UserBoundary.class);
 
 		// WHEN I POST X elements boundaries to the server
-		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
-				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+//		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl,
+//				ElementBoundary[].class, user.getUserId().getDomain(), user.getUserId().getEmail());
+		ElementBoundary[] actualElementArray = this.restTemplate.getForObject(this.getAllElementsUrl + "?page={page}&size={size}"
+				, ElementBoundary[].class, manager.getUserId().getDomain(),manager.getUserId().getEmail(),0,X);
 
 		// THEN the server returns the same X elements in the database (which mean DB
 		// saved the element entities
@@ -389,7 +425,7 @@ public class ElementPOSTTests {
 
 	}
 
-	@Test
+	//@Test
 	public void testPost10000ValidElementsServerSaveToDBAllEntitesWithGeneratedID() throws Exception {
 
 		final int X = 10000;
@@ -421,5 +457,30 @@ public class ElementPOSTTests {
 				.containsExactlyInAnyOrderElementsOf(storedElements);
 
 	}
+	
+	@Test
+	public void testPostSingleElementWithUserThatIsNotManager() throws Exception {
+		
+		// create Player and Admin
+		UserBoundary user = TestUtil.createNewUserByChoice(UserRole.PLAYER,port);
+		UserBoundary admin = TestUtil.createNewUserByChoice(UserRole.ADMIN,port);
 
+		// THEN the server returns status != 2xx
+		assertThrows(Exception.class,
+				() -> this.restTemplate.postForObject(this.createNewElement,
+						new ElementBoundary(null, "type", "Joe", null, null,
+								new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
+								new Location(32.11111, 33.11111), new HashMap<String, Object>()),
+						ElementBoundary.class, user.getUserId().getDomain(), user.getUserId().getEmail()));
+		
+		// THEN the server returns status != 2xx
+				assertThrows(Exception.class,
+						() -> this.restTemplate.postForObject(this.createNewElement,
+								new ElementBoundary(null, "type", "Joe", null, null,
+										new CreatedBy(new UserId("2020b.lior.trachtman", "morsof48@gmail.com")),
+										new Location(32.11111, 33.11111), new HashMap<String, Object>()),
+								ElementBoundary.class, admin.getUserId().getDomain(), admin.getUserId().getEmail()));
+
+	}
+	
 }
