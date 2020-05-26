@@ -935,7 +935,6 @@ public class ElementGETTests {
 
 	}
 
-//	ASK
 //	@Test
 	public void testGetAllElementsWithUserDomianDiffereceFromProjectNameReturnsAllElementsStoredInDatabase()
 			throws Exception {
@@ -1007,7 +1006,6 @@ public class ElementGETTests {
 						"any email"));
 	}
 
-//	ASK(same as 866)
 //	@Test
 	public void testGetSingleElementWithUserDomianDiffereceFromProjectNameRetreivesThatElement() throws Exception {
 
