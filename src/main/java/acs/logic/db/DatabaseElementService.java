@@ -317,16 +317,24 @@ public class DatabaseElementService implements EnhancedElementService {
 	@Transactional(readOnly = true)
 	public List<ElementBoundary> getAllElementsByLocation(String userDomain, String userEmail, String lat, String lng,
 			String distance, int size, int page) {
+		
+		double distanceNum = Double.parseDouble(distance);
+		double latNum = Double.parseDouble(lat);
+		double lngNum = Double.parseDouble(lng);
+		
+		if(distanceNum < 0) {
+			throw new RuntimeException("Distance can not be negative.");
+		}
 
 		List<ElementEntity> entities;
 		Double minLat, maxLat, minLng, maxLng;
 		UserEntity userEntity = DatabaseUserService
 				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
 
-		minLat = Double.parseDouble(lat) - Double.parseDouble(distance);
-		maxLat = Double.parseDouble(lat) + Double.parseDouble(distance);
-		minLng = Double.parseDouble(lng) - Double.parseDouble(distance);
-		maxLng = Double.parseDouble(lng) + Double.parseDouble(distance);
+		minLat = latNum - distanceNum;
+		maxLat = latNum + distanceNum;
+		minLng = lngNum - distanceNum;
+		maxLng = lngNum + distanceNum;
 
 		if (userEntity.getRole() == UserRole.MANAGER) {
 			entities = this.elementDao.findAllByLocation_LatBetweenAndLocation_LngBetween(minLat, maxLat, minLng,
