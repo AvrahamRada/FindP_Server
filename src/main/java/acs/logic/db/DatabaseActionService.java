@@ -1,6 +1,8 @@
 package acs.logic.db;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,12 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import acs.action.ActionId;
 import acs.boundaries.ActionBoundary;
+import acs.boundaries.ElementBoundary;
 import acs.boundaries.UserBoundary;
 import acs.dal.ActionDao;
 import acs.dal.ElementDao;
 import acs.dal.UserDao;
 import acs.data.ActionEntity;
 import acs.data.ElementEntity;
+import acs.data.UserEntity;
 import acs.data.UserRole;
 import acs.logic.ActionService;
 import acs.logic.ElementNotFoundException;
@@ -30,6 +34,12 @@ import acs.logic.EnhancedActionService;
 import acs.logic.util.ActionConverter;
 import acs.logic.util.ElementConverter;
 import acs.logic.util.UserConverter;
+import acs.util.CreatedBy;
+import acs.util.Element;
+import acs.util.ElementId;
+import acs.util.Location;
+import acs.util.NewUserDetails;
+import acs.util.UserId;
 
 @Service
 public class DatabaseActionService implements EnhancedActionService {
@@ -38,6 +48,10 @@ public class DatabaseActionService implements EnhancedActionService {
 	private final String PARK = "park";
 	private final String UNPARK = "unpark";
 	private final String IS_TAKEN = "isTaken";
+	private final String CREATE_USER_MANAGER_BY_USERNAME = "createUserManagerByUsername";
+	private final String NEW_USER_DETAILS = "newUserDetails";
+	private final String CITY = "city";
+
 
 	private String projectName;
 	private ActionConverter actionConverter;
@@ -73,107 +87,97 @@ public class DatabaseActionService implements EnhancedActionService {
 	@Override
 	@Transactional // (readOnly = false)
 	public Object invokeAction(ActionBoundary action) {
-		
-		System.out.println("im here 0");
-
-		DatabaseUserService.checkRole(action.getInvokedBy().getUserId().getDomain(),
-				action.getInvokedBy().getUserId().getEmail(), UserRole.PLAYER, userDao, userConverter);
-		
-		System.out.println("im here 1");
-		
-		System.out.println("im here 3");
-
 
 		action.validation(); // if one of the important value is null, it will throw an exception
-		
-		System.out.println("im here 4");
-
 		action.setActionId(new ActionId(this.projectName, UUID.randomUUID().toString()));
-		
-		System.out.println("im here 5");
-
 		action.setCreatedTimestamp(new Date(System.currentTimeMillis()));
+
+		Object obj = operateAction(action);
 		
-		System.out.println("im here 6");
-
-
-		operateAction(action);
-		
-		System.out.println("im here 7");
-
-
 		// Save action to DB
 		actionDao.save(this.actionConverter.toEntity(action));
-		return action;
+
+		return obj;
 	}
 
-	private void operateAction(ActionBoundary action) {
+	private Object operateAction(ActionBoundary action) {
 
 		ElementEntity element = null;
-		
+
 		switch (action.getType()) {
 
 		case PARK:
-			
-			System.out.println("im here 2");
+			DatabaseUserService.checkRole(action.getInvokedBy().getUserId().getDomain(),
+					action.getInvokedBy().getUserId().getEmail(), UserRole.PLAYER, userDao, userConverter);
+
 			element = DatabaseElementService.findActiveElement(elementDao, this.elementConverter.convertToEntityId(
 					action.getElement().getElementId().getDomain(), action.getElement().getElementId().getId()));
-			
-			System.out.println("im here 8");
 
 			// update element attribute of isTaken to TRUE
 			element.getElementAttributes().put(IS_TAKEN, true);
-			
-			System.out.println("im here 9");
 
 			// update the element in the DB.
 			elementDao.save(element);
-			
-			System.out.println("im here 10");
 
-			break;
+			return action;
 
 		case UNPARK:
-			
-			System.out.println("im here 11");
+			DatabaseUserService.checkRole(action.getInvokedBy().getUserId().getDomain(),
+					action.getInvokedBy().getUserId().getEmail(), UserRole.PLAYER, userDao, userConverter);
 
 			// Hopefully this query works
 			List<ActionEntity> actions = actionDao.findOneByInvokedBy(
 					actionConverter.convertToEntityId(action.getInvokedBy().getUserId().getDomain(),
 							action.getInvokedBy().getUserId().getEmail()),
 					PageRequest.of(0, 1, Direction.DESC, "createdTimestamp"));
-			
-			System.out.println("im here 12");
 
-			
 			if (actions.size() == 0) {
-				
-				System.out.println("im here 13");
 				throw new RuntimeException("Player did not parked yet.");
 			}
-
-			
-			System.out.println("im here 14");
 
 			String elementId = actions.get(0).getElement();
 			element = elementDao.findById(elementId)
 					.orElseThrow(() -> new ElementNotFoundException("could not find element"));
 
-			
-			System.out.println("im here 15");
-
 			// update element attribute of isTaken to TRUE
 			element.getElementAttributes().put(IS_TAKEN, false);
-			
-			System.out.println("im here 16");
 
 			// update the element in the DB.
 			elementDao.save(element);
+			return action;
 
-			break;
+		case CREATE_USER_MANAGER_BY_USERNAME:
+			NewUserDetails newUserDetails = new NewUserDetails(action.getActionAttributes().get("email").toString(),
+					UserRole.valueOf(action.getActionAttributes().get("role").toString()),
+						action.getActionAttributes().get("username").toString(), 
+							action.getActionAttributes().get("avatar").toString());
+			
+			
+			List<UserEntity> users = userDao.findAllByUsernameOrUserId(newUserDetails.getUsername(),
+					this.userConverter.convertToEntityId(this.projectName, newUserDetails.getEmail()),
+					PageRequest.of(0, 1, Direction.DESC, "username"));
+			if (!users.isEmpty()) {
+				throw new RuntimeException("Manager already exists.");
+			}
+
+			UserBoundary userBoudary = new UserBoundary(new UserId(this.projectName, newUserDetails.getEmail()),
+					newUserDetails.getRole(), newUserDetails.getUsername(), newUserDetails.getAvatar());
+
+			UserEntity newUser = userConverter.toEntity(userBoudary);
+			this.userDao.save(newUser);
+			
+			ElementBoundary elementBoundary = new ElementBoundary(new ElementId(this.projectName, UUID.randomUUID().toString()),
+					CITY, newUser.getUsername(), true, new Date(System.currentTimeMillis()),
+					new CreatedBy(new UserId(userBoudary.getUserId().getDomain(),
+						userBoudary.getUserId().getEmail())), new Location(99999.0,99999.0), 
+							new HashMap<>());
+			
+			this.elementDao.save(this.elementConverter.toEntity(elementBoundary));
+			action.setElement(new Element(elementBoundary.getElementId()));
+			
+			return userBoudary;
 
 		default:
-			System.out.println("im here 17");
 
 			throw new RuntimeException("Type of action is not valid");
 
