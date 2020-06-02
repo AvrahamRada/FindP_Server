@@ -51,6 +51,8 @@ public class DatabaseActionService implements EnhancedActionService {
 	private final String CREATE_USER_MANAGER_BY_USERNAME = "createUserManagerByUsername";
 	private final String NEW_USER_DETAILS = "newUserDetails";
 	private final String CITY = "city";
+	private final String PARKING_STATUS_CHECK = "parkingStatusCheck";
+	
 
 
 	private String projectName;
@@ -176,10 +178,26 @@ public class DatabaseActionService implements EnhancedActionService {
 			action.setElement(new Element(elementBoundary.getElementId()));
 			
 			return userBoudary;
+			
+		case PARKING_STATUS_CHECK:
+			DatabaseUserService.checkRole(action.getInvokedBy().getUserId().getDomain(),
+					action.getInvokedBy().getUserId().getEmail(), UserRole.PLAYER, userDao, userConverter);
 
+			// Hopefully this query works
+			List<ActionEntity> myAction = actionDao.findOneByInvokedBy(
+					actionConverter.convertToEntityId(action.getInvokedBy().getUserId().getDomain(),
+							action.getInvokedBy().getUserId().getEmail()),
+					PageRequest.of(0, 1, Direction.DESC, "createdTimestamp"));
+
+			if (myAction.size() == 0) {
+				throw new RuntimeException("Player did not parked yet.");
+			}
+			
+			return myAction.get(0);
+			
 		default:
 
-			throw new RuntimeException("Type of action is not valid");
+			return action;
 
 		}
 
