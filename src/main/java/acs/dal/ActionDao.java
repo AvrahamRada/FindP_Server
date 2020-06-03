@@ -1,6 +1,5 @@
 package acs.dal;
 
-
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -11,16 +10,18 @@ import acs.action.InvokedBy;
 import acs.data.ActionEntity;
 import acs.data.ElementEntity;
 
-public interface ActionDao extends PagingAndSortingRepository<ActionEntity, String>{ 
-	
+public interface ActionDao extends PagingAndSortingRepository<ActionEntity, String> {
+
 	// SELECT * FROM ELEMENTS WHERE NAME LIKE ?
 //	public List<ActionEntity> findFirstByOrderByCreatedTimestampDescAndInvokedBy(@Param("invokedBy") String invokedBy, Pageable pageable);
 
-	
-	//Maybe this one will work?
+	// Maybe this one will work?
 //	public List<ActionEntity> findOneByInvokedByAndTopByOrderByCreatedTimestampDesc(@Param("invokedBy") String invokedBy, Pageable pageable);
-	
-	
+
 	// SELECT * FROM ELEMENTS WHERE NAME LIKE ?
 	public List<ActionEntity> findOneByInvokedBy(@Param("invokedBy") String invokedBy, Pageable pageable);
+
+	public List<ActionEntity> findOneByInvokedByAndTypeLike(@Param("invokedBy") String invokedBy,
+			@Param("type") String type, Pageable pageable);
+
 }

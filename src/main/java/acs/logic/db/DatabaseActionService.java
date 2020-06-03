@@ -51,9 +51,7 @@ public class DatabaseActionService implements EnhancedActionService {
 	private final String CREATE_USER_MANAGER_BY_USERNAME = "createUserManagerByUsername";
 	private final String NEW_USER_DETAILS = "newUserDetails";
 	private final String CITY = "city";
-	private final String PARKING_STATUS_CHECK = "parkingStatusCheck";
-	
-
+	private final String IS_USER_PARKED = "isUserParked";
 
 	private String projectName;
 	private ActionConverter actionConverter;
@@ -95,7 +93,7 @@ public class DatabaseActionService implements EnhancedActionService {
 		action.setCreatedTimestamp(new Date(System.currentTimeMillis()));
 
 		Object obj = operateAction(action);
-		
+
 		// Save action to DB
 		actionDao.save(this.actionConverter.toEntity(action));
 
@@ -151,10 +149,9 @@ public class DatabaseActionService implements EnhancedActionService {
 		case CREATE_USER_MANAGER_BY_USERNAME:
 			NewUserDetails newUserDetails = new NewUserDetails(action.getActionAttributes().get("email").toString(),
 					UserRole.valueOf(action.getActionAttributes().get("role").toString()),
-						action.getActionAttributes().get("username").toString(), 
-							action.getActionAttributes().get("avatar").toString());
-			
-			
+					action.getActionAttributes().get("username").toString(),
+					action.getActionAttributes().get("avatar").toString());
+
 			List<UserEntity> users = userDao.findAllByUsernameOrUserId(newUserDetails.getUsername(),
 					this.userConverter.convertToEntityId(this.projectName, newUserDetails.getEmail()),
 					PageRequest.of(0, 1, Direction.DESC, "username"));
@@ -167,34 +164,47 @@ public class DatabaseActionService implements EnhancedActionService {
 
 			UserEntity newUser = userConverter.toEntity(userBoudary);
 			this.userDao.save(newUser);
-			
-			ElementBoundary elementBoundary = new ElementBoundary(new ElementId(this.projectName, UUID.randomUUID().toString()),
-					CITY, newUser.getUsername(), true, new Date(System.currentTimeMillis()),
-					new CreatedBy(new UserId(userBoudary.getUserId().getDomain(),
-						userBoudary.getUserId().getEmail())), new Location(99999.0,99999.0), 
-							new HashMap<>());
-			
+
+			ElementBoundary elementBoundary = new ElementBoundary(
+					new ElementId(this.projectName, UUID.randomUUID().toString()), CITY, newUser.getUsername(), true,
+					new Date(System.currentTimeMillis()),
+					new CreatedBy(new UserId(userBoudary.getUserId().getDomain(), userBoudary.getUserId().getEmail())),
+					new Location(99999.0, 99999.0), new HashMap<>());
+
 			this.elementDao.save(this.elementConverter.toEntity(elementBoundary));
 			action.setElement(new Element(elementBoundary.getElementId()));
-			
+
 			return userBoudary;
-			
-		case PARKING_STATUS_CHECK:
+
+		case IS_USER_PARKED:
 			DatabaseUserService.checkRole(action.getInvokedBy().getUserId().getDomain(),
 					action.getInvokedBy().getUserId().getEmail(), UserRole.PLAYER, userDao, userConverter);
 
 			// Hopefully this query works
-			List<ActionEntity> myAction = actionDao.findOneByInvokedBy(
+			List<ActionEntity> myActionPark = actionDao.findOneByInvokedByAndTypeLike(
 					actionConverter.convertToEntityId(action.getInvokedBy().getUserId().getDomain(),
 							action.getInvokedBy().getUserId().getEmail()),
-					PageRequest.of(0, 1, Direction.DESC, "createdTimestamp"));
+					PARK, PageRequest.of(0, 1, Direction.DESC, "createdTimestamp"));
 
-			if (myAction.size() == 0) {
+			List<ActionEntity> myActionUnpark = actionDao.findOneByInvokedByAndTypeLike(
+					actionConverter.convertToEntityId(action.getInvokedBy().getUserId().getDomain(),
+							action.getInvokedBy().getUserId().getEmail()),
+					UNPARK, PageRequest.of(0, 1, Direction.DESC, "createdTimestamp"));
+
+			if (myActionPark.size() == 0 && myActionUnpark.size() == 0) {
 				throw new RuntimeException("Player did not parked yet.");
+			} else if (myActionPark.size() == 0) {
+				return false;
+			} else if (myActionUnpark.size() == 0) {
+				return true;
+			} else {
+				if (myActionPark.get(0).getCreatedTimestamp()
+						.compareTo(myActionUnpark.get(0).getCreatedTimestamp()) > 0) {
+					return true;
+				}
+				return false;
 			}
-			
-			return myAction.get(0);
-			
+
 		default:
 
 			return action;
