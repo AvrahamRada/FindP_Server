@@ -125,17 +125,16 @@ public class DatabaseActionService implements EnhancedActionService {
 			DatabaseUserService.checkRole(action.getInvokedBy().getUserId().getDomain(),
 					action.getInvokedBy().getUserId().getEmail(), UserRole.PLAYER, userDao, userConverter);
 
-			// Hopefully this query works
-			List<ActionEntity> actions = actionDao.findOneByInvokedBy(
+			List<ActionEntity> lastParkAction = actionDao.findOneByInvokedByAndTypeLike(
 					actionConverter.convertToEntityId(action.getInvokedBy().getUserId().getDomain(),
 							action.getInvokedBy().getUserId().getEmail()),
-					PageRequest.of(0, 1, Direction.DESC, "createdTimestamp"));
+					PARK, PageRequest.of(0, 1, Direction.DESC, "createdTimestamp"));
 
-			if (actions.size() == 0) {
+			if (lastParkAction.size() == 0) {
 				throw new RuntimeException("Player did not parked yet.");
 			}
-
-			String elementId = actions.get(0).getElement();
+			
+			String elementId = lastParkAction.get(0).getElement();
 			element = elementDao.findById(elementId)
 					.orElseThrow(() -> new ElementNotFoundException("could not find element"));
 
