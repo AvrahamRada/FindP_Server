@@ -241,7 +241,13 @@ public class DatabaseElementService implements EnhancedElementService {
 		Set<ElementBoundary> rv = new HashSet<>();
 
 		if (origin != null) {
-			rv.add(this.elementConverter.fromEntity(origin));
+			if(userEntity.getRole() == UserRole.MANAGER) {
+				rv.add(this.elementConverter.fromEntity(origin));
+			}else if(userEntity.getRole() == UserRole.PLAYER) {
+				if(origin.getActive()) {
+					rv.add(this.elementConverter.fromEntity(origin));
+				}
+			}
 		}
 
 		return rv;
