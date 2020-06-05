@@ -211,18 +211,17 @@ public class DatabaseElementService implements EnhancedElementService {
 		UserEntity userEntity = DatabaseUserService
 				.getUserEntityFromDatabase(this.userConverter.convertToEntityId(userDomain, userEmail), userDao);
 		Set<ElementEntity> entities;
-
+		ElementEntity originElement;
 		if (userEntity.getRole() == UserRole.MANAGER) {
-			entities = findActiveOrInActiveElement(elementDao,this.elementConverter.convertToEntityId(elementDomain, elementId))
-					.getChildrenElements();
-			return findActiveAndInActiveElements(entities, elementDao, elementConverter);
+			originElement = findActiveOrInActiveElement(elementDao, this.elementConverter.convertToEntityId(elementDomain, elementId));
+			entities = elementDao.findAllByOrigin(originElement, PageRequest.of(page, size, Direction.ASC, "elementId")).stream().collect(Collectors.toSet());
 		} else if (userEntity.getRole() == UserRole.PLAYER) {
-			entities = findActiveElement(elementDao, this.elementConverter.convertToEntityId(elementDomain, elementId))
-					.getChildrenElements();
-			return findActiveElements(entities, elementDao, elementConverter);
+			originElement = findActiveElement(elementDao, this.elementConverter.convertToEntityId(elementDomain, elementId));
+			entities = elementDao.findAllByOriginAndActive(originElement,true, PageRequest.of(page, size, Direction.ASC, "elementId")).stream().collect(Collectors.toSet());
 		} else {
 			throw new UserNotFoundException("Not valid operation for ADMIN user");
 		}
+		return entities.stream().map(elementConverter::fromEntity).collect(Collectors.toList());
 
 	}
 
@@ -384,15 +383,15 @@ public class DatabaseElementService implements EnhancedElementService {
 		return elementDao.findById(elementId).orElseThrow(() -> new ElementNotFoundException("could not find element"));
 	}
 
-	public static List<ElementBoundary> findActiveElements(Collection<ElementEntity> entities, ElementDao elementDao,
-			ElementConverter elementConverter) {
-		return entities.stream().filter(elementEntity -> elementEntity.getActive()).map(elementConverter::fromEntity)
-				.collect(Collectors.toList());
-	}
-
-	public static List<ElementBoundary> findActiveAndInActiveElements(Collection<ElementEntity> entities,
-			ElementDao elementDao, ElementConverter elementConverter) {
-		return entities.stream().map(elementConverter::fromEntity).collect(Collectors.toList());
-	}
+//	public static List<ElementBoundary> findActiveElements(Collection<ElementEntity> entities, ElementDao elementDao,
+//			ElementConverter elementConverter) {
+//		return entities.stream().filter(elementEntity -> elementEntity.getActive()).map(elementConverter::fromEntity)
+//				.collect(Collectors.toList());
+//	}
+//
+//	public static List<ElementBoundary> findActiveAndInActiveElements(Collection<ElementEntity> entities,
+//			ElementDao elementDao, ElementConverter elementConverter) {
+//		return entities.stream().map(elementConverter::fromEntity).collect(Collectors.toList());
+//	}
 
 }
